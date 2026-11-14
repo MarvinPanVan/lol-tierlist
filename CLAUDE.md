@@ -58,7 +58,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   numbers grouped by ability (`ab` = ability names) with only the changed numbers marked (`_diff`, rank by rank).
   Items show who builds them (OP.GG core/boots/starter) and an icon from `public/img/item/<id>.webp` (icons workflow).
   No guessing about how a change plays out.
-  Linked from the nav ("Patch notes"), the footer, the homepage data line, the next-patch card and every panel
+  Top of the page: the numbers (buffs, nerfs, adjusted, items) as small stat boxes, then the `tldr()` sentences after the
+  first. Linked from the nav ("Patch notes"), the footer, the homepage data line, the next-patch card and every panel
   line about a change ("All numbers" → `/patch/<p>/#<champion>` or `#i-<item>`). CSS classes all start with `pn-`.
 - `pipeline/privacy.html` : the privacy page (English + German), built to `public/privacy/`. Contact is Discord
   `marvinpanvan` only (Marvin's choice, no real name, no Impressum). If the site starts using anything new that
@@ -66,8 +67,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
   build.py. The panel shows a small chart once 3 or more patches exist.
 - Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
+- Every page has the same top menu (Tier list, Pick vs win, Counter pick, Patch notes, How it works); from other pages
+  the two layout links go to `/?show=chart` and `/?show=counter`.
 - Homepage: above the control bar is the patch story and stays fixed (Emerald+, all regions): a one-sentence data line,
-  `headline`, `lede` and three art cards (the top three Z/S picks across roles, `strongest()` in build.py). Below the
+  `headline`, `lede` and three art cards (the top three Z/S picks across roles, `strongest()` in build.py, shown in the
+  order the headline names them). Keep the lede to two short sentences. Below the
   bar everything follows the visitor's rank and region: the list (Top by default), then "All roles this patch" with
   Strongest picks (every Z and S, P left out), Best bans across roles (per champion: score x pick summed over its roles
   with a positive score, divided by 100 - ban of its most-picked role), Popular but losing, Moved most and Changing next

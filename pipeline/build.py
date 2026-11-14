@@ -130,13 +130,17 @@ def strongest(vk='E'):   # every Z and S pick across roles, Z first, then by sco
 def head_home(root):
     # the patch story: fixed for the patch (Emerald+, all regions). Everything under the control bar follows the visitor's rank and region.
     strong = strongest()
+    hl = P.get('headline', '')
+    # the three cards appear in the order the headline names them, so the text and the cards match
+    top3 = sorted(strong[:3], key=lambda t: (hl.find(t[1]['c']) if t[1]['c'] in hl else 999))
     lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
                  f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="--T:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in strong[:3])
+                 f'<span><span class="tg" style="--T:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in top3)
     nx = P.get('next', {})
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
-    when = f'{pl}, updated {E(UPD)}.' + (f' {nl}.' if nl else '')
+    nl = (f'<a class="nx" href="{root}patch/{nx["patch"]}/">Patch {nx["patch"]} on {E(nx.get("date", ""))}: see what changes</a>' if nx.get('patch') in NOTES else f'<span class="nx">Next patch on {E(nx.get("date", ""))}</span>') if nx else ''
+    when = f'<span>Patch {PATCH}, updated {E(UPD)}</span>{nl}'
     return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt"><p class="dl">{when}</p>'
             f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div></div></header>')
 RKN = [('E', 'Emerald+'), ('D', 'Diamond+'), ('M', 'Master+')]
@@ -405,7 +409,11 @@ def notes_body(p, root):
     head = (f'<header class="band hero-band pn-hero"><div class="wrap"><p class="meta"><span>Patch {p}</span><span>{"Live since" if live else "Preview, goes live"} {E(n["live"])}</span></p>'
             f'<h1>Patch {p} {"notes" if live else "preview"}</h1><p class="lede">Every Summoner\'s Rift change with the exact numbers, what they mean, '
             f'and where each champion stands in this tier list right now.</p><nav class="pn-sw" aria-label="Patches">{sw}</nav></div></header>')
-    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh">Short version</h2><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n))}</ul>'
+    ks = [x['kind'] for x in n['champs']]; nadj = len([k for k in ks if k not in ('buff', 'nerf')])
+    st = ''.join(f'<div class="{c}"><b>{v}</b><span>{lab}</span></div>' for c, v, lab in
+                  [('pos', ks.count('buff'), 'buffs' if ks.count('buff') != 1 else 'buff'), ('neg', ks.count('nerf'), 'nerfs' if ks.count('nerf') != 1 else 'nerf'),
+                   ('', nadj, 'adjusted'), ('', len(n.get('items', [])), 'items' if len(n.get('items', [])) != 1 else 'item')] if v)
+    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh" class="sr">Short version</h2><div class="pn-st">{st}</div><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n)[1:])}</ul>'
           f'<p class="pn-mine" id="pnmine" hidden></p></section>')
     groups = [(k, lab, [x for x in n['champs'] if (x['kind'] if x['kind'] in ('buff', 'nerf') else 'adjust') == k]) for k, lab in GROUPS]
     groups = [(k, lab, sorted(xs, key=lambda x: x['c'])) for k, lab, xs in groups if xs]

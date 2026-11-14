@@ -170,7 +170,7 @@ button.gopt:hover{border-color:var(--faint)}
 .tv td.tc b{font:600 14.5px Inter,sans-serif;letter-spacing:-.01em}
 .tv tbody tr{cursor:pointer;transition:background .12s}.tv tbody tr:hover{background:var(--surf)}.tv tbody tr.on{background:color-mix(in srgb,var(--acc) 9%,transparent)}
 .tv tbody tr.dim{opacity:.3}
-.tg{display:inline-block;font:800 13px/1 'Barlow Condensed',sans-serif;padding:5px 8px;border-radius:7px;color:color-mix(in srgb,var(--T,var(--E)) 78%,var(--ink));background:color-mix(in srgb,var(--T,var(--E)) 17%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T,var(--E)) 30%,transparent);min-width:26px;text-align:center;letter-spacing:.02em}
+.tg{display:inline-block;font:800 13px/1 'Barlow Condensed',sans-serif;padding:5px 8px;border-radius:7px;color:color-mix(in srgb,var(--T,var(--E)) 85%,var(--ink));background:color-mix(in srgb,var(--T,var(--E)) 22%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T,var(--E)) 38%,transparent);min-width:26px;text-align:center;letter-spacing:.02em}
 .tg.sm{font:700 11px/1 Inter,sans-serif;padding:3px 5px;min-width:20px;border-radius:5px;letter-spacing:0}
 
 /* detail panel */
@@ -646,7 +646,7 @@ details.brow{display:block}
 .pn-sw{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .pn-sw a{font:600 13px/1 Inter,sans-serif;padding:9px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--card)}
 .pn-sw a:hover{border-color:var(--faint)}
-.pn-sw a[aria-current]{background:var(--acc);border-color:var(--acc);color:#14151a}
+.pn-sw a[aria-current]{background:var(--surf2);border-color:color-mix(in srgb,var(--acc) 55%,var(--line));color:var(--ink)}
 .pn{padding-top:4px}
 .pn-tl{padding:18px 22px;margin-bottom:28px}
 .pn-tl h2{font-size:19px;margin:0 0 8px}
@@ -789,6 +789,21 @@ details.brow{display:block}
 .legend .smp{display:inline-flex;align-items:center;gap:1px;min-height:20px;padding:0 6px;border-radius:6px;background:var(--surf);color:var(--ink);font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px var(--line)}
 .legend .smp.lowsc{color:var(--faint)}
 .legend .tri{margin:0}
+.links a[aria-current=page]{color:var(--ink)}
+.home .dl{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.home .dl>*{display:inline-flex;align-items:center;gap:7px;min-height:28px;padding:0 11px;border-radius:999px;background:var(--surf);box-shadow:inset 0 0 0 1px var(--line);font:500 12.5px/1 Inter,sans-serif;color:var(--mut);text-decoration:none}
+.home .dl a{color:var(--ink)}.home .dl a:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 50%,var(--line))}
+.home .dl .nx::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.pn-tl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 34px;align-items:center}
+.pn-st{display:flex;gap:10px}
+.pn-st div{display:grid;justify-items:start;gap:4px;min-width:84px;padding:12px 16px;border-radius:12px;background:var(--surf)}
+.pn-st b{font:700 30px/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;color:var(--ink)}
+.pn-st span{font:500 12.5px/1 Inter,sans-serif;color:var(--mut)}
+.pn-st .pos b{color:var(--pos)}.pn-st .neg b{color:var(--neg)}
+.pn-tl ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.pn-tl li{padding-left:14px;position:relative}.pn-tl li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--faint)}
+.pn-tl .pn-mine{grid-column:1/-1;margin:0}
+@media(max-width:760px){.pn-tl{grid-template-columns:minmax(0,1fr)}.pn-st div{min-width:0;flex:1}}
 @media(max-width:1340px){.legend .k:first-child{display:none}}
 @media(max-width:1180px){.hintline{flex-wrap:wrap}.legend{margin-left:0;flex-wrap:wrap}}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
@@ -839,7 +854,7 @@ details.brow{display:block}
 </head>
 <body>
 <div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#fbcd68"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#fbcd68" opacity="1"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#fbaa71"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#fbcd68" opacity=".75"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#beaa85"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#fbcd68" opacity=".5"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#7fa48f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#fbcd68" opacity=".3"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
-<!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="#board-sec" data-mode="counter">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#champions">Champions</a><a class="opt" href="#items">Items</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
+<!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="#board-sec" data-mode="counter">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a href="__ROOT__?show=chart#board-sec">Pick vs win</a><a href="__ROOT__?show=counter#board-sec">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/" aria-current="page">How it works</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a href="__ROOT__?show=chart#board-sec">Pick vs win</a><a href="__ROOT__?show=counter#board-sec">Counter pick</a><a href="__ROOT__patch/" aria-current="page">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
 <!--B-->__HEAD__
 
 <nav class="bar" id="bar" aria-label="Tier list controls">
@@ -985,7 +1000,8 @@ const fmt=v=>{if(v==null)return 'n/a';const r=Math.round(v*10)/10;return (r>0?'+
 const colT=t=>{t=(t||'').replace('+','');return {Z:'--Z',S:'--S',A:'--A',B:'--B',C:'--C',D:'--D',P:'--P'}[t]||'--E';};
 const narrow=()=>matchMedia('(max-width:980px)').matches;
 let role='top',rank='e',reg='all',pick=null,q='',mode='tiers',sortK='cur',sortD=-1;
-try{const s=localStorage.getItem('tl-mode');if(s==='tiers'||s==='table')mode=s;}catch(e){}   // the chart is never remembered: the list is the page
+try{const s=localStorage.getItem('tl-mode');if(s==='tiers'||s==='table')mode=s;}catch(e){}
+{const sh=new URLSearchParams(location.search).get('show');if(sh==='chart'||sh==='counter')mode=sh;}   // links from other pages: /?show=chart   // the chart is never remembered: the list is the page
 try{const s=localStorage.getItem('tl-view');if(s){const [a,b]=s.split('|');if(RN[a])rank=a;if(GN[b])reg=b;}else if(localStorage.getItem('tl-lens')==='hi')rank='d';}catch(e){}
 // every view (rank x region) is scored the same way; older limited archives only have Emerald+, all regions
 const R=()=>LIM()?'e':rank,G=()=>LIM()?'all':reg;

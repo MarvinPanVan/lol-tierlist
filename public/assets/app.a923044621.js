@@ -34,7 +34,8 @@ const fmt=v=>{if(v==null)return 'n/a';const r=Math.round(v*10)/10;return (r>0?'+
 const colT=t=>{t=(t||'').replace('+','');return {Z:'--Z',S:'--S',A:'--A',B:'--B',C:'--C',D:'--D',P:'--P'}[t]||'--E';};
 const narrow=()=>matchMedia('(max-width:980px)').matches;
 let role='top',rank='e',reg='all',pick=null,q='',mode='tiers',sortK='cur',sortD=-1;
-try{const s=localStorage.getItem('tl-mode');if(s==='tiers'||s==='table')mode=s;}catch(e){}   // the chart is never remembered: the list is the page
+try{const s=localStorage.getItem('tl-mode');if(s==='tiers'||s==='table')mode=s;}catch(e){}
+{const sh=new URLSearchParams(location.search).get('show');if(sh==='chart'||sh==='counter')mode=sh;}   // links from other pages: /?show=chart   // the chart is never remembered: the list is the page
 try{const s=localStorage.getItem('tl-view');if(s){const [a,b]=s.split('|');if(RN[a])rank=a;if(GN[b])reg=b;}else if(localStorage.getItem('tl-lens')==='hi')rank='d';}catch(e){}
 // every view (rank x region) is scored the same way; older limited archives only have Emerald+, all regions
 const R=()=>LIM()?'e':rank,G=()=>LIM()?'all':reg;
