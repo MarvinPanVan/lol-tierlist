@@ -19,7 +19,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/img/champ public/img/tile public/img/splash public/img/item public/img/spell pipeline/data/ddragon_champions.json pipeline/data/ddragon_items.json
+          git add public/img/champ public/img/tile public/img/splash public/img/item public/img/spell public/img/sum public/img/rune pipeline/data/ddragon_champions.json pipeline/data/ddragon_items.json pipeline/data/ddragon_spells_runes.json
           git diff --cached --quiet && exit 0
           git commit -m "Champion portraits, art, item and ability icons from Data Dragon"
           git pull --rebase && git push

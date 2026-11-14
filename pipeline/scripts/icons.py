@@ -1,7 +1,8 @@
 """Download champion portraits from Riot's Data Dragon into public/img/champ/<slug>.webp (64x64).
 Runs in GitHub Actions (the build sandbox can't reach Riot). Also writes pipeline/data/ddragon_champions.json,
 item icons to public/img/item/<id>.webp plus pipeline/data/ddragon_items.json, and ability icons to
-public/img/spell/<champion slug>_<p|q|w|e|r>.webp."""
+public/img/spell/<champion slug>_<p|q|w|e|r>.webp,
+summoner spell icons public/img/sum/<key>.webp, rune icons public/img/rune/<id>.webp and pipeline/data/ddragon_spells_runes.json."""
 import os, re, json, io, urllib.request
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); PIPE = os.path.dirname(HERE); PUB = os.path.join(os.path.dirname(PIPE), 'public')
@@ -70,4 +71,29 @@ for cid, c in champs.items():
         except Exception as e:
             print('miss spell', cid, k, e)
 print(f'{sp} new ability icons')
+# summoner spells and runes for the build section: icons + Riot's own short descriptions (shown as "what it does")
+clean = lambda h: re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', h or '')).replace(' .', '.').strip()
+sums = json.loads(get(f'{DD}/{ver}/data/en_US/summoner.json'))['data']
+os.makedirs(os.path.join(PUB, 'img', 'sum'), exist_ok=True); SUM = {}
+for k, x in sums.items():
+    if 'CLASSIC' not in x.get('modes', []): continue
+    SUM[x['key']] = {'name': x['name'], 'desc': clean(x.get('description'))}
+    out = os.path.join(PUB, 'img', 'sum', f'{x["key"]}.webp')
+    if not os.path.exists(out):
+        try: Image.open(io.BytesIO(get(f'{DD}/{ver}/img/spell/{x["image"]["full"]}'))).convert('RGB').resize((48, 48), Image.LANCZOS).save(out, 'WEBP', quality=82, method=6)
+        except Exception as e: print('miss summoner', k, e)
+runes = json.loads(get(f'{DD}/{ver}/data/en_US/runesReforged.json'))
+os.makedirs(os.path.join(PUB, 'img', 'rune'), exist_ok=True); RUNE = {}
+for tree in runes:
+    RUNE[str(tree['id'])] = {'name': tree['name'], 'tree': True}
+    items = [(tree['id'], tree['icon'])] + [(r['id'], r['icon']) for slot in tree['slots'] for r in slot['runes']]
+    for slot in tree['slots']:
+        for r in slot['runes']: RUNE[str(r['id'])] = {'name': r['name'], 'desc': clean(r.get('shortDesc')), 'style': tree['id']}
+    for rid, icon in items:
+        out = os.path.join(PUB, 'img', 'rune', f'{rid}.webp')
+        if os.path.exists(out): continue
+        try: Image.open(io.BytesIO(get(f'https://ddragon.leagueoflegends.com/cdn/img/{icon}'))).convert('RGBA').resize((48, 48), Image.LANCZOS).save(out, 'WEBP', quality=85, method=6)
+        except Exception as e: print('miss rune', rid, e)
+json.dump({'version': ver, 'summoners': SUM, 'runes': RUNE}, open(os.path.join(PIPE, 'data', 'ddragon_spells_runes.json'), 'w'), ensure_ascii=False, indent=0)
+print(f'{len(SUM)} summoner spells, {len(RUNE)} runes')
 print(f'{len(champs)} portraits from Data Dragon {ver}')
