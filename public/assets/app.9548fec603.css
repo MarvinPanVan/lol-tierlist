@@ -448,4 +448,20 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 @media(max-width:1180px){.ins-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:980px){.ins-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:640px){.ins-row{grid-template-columns:minmax(0,1fr)}.fig-card .fig{min-height:360px}.sh p{font-size:13px}}
+/* visual pass */
+.seg button[aria-pressed=true]{background:light-dark(var(--card),color-mix(in srgb,var(--ink) 13%,var(--card)));color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.25),inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.seg button.two[aria-pressed=true] small{color:color-mix(in srgb,var(--ink) 70%,transparent)}
+.row{position:relative;border-left:1px solid color-mix(in srgb,var(--T) 14%,var(--line));border-color:color-mix(in srgb,var(--T) 14%,var(--line));background:color-mix(in srgb,var(--T) 3.5%,var(--card))}
+.row::before{content:"";position:absolute;left:-1px;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--T)}
+.chip{border-color:color-mix(in srgb,var(--line) 75%,transparent)}
+.chip:hover{border-color:var(--line)}
+.chip.big::before{opacity:.34;filter:saturate(.85);-webkit-mask-image:linear-gradient(90deg,transparent 42%,rgba(0,0,0,.55) 70%,#000 100%);mask-image:linear-gradient(90deg,transparent 42%,rgba(0,0,0,.55) 70%,#000 100%)}
+.chip.big .sc{background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.ph h3 a{color:inherit;text-decoration:none}.ph h3 a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.ph h3 .go{display:inline-block;width:15px;height:15px;margin-left:6px;vertical-align:2px;color:var(--mut)}
+.panel{padding-bottom:24px}
+.hm td button{color:var(--ink)}
+.home h1{font-size:clamp(28px,2.7vw,40px);max-width:30ch}
+.rt .hico{margin-left:6px;vertical-align:.32em;width:30px;min-height:30px;height:30px;padding:0}.rt .hico svg{width:14px;height:14px}
+.take{margin-top:2px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}

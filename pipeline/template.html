@@ -475,6 +475,22 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 @media(max-width:1180px){.ins-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:980px){.ins-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:640px){.ins-row{grid-template-columns:minmax(0,1fr)}.fig-card .fig{min-height:360px}.sh p{font-size:13px}}
+/* visual pass */
+.seg button[aria-pressed=true]{background:light-dark(var(--card),color-mix(in srgb,var(--ink) 13%,var(--card)));color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.25),inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.seg button.two[aria-pressed=true] small{color:color-mix(in srgb,var(--ink) 70%,transparent)}
+.row{position:relative;border-left:1px solid color-mix(in srgb,var(--T) 14%,var(--line));border-color:color-mix(in srgb,var(--T) 14%,var(--line));background:color-mix(in srgb,var(--T) 3.5%,var(--card))}
+.row::before{content:"";position:absolute;left:-1px;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--T)}
+.chip{border-color:color-mix(in srgb,var(--line) 75%,transparent)}
+.chip:hover{border-color:var(--line)}
+.chip.big::before{opacity:.34;filter:saturate(.85);-webkit-mask-image:linear-gradient(90deg,transparent 42%,rgba(0,0,0,.55) 70%,#000 100%);mask-image:linear-gradient(90deg,transparent 42%,rgba(0,0,0,.55) 70%,#000 100%)}
+.chip.big .sc{background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.ph h3 a{color:inherit;text-decoration:none}.ph h3 a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.ph h3 .go{display:inline-block;width:15px;height:15px;margin-left:6px;vertical-align:2px;color:var(--mut)}
+.panel{padding-bottom:24px}
+.hm td button{color:var(--ink)}
+.home h1{font-size:clamp(28px,2.7vw,40px);max-width:30ch}
+.rt .hico{margin-left:6px;vertical-align:.32em;width:30px;min-height:30px;height:30px;padding:0}.rt .hico svg{width:14px;height:14px}
+.take{margin-top:2px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -758,13 +774,13 @@ const HIGHV=()=>lens==='hi'||['dia','m','euwd','euwm','krd','krm','nad','nam'].i
 function renderPanel(){if(!DATA[role])return;
   const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';return;}
   const rn=ROLES.find(r=>r[0]===role)[1],ht=hiTier(d),sx=stat(d)||{};
-  const hcell=k=>{const v=d[k];if(v==null)return `<td class="na">–</td>`;const a=Math.min(Math.abs(v),3)/3;return `<td class="${lens===k?'on':''}" style="--h:color-mix(in srgb,var(${v>=0?'--pos':'--neg'}) ${Math.round(6+a*44)}%,transparent)"><button type="button" data-l="${k}" title="${DSN[k]}: ${d.st&&d.st[k]?d.st[k][0].toLocaleString('en-US')+' games. ':''}Tap to rank everyone by it." aria-label="${DSN[k]} ${fmt(v)}, show the tier list from this dataset">${fmt(v)}</button></td>`;};
+  const hcell=k=>{const v=d[k];if(v==null)return `<td class="na">–</td>`;const a=Math.min(Math.abs(v),3)/3;return `<td class="${lens===k?'on':''}" style="--h:color-mix(in srgb,var(${v>=0?'--pos':'--neg'}) ${Math.round(5+a*30)}%,transparent)"><button type="button" data-l="${k}" title="${DSN[k]}: ${d.st&&d.st[k]?d.st[k][0].toLocaleString('en-US')+' games. ':''}Tap to rank everyone by it." aria-label="${DSN[k]} ${fmt(v)}, show the tier list from this dataset">${fmt(v)}</button></td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RK.map(r=>`<th>${r}</th>`).join('')}</tr></thead><tbody>${GRID.map(([n,...ks])=>`<tr><th>${n}</th>${ks.map(hcell).join('')}</tr>`).join('')}</tbody></table>`;
   const rows=DSP.map(([k,n])=>{const v=d[k];if(v==null)return '';const c=Math.max(-4,Math.min(4,v)),w=Math.abs(c)/4*50;return `<div class="r"><span>${n}</span><div class="trk"><div class="fill" style="left:${c<0?50-w:50}%;width:${w}%;background:var(${v<0?'--neg':'--pos'})"></div></div><span class="val">${fmt(v)}</span></div>`;}).join('');
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site">${k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site">Lolalytics, Emerald+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}</p>`;
   const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
-  $('panel').innerHTML=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}${!ARCH&&PAGE!=='champ'?` · <a class="fp" href="${champURL(d.c)}">Full page</a>`:''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
+  $('panel').innerHTML=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${!ARCH&&PAGE!=='champ'?`<a href="${champURL(d.c)}" title="Open the full page for ${d.c}">${d.c}<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`:d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
   <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a><button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong>${rngHTML(d)}</div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${LIM()?`<p class="cap">Win rate vs role average, Global Emerald+ only</p><div class="rows">${rows}</div>`:`<p class="cap">Win rate vs role average in points, by region and rank. Tap a cell to rank everyone by it.</p>${grid}`}
@@ -838,16 +854,18 @@ function drawMap(){if(!DATA[role])return;
   g+=`<text class="q" x="${W-m.r}" y="${m.t-14}" text-anchor="end">↗ Strong and popular</text>`;
   g+=`<text class="q" x="${W-m.r}" y="${y(ymin)-8}" text-anchor="end">↘ Popular, losing</text>`;
   g+=`<text class="q" x="${m.l}" y="${m.t-14}">↖ Strong, rarely picked</text>`;
-  const boxes=[],lab=[];
-  const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||Math.abs(b[k])*Math.sqrt(P(b))-Math.abs(a[k])*Math.sqrt(P(a)));
-  pri.forEach((d,i)=>{const cx=x(P(d)),cy=y(d[k]);const w=d.c.length*7+6;const bx=cx+18,by=cy-8;
-    if(cx+18+w>W-m.r)return;const lim=small?5:10;if(d.c!==pick&&lab.length>=lim)return;
-    if(boxes.some(b=>bx<b[0]+b[2]&&bx+w>b[0]&&by<b[1]+16&&by+16>b[1]))return;boxes.push([bx,by,w]);lab.push(d.c);});
+  const boxes=[],lab={};
+  const top3=list.slice().sort((a,b)=>b[k]-a[k]).filter(d=>P(d)>=1.5).slice(0,3).map(d=>d.c);
+  const free=(bx,by,w,d)=>bx>m.l&&bx+w<W-m.r&&!boxes.some(b=>bx<b[0]+b[2]&&bx+w>b[0]&&by<b[1]+16&&by+16>b[1])&&(top3.includes(d.c)||d.c===pick||!list.some(o=>{if(o===d)return false;const ox=x(P(o)),oy=y(o[k]);return ox+13>bx&&ox-13<bx+w&&oy+13>by&&oy-13<by+16;}));
+  const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||top3.includes(b.c)-top3.includes(a.c)||Math.abs(b[k])*Math.sqrt(P(b))-Math.abs(a[k])*Math.sqrt(P(a)));
+  const lim=small?4:9;
+  pri.forEach(d=>{if(d.c!==pick&&Object.keys(lab).length>=lim)return;const cx=x(P(d)),cy=y(d[k]),w=d.c.length*7+6,by=cy-8;
+    for(const [bx,side] of [[cx+18,'r'],[cx-18-w,'l']])if(free(bx,by,w,d)){boxes.push([bx,by,w]);lab[d.c]=side;break;}});
   const R=small?9:12;
   g+=`<defs><clipPath id="cc" clipPathUnits="objectBoundingBox"><circle cx=".5" cy=".5" r=".5"/></clipPath></defs>`;
   list.slice().sort((a,b)=>(a.c===pick)-(b.c===pick)||P(a)-P(b)).forEach(d=>{const t=tierOf(d)||'E',cx=x(P(d)),cy=y(d[k]),on=d.c===pick,r=on?R+5:R;
     g+=`<g class="dot${on?' on':''}" data-c="${d.c}" transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)})"><title>${d.c} ${fmt(d[k])}, ${P(d).toFixed(1)}% pick</title><circle r="${r+2.5}" fill="var(${on?'--acc':colT(t)})"/><image href="${IMGBASE}${slug(d.c)}.webp" x="${-r}" y="${-r}" width="${2*r}" height="${2*r}" clip-path="url(#cc)" preserveAspectRatio="xMidYMid slice"/></g>`;});
-  list.filter(d=>lab.includes(d.c)).forEach(d=>{const on=d.c===pick,r=(on?R+5:R)+6;g+=`<text x="${(x(P(d))+r).toFixed(1)}" y="${(y(d[k])+4).toFixed(1)}" style="font-weight:${on?700:600}">${d.c}</text>`;});
+  list.filter(d=>lab[d.c]).forEach(d=>{const on=d.c===pick,r=(on?R+5:R)+6,L=lab[d.c]==='l';g+=`<text x="${(x(P(d))+(L?-r:r)).toFixed(1)}" y="${(y(d[k])+4).toFixed(1)}"${L?' text-anchor="end"':''} style="font-weight:${on?700:600}">${d.c}</text>`;});
   s.innerHTML=g;
 }
 function renderGrade(){

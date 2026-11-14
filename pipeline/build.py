@@ -66,10 +66,10 @@ UPD = P.get('updated', '')
 def dline(extra=''):
     return f'<p class="dl">Patch <b>{PATCH}</b> · ranked solo/duo · 9 stat sites · {kfmt(GAMES)} Emerald+ games · updated {E(UPD)}{extra}</p>'
 SHARE = '<button type="button" class="ext" data-share="">Share</button>'
+SHARE_ICO = '<button type="button" class="ext ico hico" data-share="" aria-label="Share this page" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
 def head_role(r):
     return (f'<header class="band head" style="--R:var(--R{r})"><div class="wrap"><div class="rh"><div class="rt"><span class="ri">{RICON[r]}</span>'
-            f'<div><h1>{RNAME[r]} tier list</h1>{dline()}</div></div><div><p class="take">{E(P.get("takes", {}).get(r, ""))}</p>'
-            f'<div class="hacts">{SHARE}</div></div></div></div></header>')
+            f'<div><h1>{RNAME[r]} tier list {SHARE_ICO}</h1>{dline()}</div></div><p class="take">{E(P.get("takes", {}).get(r, ""))}</p></div></div></header>')
 def head_home(root):
     cards = ''
     for r, n, _ in ROLES:
