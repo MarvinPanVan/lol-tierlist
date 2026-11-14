@@ -82,7 +82,8 @@ SITE = pd.DataFrame(rows, columns=['site', 'rank', 'role', 'c', 'tier', 'win', '
 MOBA = json.load(open('data2/moba_highelo.json'))
 # OP.GG's three hardest matchups per champion (tier list Counter column), Emerald+ and Diamond+. Stopgap until the Riot data has enough games.
 CTR = json.load(open('data/opgg_counters.json')) if os.path.exists('data/opgg_counters.json') else {'e': {}, 'd': {}}
-CTR = {rk: {r: {nm(c): [nm(x) for x in cs] for c, cs in v.items()} for r, v in CTR.get(rk, {}).items()} for rk in ['e', 'd']}
+# entries: [opponent, games, wins of this champion]; stored as [opponent, win rate, games]
+CTR = {rk: {r: {nm(c): [[nm(x[0]), round(100 * x[2] / x[1], 1), x[1]] for x in cs] for c, cs in v.items()} for r, v in CTR.get(rk, {}).items()} for rk in ['e', 'd']}
 
 out, meta_tau, prev_cmp = {}, {}, []
 for role in ROLES:
@@ -182,10 +183,13 @@ for role in ROLES:
                 st[k] = [int(r.n), round(float(r.pick), 2), None if pd.isna(r.ban) else round(float(r.ban), 1), round(float(r.win), 2)]
         e['st'] = st
         E_sh = avg([(val('euwd', c), 1), (val('euwm', c), 1)])
+        e['_gsh'] = None if val('g', c) is None else val('g', c) - spec(pick)   # shrunk, same footing as score and hi
+        e['_esh'] = E_sh   # shrunk EUW Diamond+/Master+ block
         pick_d = float(dref.loc[c, 'pick']) if c in dref.index else None
         e['pick_d'] = None if pick_d is None else round(pick_d, 2)
         hi = avg([(D_sh, HI_W['D']), (m_sh, HI_W['M']), (E_sh, HI_W['E'])])
         e['hi'] = None if hi is None else round(hi - spec(pick_d if pick_d else pick), 2)
+        e['_hib'] = hi   # high elo blend before the one-trick correction, to compare with the EUW block
         # previous patch (Global Emerald+), both shrunk
         pv, gv = val('prev', c), val('g', c)
         e['tr'] = None if pv is None or gv is None else round(gv - pv, 2)
@@ -233,6 +237,9 @@ for role, L in out.items():
 
 # ---------- notes, written from the numbers ----------
 DSN = {'g': 'Global', 'euw': 'EUW', 'kr': 'KR', 'na': 'NA', 'm': 'Master+', 'dia': 'Diamond+', 'euwd': 'EUW Diamond+', 'euwm': 'EUW Master+'}
+from decimal import Decimal, ROUND_HALF_UP
+def fx(v, nd=1):  # same as JavaScript's toFixed, which the site uses for pick rates
+    return str(Decimal(v).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP)) if nd else str(Decimal(v).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 def f1(v):  # same rounding as the site (Math.round), so notes and numbers match
     r = math.floor(v * 10 + .5) / 10; return ('+' if r > 0 else '−' if r < 0 else '') + f'{abs(r):.1f}'
 LV = {'S+': 6, 'S': 5, 'S-': 4.5, 'A+': 4.3, 'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3, 'B-': 2.7, 'C': 2, 'D': 1}
@@ -247,33 +254,34 @@ def note(e):
     elif alo >= .5: out.append((7, f'Above average in all {len(va)} datasets ({f1(alo)} to {f1(ahi)}).'))
     elif ahi <= -.5: out.append((7, f'Below average in all {len(va)} datasets.'))
     elif hi - lo >= 1.8 and hi > .3 and lo < -.3: out.append((8, f'Mixed: {f1(hi)} in {DSN[hi_k]}, {f1(lo)} in {DSN[lo_k]}.'))
-    low_elo, high = e.get('g'), e.get('hi')
+    low_elo, high = e.get('_gsh'), e.get('hi')   # both shrunk and one-trick corrected
     if low_elo is not None and high is not None:
         if high - low_elo >= .8:
             out.append((7, f'Less bad in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if high < 0 else f'Gets better with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
         elif high - low_elo <= -.8:
             out.append((7, f'Even worse in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if low_elo < 0 else f'Falls off with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
-    if e['pick'] >= 8 and e['score'] <= -.3: out.append((9, f'Very popular ({e["pick"]:.1f}% pick in Emerald+) and still losing.'))
-    elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular ({e["pick"]:.1f}% pick in Emerald+) and still winning.'))
-    elif e['pick'] < 1.5: out.append((8, f'Rarely picked ({e["pick"]:.1f}% in Emerald+), mostly by mains. Expect less if you are new to it.'))
-    eu = [e[k] for k in ['euwd', 'euwm'] if e.get(k) is not None]
-    if eu and high is not None:
-        ev = sum(eu) / len(eu)
-        if ev - high >= 1: out.append((6, f'Even better on EUW high elo ({f1(ev)}).'))
-        elif ev - high <= -1: out.append((6, f'Worse on EUW high elo ({f1(ev)}).'))
+    if e['pick'] >= 8 and e['score'] <= -.3: out.append((9, f'Very popular ({fx(e["pick"])}% pick in Emerald+) and still losing.'))
+    elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular ({fx(e["pick"])}% pick in Emerald+) and still winning.'))
+    elif e['pick'] < 1.5: out.append((8, f'Rarely picked ({fx(e["pick"])}% in Emerald+), mostly by mains. Expect less if you are new to it.'))
+    ev, hb = e.get('_esh'), e.get('_hib')   # both shrunk, before the one-trick correction
+    if ev is not None and hb is not None:
+        if ev - hb >= 1: out.append((6, f'Even better on EUW high elo ({f1(ev)}).'))
+        elif ev - hb <= -1: out.append((6, f'Worse on EUW high elo ({f1(ev)}).'))
     sl = {k: v for k, v in e['sites'].items() if v in LV}
     if len(sl) >= 3:
         a, b = max(sl, key=lambda k: LV[sl[k]]), min(sl, key=lambda k: LV[sl[k]])
         if LV[sl[a]] - LV[sl[b]] >= 3: out.append((5, f'Sites disagree: {a} gives {sl[a]}, {b} gives {sl[b]}.'))
     if e.get('tr') is not None and abs(e['tr']) >= 1:
-        out.append((6, f'{"Up" if e["tr"] > 0 else "Down"} {abs(e["tr"]):.1f} points in Global since {P["prev_patch"]}.'))
+        out.append((6, f'{"Up" if e["tr"] > 0 else "Down"} {f1(e["tr"]).lstrip("+−")} points in Global since {P["prev_patch"]}.'))
     if e.get('mx') is not None and e['mx'] >= 6:
-        out.append((7, f'Rewards mastery: the best players on it win {e["mxw"]:.0f}%, {e["mx"]:.1f} points above the Emerald+ average on it.'))
+        out.append((7, f'Rewards mastery: the best players on it win {fx(e["mxw"], 0)}%, {fx(e["mx"])} points above the Emerald+ average on it.'))
     if e['se'] >= .8: out.append((4, 'Small sample, so treat the tier as rough.'))
     out.sort(key=lambda x: -x[0])
     return ' '.join(t for _, t in out[:2])
 for L in out.values():
-    for e in L: e['note'] = note(e)
+    for e in L:
+        e['note'] = note(e)
+        for k in ['_gsh', '_esh', '_hib']: e.pop(k, None)
 
 # ---------- site grading (rank correlation of letters with win rate vs popularity, Diamond+) ----------
 grade = []

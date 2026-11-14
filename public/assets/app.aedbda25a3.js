@@ -84,7 +84,7 @@ function renderTable(){if(!DATA[role])return;
     case 't':{const t=tierOf(d);return `<td><span class="tg" style="background:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
-    case 'ctr':{const cs=(HIGHV()?d.ctr_d:d.ctr)||d.ctr||[];return `<td><span class="ctrs">${cs.map(x=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}" width="22" height="22" loading="lazy">`).join('')}</span></td>`;}
+    case 'ctr':{const {cs}=ctrs(d);return `<td><span class="ctrs">${cs.length?cs.map(([x,wr,n])=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}: ${wr.toFixed(0)}% in ${n.toLocaleString('en-US')} games" width="22" height="22" loading="lazy">`).join(''):'<span class="mu">–</span>'}</span></td>`;}
     case 'games':{const w=val(d,c);return `<td class="n${w!=null&&w<LOWN?' mu':''}">${w==null?NA:Math.round(w).toLocaleString('en-US')}</td>`;}
     case 'hi':return `<td class="n">${v==null?NA:`${fmt(v)} <span class="tg sm" style="background:var(${colT(d.ht)})">${d.ht||''}</span>`}</td>`;
     default:return `<td class="n"><b>${fmt(v)}</b>${c===k&&lens==='score'?` <span class="mu se">±${(d.se??0).toFixed(1)}</span>`:''}</td>`;}};
@@ -101,11 +101,11 @@ const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?
 const chipHTML=(d,k,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big';return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="${lens==='score'?`Few games, could be off by ±${d.se.toFixed(1)}`:`Only ${x?x.n.toLocaleString('en-US'):'a few'} games in ${DSN[SK()]}`}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],hiv=HIGHV(),cnt={};
-  for(const d of mine)for(const c of ((hiv?d.ctr_d:d.ctr)||d.ctr||[]))if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
+  for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
   const bans=Object.entries(cnt).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,2);
   let t=mine.length>1?`Best of yours this patch: <b>${best.c}</b> (${tierOf(best)}, ${fmt(best[keyOf()])}).`:'';
   if(bans.length)t+=` Ban ${bans.map(([c,n])=>`<b>${c}</b>`).join(' or ')}: hard matchup for ${bans[0][1]} of your ${mine.length}.`;
-  else if(mine.length===1){const cs=(hiv?best.ctr_d:best.ctr)||best.ctr;if(cs&&cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(c=>`<b>${c}</b>`).join(', ')}.`;}
+  else if(mine.length===1){const {cs}=ctrs(best);if(cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(([c,wr])=>`<b>${c}</b> (${wr.toFixed(0)}%)`).join(', ')}.`;}
   return t?`<p class="mi">${t}</p>`:'';
 }
 function sinceVisit(){
@@ -198,10 +198,16 @@ function share(c){const url=c?champURL(c):PAGE==='home'?SITE:SITE+role+'/',title
   if(navigator.share&&matchMedia('(pointer:coarse)').matches){navigator.share({title,url}).catch(()=>{});return;}
   const done=()=>{const t=document.createElement('div');t.className='toast';t.textContent='Link copied';document.body.appendChild(t);setTimeout(()=>t.remove(),1800);};
   (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(done).catch(()=>{prompt('Copy this link',url);});}
+const CMIN=150;
+// OP.GG's three hardest matchups as [opponent, win rate, games]; only those with enough games count.
+// High elo views use Diamond+ when it has any matchup with enough games, else Emerald+.
+function ctrs(d){const ok=a=>(a||[]).filter(x=>Array.isArray(x)&&x[2]>=CMIN);const dd=ok(d.ctr_d),ee=ok(d.ctr);
+  if(HIGHV()&&dd.length)return {cs:dd,src:'Diamond+'};return {cs:ee,src:'Emerald+',fb:HIGHV()&&(d.ctr_d||[]).length>0,thin:!ee.length&&(d.ctr||[]).length>0};}
 function ctrHTML(d){
-  const hiv=HIGHV(),cs=(hiv?d.ctr_d:d.ctr)||d.ctr;if(!cs||!cs.length)return '';
-  const inRole=c=>DATA[role].some(x=>x.c===c);
-  return `<p class="cap">Hardest matchups <span class="mu">(OP.GG, ${hiv&&d.ctr_d?'Diamond+':'Emerald+'})</span></p><div class="ctr">${cs.map(c=>inRole(c)?`<button type="button" class="cc" data-c="${c}">${pic(c,'pic xs')}${c}</button>`:`<span class="cc">${pic(c,'pic xs')}${c}</span>`).join('')}<a class="ctrl" href="${opgg(d.c,'counters')}" target="_blank" rel="noopener">All matchups ↗</a></div>`;
+  const {cs,src,fb,thin}=ctrs(d);const inRole=c=>DATA[role].some(x=>x.c===c);
+  const head=`<p class="cap">Hardest matchups <span class="mu">(OP.GG, ${src}${fb?', Diamond+ has too few games':''})</span></p>`;
+  if(!cs.length)return thin||((d.ctr||[]).length)?`${head}<p class="mi0">OP.GG's hardest matchups for ${d.c} each have under ${CMIN} games, too few to trust. <a class="ctrl" href="${opgg(d.c,'counters')}" target="_blank" rel="noopener">All matchups ↗</a></p>`:'';
+  return `${head}<div class="ctr">${cs.map(([c,wr,n])=>{const inner=`${pic(c,'pic xs')}<span>${c}</span><small>${wr.toFixed(0)}% · ${kfmt(n)} games</small>`;return inRole(c)?`<button type="button" class="cc" data-c="${c}" title="${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}">${inner}</button>`:`<span class="cc" title="${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}">${inner}</span>`;}).join('')}<a class="ctrl" href="${opgg(d.c,'counters')}" target="_blank" rel="noopener">All matchups ↗</a></div>`;
 }
 function renderSide(){if(!DATA[role])return;
   const list=DATA[role];

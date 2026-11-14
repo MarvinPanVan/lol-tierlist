@@ -57,6 +57,8 @@ RNAME = {r: n for r, n, _ in ROLES}
 SAMP = json.load(open(os.path.join(HERE, 'data', 'samples.json')))
 GAMES = SAMP.get('opgg_global_e', 0) / 10
 def kfmt(n): return f'{n / 1e6:.1f}M' if n >= 1e6 else f'{round(n / 1e3)}k'
+from decimal import Decimal, ROUND_HALF_UP
+def fx(v, nd=1): return str(Decimal(v).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP))   # = JavaScript toFixed
 def f1(v):
     import math
     r = math.floor(v * 10 + .5) / 10; return ('+' if r > 0 else '−' if r < 0 else '') + f'{abs(r):.1f}'
@@ -88,7 +90,7 @@ def head_home(root):
     lead = sorted(lead, key=lambda x: -x[1]['score'])[:3]; lead += rest[:3 - len(lead)]
     lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
                  f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="background:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {e["pick"]:.1f}% pick</span></span></a>' for r, e in lead)
+                 f'<span><span class="tg" style="background:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in lead)
     hdl = f'<p class="dl">Patch <b>{PATCH}</b> · 9 stat sites · {kfmt(GAMES)} Emerald+ games · updated {E(UPD)}{nxt.replace(" next patch", " next")}</p>'
     return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt">{hdl}'
             f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div><div class="mvs bpr"><span>Best per role:</span>{cards}</div>'

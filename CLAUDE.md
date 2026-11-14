@@ -79,15 +79,21 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      Global Emerald+ (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
      KR and NA Diamond+/Master+ are view-only: Raw data menu and the region by rank grid in the panel, not in Overall
      or High elo. Notes count all 12 datasets for "above/below average in all N".
-   - OP.GG counters: the tier list's Counter column (three hardest matchups) for Global Emerald+ and Diamond+, every
-     role -> `data/opgg_counters.json` (`{"e": {role: {champ: [c1, c2, c3]}}, "d": ...}`). The icons only exist in
-     the rendered page, not in the server HTML: navigate to each page in the browser, wait ~3 s, read `img.alt` in
-     the Counter column. Stopgap until the Riot data has enough games per matchup.
-   - Quick way to read OP.GG: open any op.gg champions page in the browser, then in the page's JS fetch
-     `/lol/champions?region=kr&tier=master_plus&position=top&patch=16.xx` and parse the server-rendered table with
-     DOMParser (columns Win rate, Pick rate, Ban rate; "Total analyzed samples" is in the page text). Region values
-     global/euw/kr/na, tiers emerald_plus/diamond_plus/master_plus, positions top/jungle/mid/adc/support. Wait ~0.4 s
-     between pages.
+   - OP.GG counters: `positionCounters` from the same page data for Global Emerald+ and Diamond+, every role ->
+     `data/opgg_counters.json` (`{"e": {role: {champ: [[opponent, games, wins], ...]}}, "d": ...}`). The site only
+     shows matchups with 150+ games (about a third of Emerald+ and two thirds of Diamond+ ones have fewer). Stopgap
+     until the Riot data has enough games per matchup.
+   - Reading OP.GG: NEVER use the visible table. It stops at 55 rows ranked by OP.GG's own tier order, which silently
+     drops losing champions (in 26.22 that hid K'Sante top, Jayce jungle and 9 others). Read the page data instead:
+     open any op.gg champions page in the browser, then in page JS `fetch('/lol/champions?region=kr&tier=master_plus&
+     position=top&patch=16.xx')`, take the HTML, replace `\\"` with `"` and regex the records
+     `{"key":..,"name":..,"image_url":..,"positionName":"TOP","positionWinRate":..,"positionPickRate":..,"positionBanRate":..`
+     (names are JSON-escaped, e.g. `Nunu \\u0026 Willump`; decode with JSON.parse). Each record also has
+     `positionCounters` = three hardest matchups as {name, play, win}. "Total analyzed samples" is in the page text.
+     Regions global/euw/kr/na, tiers emerald_plus/diamond_plus/master_plus, positions top/jungle/mid/adc/support,
+     0.4 s between pages. Collecting all 65 pages takes about 2 minutes: run it, store in sessionStorage, read back.
+     Check after collecting: pick rates per role add up to roughly 180-200% (two players per role per game) and the
+     pick-weighted role average is about 50%.
 4. Update the texts: in `patch.json` `updated`, `headline` (short, names the patch leaders, about 40 characters),
    `lede` (counts) and the five `takes`; the homepage leader cards are picked by build.py (Z tier, filled with the best S); in
    `pipeline/template.html` the top bar pill "Patch xx.xx", the NEXT list ("Changing on ..."), method and limits

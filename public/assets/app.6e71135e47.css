@@ -191,7 +191,7 @@ button.gopt:hover{border-color:var(--faint)}
 .hist text{font:600 11px Inter,sans-serif;fill:var(--mut)}.hist .lv{fill:var(--ink)}
 .ctr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:16px}
 .cc{display:inline-flex;align-items:center;font:600 13px Inter,sans-serif;background:var(--surf);color:var(--ink);border:0;border-radius:999px;padding:3px 10px 3px 3px;white-space:nowrap}
-.cc .pic.xs{margin-right:7px;vertical-align:0}
+.cc .pic.xs{margin-right:7px;vertical-align:0}.cc small{font:600 11.5px Inter,sans-serif;color:var(--neg);margin-left:7px}.mi0{font-size:13px;color:var(--mut);margin:0 0 16px}
 button.cc{cursor:pointer}button.cc:hover{background:var(--surf2)}
 .ext.ico{padding:0;width:34px;justify-content:center}.ext.ico svg{width:16px;height:16px}
 .rolesub .fp{white-space:nowrap;color:var(--acc);font-weight:600;text-decoration:none}.rolesub .fp:hover{text-decoration:underline}

@@ -16,7 +16,9 @@ COL={'Z':'#ff4fbf','S':'#ff6b6b','A':'#ff9f43','B':'#ffd23f','C':'#a6dc5c','D':'
 ROLES=[('top','Top'),('jungle','Jungle'),('mid','Mid'),('adc','ADC'),('support','Support')]
 SL=lambda c: re.sub(r'[^a-z0-9]','',c.lower())
 IMG=lambda c: f"file://{PUB}/img/champ/{SL(c)}.webp"
-def sc(v): return ('+' if v>0 else '\u2212' if v<0 else '')+f"{abs(v):.1f}"
+def sc(v):
+    import math; r=math.floor(v*10+.5)/10   # same rounding as the site
+    return ('+' if r>0 else '\u2212' if r<0 else '')+f"{abs(r):.1f}"
 rows=''
 for r,n in ROLES:
     d=sorted([x for x in data[r] if x['t']!='P'],key=lambda x:(TR[x['t']],-x['score']))[0]
