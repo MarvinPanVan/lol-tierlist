@@ -75,7 +75,7 @@ function renderControls(){if(!DATA[role])return;
 }
 function renderTable(){if(!DATA[role])return;
   const list=DATA[role],k=keyOf();
-  const lim=LIM(),cols=[['c','Champion'],['t','Tier'],[k,lens==='score'?'Score':lens==='hi'?'High elo':'Value'],...(lim||lens==='hi'?[]:[['hi','High elo']]),...(lim?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games in '+DSN[SK()]],...(lim?[]:[['ctr','Hardest matchups']])];
+  const lim=LIM(),cols=[['c','Champion'],['t','Tier'],[k,lens==='score'?'Score':lens==='hi'?'High elo':'Value'],...(lim||lens==='hi'?[]:[['hi','High elo']]),...(lim?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games'],...(lim?[]:[['ctr','Counters']])];
   const NA='<span class="mu">–</span>';
   const SC={wr:'wr',pick:'pick',ban:'ban',games:'n'};
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:d[c];
@@ -98,7 +98,7 @@ const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
 const isTrap=d=>{const x=stat(d),v=d[keyOf()];return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
-const chipHTML=(d,k,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big';return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="${lens==='score'?`Few games, could be off by ±${d.se.toFixed(1)}`:`Only ${x?x.n.toLocaleString('en-US'):'a few'} games in ${DSN[SK()]}`}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}${isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':''}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+const chipHTML=(d,k,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big';return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="${lens==='score'?`Few games, could be off by ±${d.se.toFixed(1)}`:`Only ${x?x.n.toLocaleString('en-US'):'a few'} games in ${DSN[SK()]}`}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],hiv=HIGHV(),cnt={};
   for(const d of mine)for(const c of ((hiv?d.ctr_d:d.ctr)||d.ctr||[]))if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;

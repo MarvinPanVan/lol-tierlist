@@ -7,7 +7,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 ## Layout
 
 - `public/index.html` + `public/fonts/` : the live site. Never hand-edit index.html, it is generated.
-- `pipeline/template.html` : the page (HTML, CSS, JS, all texts). Data goes in at `__DATA__`.
+- `pipeline/template.html` : the page layout, CSS and JS. build.py ships the CSS and JS as shared cached files
+  (`public/assets/app.<hash>.css/js`); each page only keeps a small inline config (`window.TL`).
+  Look: dark by default (light only if the visitor picks it), gold accent, own position icons, tinted tier rows,
+  Z/S as big art cards, A/B normal chips, C/D compact. Page headers are plain HTML made by build.py.
 - `pipeline/tiers.json` : the data for the current patch. Source of truth for what the site shows.
 - `pipeline/assets/mark.svg` : the logo (tier-row icon), used for favicon, brand mark and og.png.
 - `pipeline/build.py` : `python3 pipeline/build.py` builds every page from template + tiers.json: `public/index.html`,
@@ -23,6 +26,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
   build.py. The panel shows a small chart once 3 or more patches exist.
 - Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
+- Homepage = patch overview (data line, headline, role cards with each role's best pick, movers), then the list of
+  the role the visitor used last. Champion pages: `/mid/ahri/` for every listed champion (static header with art,
+  tiers, note; the list loads below). They embed no data and load `data/<patch>.json`.
+- Art: `public/img/tile/<slug>.webp` (square face crops) and `public/img/splash/<slug>.webp` (960x540), downloaded by
+  the icons workflow (only missing files). In CSS custom properties use root paths (`/img/...`), because relative
+  url() inside a CSS variable resolves against the stylesheet folder.
 - URLs: `/mid/` is the mid page, `#katarina` selects a champion, `?patch=26.21` opens an archived patch. Old `/#mid`
   links still work.
 - Patch archive: `public/data/<patch>.json` per patch and `patches.json` (newest 6). build.py always writes the
@@ -32,7 +41,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `pipeline/data`, `pipeline/data2` : raw numbers read from the stat sites for the current patch.
 - `pipeline/update.py` : the whole method, raw files to tiers.json in one run (`python3 pipeline/update.py`).
   Prints a backtest (last patch vs this patch for unchanged champions), fitted spreads and the tiers.
-- `pipeline/patch.json` : patch numbers, previous patch code for the trend files, next patch preview per role
+- `pipeline/patch.json` : texts for the page headers (`updated`, `headline`, `lede` for the homepage, `takes` = two
+  sentences per role, written by hand each patch from the numbers, Marvin's writing rules), patch numbers, previous patch code for the trend files, next patch preview per role
   (shown on the site and used for buff/nerf flags), champions changed this patch (excluded from the backtest).
 - `pipeline/data/samples.json` : OP.GG "Total analyzed samples" per dataset. It counts 10 per match, so
   games for a champion = pick% / 100 x samples / 10 (checked against U.GG game counts, they match).
@@ -78,13 +88,13 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      DOMParser (columns Win rate, Pick rate, Ban rate; "Total analyzed samples" is in the page text). Region values
      global/euw/kr/na, tiers emerald_plus/diamond_plus/master_plus, positions top/jungle/mid/adc/support. Wait ~0.4 s
      between pages.
-4. Update the texts in `pipeline/template.html`: title and meta tags, top bar pill "Patch xx.xx", hero meta line
-   ("Updated ...", "Next patch ..."), headline, lede counts, the NEXT list ("Changing on ..."), method and limits
+4. Update the texts: in `patch.json` `updated`, `headline`, `lede` (counts) and the five `takes`; in
+   `pipeline/template.html` the top bar pill "Patch xx.xx", the NEXT list ("Changing on ..."), method and limits
    bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.
    Rewrite notes that no longer match the numbers.
    Writing rules from Marvin: blunt, no em dashes, must not sound AI-written, explain jargon.
 5. `python3 pipeline/build.py`, then `python3 pipeline/scripts/assets.py` (favicon, apple-touch-icon, og.png and
-   og-<role>.png link previews with portraits; it reads the patch from the top bar pill and the date from "Updated ..." in the template). Then check with playwright over a local server (`cd public && python3 -m http.server`; role paths and the
+   og-<role>.png link previews with portraits; it reads the patch from the top bar pill and the date from `updated` in patch.json). Then check with playwright over a local server (`cd public && python3 -m http.server`; role paths and the
    patch archive need http, not file://): no JS errors,
    no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.

@@ -76,7 +76,7 @@ def head_home(root):
         b = best(r)
         if not b: continue
         c, t, sc = b
-        cards += (f'<a class="rcd" href="{root}{r}/" style="--R:var(--R{r});--art:url({root}img/tile/{slug(c)}.webp)"><span class="rn"><span class="ri">{RICON[r]}</span>{n}</span>'
+        cards += (f'<a class="rcd" href="{root}{r}/" style="--R:var(--R{r});--art:url(/img/tile/{slug(c)}.webp)"><span class="rn"><span class="ri">{RICON[r]}</span>{n}</span>'
                   f'<span class="bp"><small>Best pick</small><b>{E(c)} <span class="tg" style="background:var(--{t})">{t}</span></b><small>{f1(sc)} vs role average</small></span></a>')
     mv = sorted([(e['tr'], r, e['c']) for r, _, _ in ROLES for e in D[r] if e.get('tr') is not None and e['pick'] >= 1 and abs(e['tr']) >= .4], reverse=True)
     pick = mv[:4] + [x for x in mv[::-1][:4] if x[0] < 0]
@@ -88,7 +88,7 @@ def head_home(root):
 def head_champ(r, e, root):
     s_ = slug(e['c']); tc = lambda t: f'var(--{t})' if t else 'var(--E)'
     hi = f'<span style="background:{tc(e.get("ht"))}">High elo {e.get("ht") or "–"} {f1(e["hi"])}</span>' if e.get('hi') is not None else ''
-    return (f'<header class="band head champ-head" style="--art:url({root}img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
+    return (f'<header class="band head champ-head" style="--art:url(/img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
             f'<div class="ch"><img class="pic big" src="{root}img/champ/{s_}.webp" alt="" width="72" height="72"><div><h1>{E(e["c"])}</h1>'
             f'<p class="dl">{RNAME[r]} · patch <b>{PATCH}</b> · {e["games"]:,} games in Global Emerald+ · updated {E(UPD)}</p></div></div>'
             f'<div class="ctiers"><span style="background:{tc(e["t"])}">Overall {e["t"]} {f1(e["score"])}</span>{hi}</div>'
@@ -96,7 +96,7 @@ def head_champ(r, e, root):
 
 def page(rel, keep, root, page_kind, role, title, ogtitle, desc, url, ogimg, champ='', head=''):
     h = strip(T, keep)
-    rep = {'__HEAD__': head, '__CHAMP__': champ, '__TITLE__': html.escape(title), '__OGTITLE__': html.escape(ogtitle, quote=True), '__DESC__': html.escape(desc, quote=True),
+    rep = {'__HEAD__': head, '__CHAMP__': json.dumps(champ, ensure_ascii=False), '__TITLE__': html.escape(title), '__OGTITLE__': html.escape(ogtitle, quote=True), '__DESC__': html.escape(desc, quote=True),
            '__URL__': url, '__OGIMG__': ogimg, '__ROOT__': root, '__PAGE__': page_kind, '__ROLE__': role, '__PATCH__': PATCH}
     for k, v in rep.items(): h = h.replace(k, v)
     write(rel, h.replace('__DATA__', data_for(role, page_kind)))
