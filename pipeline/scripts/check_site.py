@@ -52,6 +52,14 @@ with sync_playwright() as p:
     if pg.evaluate("document.querySelectorAll('#board .chip').length") == 0: problems.append('"Tier list" link does not leave the chart')
     pg.click('nav.links a[data-mode=chart]'); pg.wait_for_timeout(400); pg.reload(); pg.wait_for_timeout(1200)
     if pg.evaluate("document.querySelectorAll('#board .chip').length") == 0: problems.append('the chart comes back after a reload')
+    # counter-pick finder: opens, lists picks for an enemy, and the way back works
+    pg.goto(B + '/top/'); pg.wait_for_timeout(900)
+    if pg.query_selector('nav.links a[data-mode=counter]'):
+        pg.click('nav.links a[data-mode=counter]'); pg.wait_for_timeout(1500)
+        pg.evaluate("document.querySelector('[data-cpe]')&&document.querySelector('[data-cpe]').click()"); pg.wait_for_timeout(600)
+        if pg.evaluate("document.querySelectorAll('#board .cpr').length") == 0: problems.append('counter-pick finder shows no picks')
+        pg.click('.cpback'); pg.wait_for_timeout(500)
+        if pg.evaluate("document.querySelectorAll('#board .chip').length") == 0: problems.append('"Back to the tier list" does not work')
     # 3) links, images, ids, names, meta
     links = set()
     for u in ['/', '/mid/', '/method/', '/privacy/', '/adc/kogmaw/', '/patch/']:

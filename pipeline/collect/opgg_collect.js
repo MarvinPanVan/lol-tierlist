@@ -2,7 +2,7 @@
 // javascript_tool): paste this whole file, then for example
 //   await TLC.run('16.23', ['stats'])                    // 65 tier list pages, ~2 min
 //   await TLC.run('16.23', ['matchups','builds'])        // counters E+/D+ and build pages, ~35 min
-//   await TLC.run('16.23', ['vs','runes','length'])      // matchup builds, runes and trends pages, ~60 min
+//   await TLC.run('16.23', ['vs','runes','length','duos'])  // matchup builds, runes, trends and synergies pages, ~60 min
 // Each run saves ONE file, lol-tierlist-<patch>-<parts>.json, through a download (a save window opens on Marvin's PC;
 // he saves it to Downloads/lol-tierlist-data/). Then in the container: device_stage_files, and
 //   python3 pipeline/collect/import_bundle.py <staged file> <length> <number sum>
@@ -92,6 +92,10 @@ function parseRunesPage(t) { const di = t.indexOf('"data":{"rune_pages"'); if (d
 // trends page: win rate by game length, [[bucket start (0 = under 25), win %], ...]
 function parseLen(t) { const i = t.indexOf('"xAxisKey":"game_length"'); if (i < 0) return null; const seg = t.slice(Math.max(0, i - 1500), i);
   const ds = seg.lastIndexOf('"data":['); return [...(ds < 0 ? seg : seg.slice(ds)).matchAll(/\{"game_length":(\d+),"rate":([\d.]+),"average":([\d.]+)/g)].map(m => [+m[1], +m[2]]); }
+// synergies page: the 10 most played partners per other position, [position, partner, games, wins]
+function parseSyn(t) { const out = [], seen = new Set(), re = /\{"play":(\d+),"synergy_position":"([A-Z]+)","win_rate":([\d.]+),"pick_rate":[\d.eE-]+,"synergy_champion_name":"((?:[^"\\]|\\.)*)"/g; let m;
+  while ((m = re.exec(t))) { const nm = JSON.parse('"' + m[4] + '"'), k = m[2] + '|' + nm; if (seen.has(k)) continue; seen.add(k); out.push([m[2], nm, +m[1], Math.round(+m[3] * +m[1])]); }
+  return out; }
 // build page -> the stored build format (see CLAUDE.md): x10 for spells and items, per mille for runes
 const x10 = v => v == null ? null : Math.round(v * 10);
 const packBuild = b => [b.sp.map(r => [r.ids, x10(r.pick), x10(r.win)]), b.rn, b.co.map(r => [r.ids, x10(r.pick), x10(r.win), r.games]),
@@ -128,12 +132,15 @@ async function run(patch, parts) {
     await each(keys, async key => { const [r, c] = key.split('|'); const p = parseRunesPage(await get(`/lol/champions/${slug(c)}/runes/${r}?${q()}`)); if (p) out.rune_pages[key] = p; }); }
   if (parts.includes('length')) { await needKeys(); S.part = 'length'; out.game_length = {};
     await each(keys, async key => { const [r, c] = key.split('|'); const p = parseLen(await get(`/lol/champions/${slug(c)}/trends/${r}?${q()}`)); if (p && p.length) out.game_length[key] = p; }); }
+  if (parts.includes('duos')) { await needKeys(); S.part = 'duos'; out.synergy = {};
+    await each(keys.filter(k => k.startsWith('adc|') || k.startsWith('support|')), async key => { const [r, c] = key.split('|');
+      const p = parseSyn(await get(`/lol/champions/${slug(c)}/synergies/${r}?${q()}`)); if (p.length) out.synergy[key] = p; }); }
   out.made = new Date().toISOString(); out.errors = S.errors.slice(); S.part = 'saving';
   const txt = JSON.stringify(out); let sum = 0; txt.replace(/-?\d+/g, x => { sum += +x; });
   const name = `lol-tierlist-${patch}-${parts.join('-')}.json`, a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([txt], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click();
   S.part = 'saved'; return {file: name, length: txt.length, sum, errors: S.errors.length};
 }
-window.TLC = {run, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, packBuild, packVs, get};
+window.TLC = {run, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, parseSyn, packBuild, packVs, get};
 })();
 'TLC ready';

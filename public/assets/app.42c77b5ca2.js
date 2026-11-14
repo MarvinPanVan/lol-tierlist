@@ -57,7 +57,7 @@ const LIM=()=>!!(ARCH&&ARCH.kind==='limited');
 function tri(d){if(d.tr==null||Math.abs(d.tr)<.6||chance(d)||VK()!=='E')return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'↑':'↓'}</span>`;}
 function renderControls(){if(!DATA[role])return;
   $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}" aria-label="${n}">${RICON[k]}<span class="rl">${n}</span></button>`).join('');
-  $('modes').innerHTML=[['tiers','Tiers'],['table','Table'],['chart','Chart']].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
+  $('modes').innerHTML=[['tiers','Tiers'],['table','Table'],['chart','Chart'],...(META.cpf&&!ARCH?[['counter','Counter']]:[])].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
   const lim=LIM(),dv=R()!=='e'||G()!=='all',nf=(mode!=='tiers')+(!!ARCH)+(!!q);
   if($('filt'))$('filt').innerHTML=dv?`${G()==='all'?'':GN[G()]+' '}${{e:'E+',d:'D+',m:'M+'}[R()]}${nf?` <small>+${nf}</small>`:''}`:nf?`Filters (${nf})`:'Filters';
   if($('filt'))$('filt').title=dv?'Showing '+VNM()+'. Tap to change.':'';
@@ -140,6 +140,7 @@ function flipRender(fn){
 function renderBoard(){if(!DATA[role])return;
   if(mode==='table'){renderTable();return;}
   if(mode==='chart'){renderChart();return;}
+  if(mode==='counter'){renderCounter();return;}
   const list=DATA[role];
   $('board').innerHTML=TIERS.map(([t,cap],ti)=>{
     const cs=list.filter(d=>tierOf(d)===t).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
@@ -172,7 +173,7 @@ function renderPanel(){if(!DATA[role])return;
   ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap">Every rank and region. Tap one to show that list.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
   ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.${nlink(META.next.patch,d.c)}</p>`:''}
-  ${glHTML(d)}${buildHTML(d)}${ctrHTML(d)}
+  ${glHTML(d)}${buildHTML(d)}${ctrHTML(d)}${duoHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+:</span>${sites}</div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
   if(P0.dataset.key===key&&P0.firstElementChild){const t=document.createElement('template');t.innerHTML=PH;morph(P0.firstElementChild,t.content.firstElementChild);}
@@ -294,8 +295,39 @@ function ctrHTML(d){
   const more=cs.length>3||gs.length>3;
   const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
   return `${head}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
-    +(more?`<details class="pmore sm-d"><summary>More matchups</summary><div class="dc">${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</div></details>`:'')+foot;
+    +(more?`<details class="pmore sm-d"><summary>More matchups</summary><div class="dc">${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</div></details>`:'')+foot
+    +(META.cpf&&!ARCH?`<button type="button" class="cpgo" data-cpgo="${d.c}">Who beats ${d.c}? <span>See every pick ranked</span></button>`:'');
 }
+// counter-pick finder (layout "Counter pick"): tap the enemy laner, see who wins most against it in this role. From the
+// enemy's own OP.GG matchup list turned around (Emerald+, or Diamond+ for the Diamond+ and Master+ views), ranked by the
+// gap to what an average opponent gets, pulled toward 0 by sample size like the panel's matchups (update.py). Loads
+// data/<patch>-counters.json the first time it opens.
+let CPD=null,CPE='',CPall=false;
+function renderCounter(){
+  if(!META.cpf||ARCH){$('board').innerHTML='<p class="empty">The counter-pick finder only covers the current patch.</p>';return;}
+  if(!CPD){$('board').innerHTML='<p class="empty">Loading matchups…</p>';fetch(`${SITE}data/${META.cpf}`).then(r=>r.json()).then(j=>{CPD=j;if(mode==='counter')renderCounter();}).catch(()=>{$('board').innerHTML='<p class="empty">Could not load the matchups. Reload to try again.</p>';});return;}
+  const rk=R()==='e'?'e':'d',D=CPD[rk],RN={top:'Top',jungle:'Jungle',mid:'Mid',adc:'ADC',support:'Support'}[role]||role;
+  const list=(DATA[role]||[]).filter(d=>tierOf(d)).slice().sort((a,b)=>((stat(b)||{}).pick||0)-((stat(a)||{}).pick||0));
+  if(CPE&&!list.some(d=>d.c===CPE))CPE='';
+  const grid=`<div class="cpg" id="cpg">${list.map(d=>`<button type="button" class="cpe${d.c===CPE?' on':''}" data-cpe="${d.c}" data-n="${d.c.toLowerCase()}" aria-pressed="${d.c===CPE}">${pic(d.c)}<span>${d.c}</span></button>`).join('')}</div>`;
+  let res='';
+  if(CPE){const rows=((D.r||{})[role]||{})[CPE]||[];
+    const item=([i,wr,n,cl])=>{const c=D.names[i],d=list.find(x=>x.c===c),tt=d?tierOf(d):null,w=wr/10;
+      return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="background:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
+    const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,12);
+    res=`<div class="cph"><div class="cpsel">${pic(CPE)}<div><h3>Best picks into ${CPE}</h3><p class="cap">${RN}, OP.GG ${rk==='e'?'Emerald+':'Diamond+'}: win rate against ${CPE} in lane. Ranked with the number of games in mind, so 52% over 2,000 games beats 55% over 250.</p></div><button type="button" class="cpchg" id="cpchange">Change enemy</button></div></div>`
+      +(mine.length?`<p class="mlab">Your champions</p><div class="cpl">${mine.map(item).join('')}</div><p class="mlab">Everyone</p>`:'')
+      +(rows.length?`<div class="cpl">${shown.map(item).join('')}</div>${rows.length>12?`<button type="button" class="xmore" id="cpmore" aria-expanded="${CPall}">${CPall?'Show fewer':`Show all ${rows.length}`}</button>`:''}<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure it differs from an average pick. Only matchups with 150+ games. Tap a champion for its build and more.</p>`:`<p class="empty">No matchup against ${CPE} has 150+ games yet.</p>`);}
+  $('board').innerHTML=`<div class="cp"><button type="button" class="cpback" data-mode="tiers">← Back to the tier list</button>${CPE?`<div id="cpres">${res}</div>`:`<div class="cph"><h3>Counter pick</h3><p class="cap">Tap the enemy ${RN} laner to see who wins most against them. Most played first.</p></div><input type="search" class="cpq" id="cpq" placeholder="Find the enemy champion" autocomplete="off">${grid}`}</div>`;
+}
+document.addEventListener('input',e=>{if(e.target.id!=='cpq')return;const v=e.target.value.trim().toLowerCase();document.querySelectorAll('#cpg .cpe').forEach(b=>{b.hidden=!!v&&!b.dataset.n.includes(v);});});
+// bot lane duos (panel, ADCs and supports): the champion's 10 most played partners from OP.GG, each against the champion's
+// own win rate, pulled toward it by sample size (update.py); dotted when the gap could be luck. Links to the partner's page.
+function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const pr=role==='adc'?'support':'adc',pn=role==='adc'?'supports':'ADCs';
+  const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
+  const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
+  return `<div class="caph"><p class="cap">Best ${pn} with ${d.c} <span class="mu">OP.GG Emerald+, vs ${d.c}'s usual ${D.o.toFixed(1)}%</span></p></div>${grid(D.l.slice(0,3))}`
+    +(D.l.length>3?`<details class="pmore sm-d"><summary>All ${D.l.length} most played ${pn}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'');}
 // the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
   const ALL=PAGE==='home';
@@ -406,13 +438,17 @@ document.addEventListener('click',e=>{
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
   if(r){navRole(r.dataset.r);return;}
-  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
+  {const ce=t.closest('[data-cpe]');if(ce){CPE=ce.dataset.cpe;CPall=false;renderCounter();const r_=$('cpres');if(r_)r_.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});return;}}
+  if(t.closest('#cpmore')){CPall=!CPall;renderCounter();return;}
+  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;mode='counter';renderControls();renderBoard();if(narrow())openPanel(false);$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}}
+  if(t.closest('#cpchange')){CPE='';renderCounter();return;}
   if(t.closest('#nxmore')){const x=$('next'),all=!x.classList.contains('all'),b=$('nxmore');x.classList.toggle('all',all);b.setAttribute('aria-expanded',all);b.textContent=all?'Show fewer':`Show all ${b.dataset.n}`;return;}
   if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
-  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode!=='chart')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}

@@ -28,6 +28,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   `/patch/<p>/i-<item>/` (noindex, own og title/text/picture, JS sends visitors to the card). "Copy link" on each card copies
   it (phones: share sheet). Pictures: build.py writes their HTML to `pipeline/.og_jobs.json`, assets.py renders only changed
   ones to `public/og/patch/` (hashes in `data/og_hashes.json`). Champion pages use their splash art as preview.
+- Counter-pick finder (layout "counter", header link "Counter pick", panel button "Who beats X?"; phones: Filters):
+  tap the enemy laner, get every pick in that role ranked by the gap to what an average opponent gets against it, shrunk by
+  games (update.py writes `pipeline/counters.json` from `data/opgg_matchups_full.json`, build.py copies it to
+  `public/data/<patch>-counters.json`, loaded only when the finder opens). Emerald+, Diamond+ for D+/M+ views. Not remembered.
+- Bot lane duos on the panel (ADCs and supports): OP.GG synergies page, the 10 most played partners
+  (`data/opgg_synergy.json`), each against the champion's own win rate, shrunk (`duos()` in update.py).
 - Method page check: `backtest.cover` = % of unchanged champions whose value lands inside last patch's ± range (about 85-90%
   is healthy; far below means the ± is too narrow).
 - Patch notes pages: `/patch/<patch>/` for every patch in `patch.json` `notes`, `/patch/` = the newest live one. Built by
@@ -98,7 +104,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    ALL OP.GG parts run from one saved script: open any op.gg page in the built-in browser, paste
    `pipeline/collect/opgg_collect.js` into javascript_tool, then `await TLC.run('16.xx', ['stats'])`, then
    `['matchups','builds']`, then `['vs','runes','length']` (vs needs matchups in the same run, so in practice:
-   `['matchups','builds','vs','runes','length']` in one long run, ~1.5 h, or stats + the rest). Each run saves one file
+   `['matchups','builds','vs','runes','length']` in one long run, ~1.5 h, or stats + the rest). Add 'duos' for
+   the bot lane synergies (ADC and support synergies pages, ~80 pages). Each run saves one file
    (Marvin clicks save once, into Downloads/lol-tierlist-data/); stage it and run
    `python3 pipeline/collect/import_bundle.py <file> <length> <sum>` with the numbers run() returned. The importer checks
    the file, computes the matchup ranking and writes every data file below. Tested on 15 Nov 2026 against the data in the
