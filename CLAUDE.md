@@ -26,10 +26,14 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
   build.py. The panel shows a small chart once 3 or more patches exist.
 - Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
-- Homepage = patch overview (data line, headline, leader cards), then "Strongest this patch" (every Z and S pick
-  across roles, P left out), "Moved most" and "Best bans, all roles" (per champion: sum over its roles with a positive
-  score of score x pick, divided by 1 - ban/100; ban from its most-picked role), then the Top list. build.py writes
-  the Emerald+ version (`xr_lists`); the site redraws both for other ranks/regions with the same math (`renderXR`).
+- Homepage: above the control bar is the patch story and stays fixed (Emerald+, all regions): a one-sentence data line,
+  `headline`, `lede` and three art cards (the top three Z/S picks across roles, `strongest()` in build.py). Below the
+  bar everything follows the visitor's rank and region: the list (Top by default), then "All roles this patch" with
+  Strongest picks (every Z and S, P left out), Best bans across roles (per champion: score x pick summed over its roles
+  with a positive score, divided by 100 - ban of its most-picked role), Popular but losing, Moved most and Changing next
+  patch (first six, deduplicated). Role pages show the same cards for their role only (`renderSide` does both).
+  Layouts: Tiers, Table and Chart (pick rate vs score; the nav link "Pick vs win" opens it). On desktop champion page
+  headers hide the note and share button, because the card next to the list shows them.
   `/` always opens like a first visit (the logo leads there); `/#adc` opens ADC, `/#xayah` finds Xayah's role. Champion pages: `/mid/ahri/` for every listed champion (static header with art,
   tiers, note; the list loads below). They embed no data and load `data/<patch>.json`.
 - Art: `public/img/tile/<slug>.webp` (square face crops) and `public/img/splash/<slug>.webp` (960x540), downloaded by

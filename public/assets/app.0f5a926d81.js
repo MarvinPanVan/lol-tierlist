@@ -57,7 +57,7 @@ const LIM=()=>!!(ARCH&&ARCH.kind==='limited');
 function tri(d){if(d.tr==null||Math.abs(d.tr)<.6||VK()!=='E')return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'↑':'↓'}</span>`;}
 function renderControls(){if(!DATA[role])return;
   $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}" aria-label="${n}">${RICON[k]}<span class="rl">${n}</span></button>`).join('');
-  $('modes').innerHTML=[['tiers','Tiers'],['table','Table']].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
+  $('modes').innerHTML=[['tiers','Tiers'],['table','Table'],['chart','Chart']].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
   const lim=LIM(),dv=R()!=='e'||G()!=='all',nf=(mode!=='tiers')+(!!ARCH)+(!!q);
   if($('filt'))$('filt').innerHTML=dv?`${G()==='all'?'':GN[G()]+' '}${{e:'E+',d:'D+',m:'M+'}[R()]}${nf?` <small>+${nf}</small>`:''}`:nf?`Filters (${nf})`:'Filters';
   if($('filt'))$('filt').title=dv?'Showing '+VNM()+'. Tap to change.':'';
@@ -69,7 +69,7 @@ function renderControls(){if(!DATA[role])return;
   const list=DATA[role],miss=list.filter(d=>tierOf(d)==null).length;
   const BLK={e:'OP.GG Global, EUW, KR and NA.',d:'Global from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs, plus EUW, KR and NA.',m:'Global from OP.GG and U.GG, plus EUW, KR and NA.'};
   $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'');
-  $('legend').hidden=lim;
+  $('legend').hidden=lim||mode==='chart';
 }
 function renderTable(){if(!DATA[role])return;
   const list=DATA[role],lim=LIM();
@@ -131,6 +131,7 @@ function flipRender(fn){
 }
 function renderBoard(){if(!DATA[role])return;
   if(mode==='table'){renderTable();return;}
+  if(mode==='chart'){renderChart();return;}
   const list=DATA[role];
   $('board').innerHTML=TIERS.map(([t,cap],ti)=>{
     const cs=list.filter(d=>tierOf(d)===t).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
@@ -212,50 +213,47 @@ function ctrHTML(d){
   if(!cs.length)return thin||((d.ctr||[]).length)?`${head}<p class="mi0">OP.GG's hardest matchups for ${d.c} each have under ${CMIN} games, too few to trust.</p>`:'';
   return `${head}<div class="ctr">${cs.map(([c,wr,n])=>{const inner=`${pic(c,'pic xs')}<span>${c}</span><small>${wr.toFixed(0)}% · ${kfmt(n)} games</small>`,tip=`${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}`;return inRole(c)?`<button type="button" class="cc" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="cc" title="${tip}">${inner}</span>`;}).join('')}</div>`;
 }
+// the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
-  const list=DATA[role];
-  const VN=VNM();
-  const sx=d=>stat(d)||{},vv=d=>SV(d);
-  const row=(d,sub,pill,cls)=>`<li><button type="button" class="irow" data-c="${d.c}">${pic(d.c)}<span class="in"><b>${d.c}</b><small>${sub}</small></span><span class="pill ${cls}">${pill}</span></button></li>`;
+  const ALL=PAGE==='home';
+  if(ALL&&DATA===CUR&&CUR._meta.part)ensureFull().then(()=>{if(!CUR._meta.part)renderSide();});
+  const RNm=Object.fromEntries(ROLES),items=ALL?ROLES.flatMap(([r])=>(DATA[r]||[]).map(d=>[r,d])):DATA[role].map(d=>[role,d]);
+  const VN=VNM(),sx=d=>stat(d)||{},vv=d=>SV(d),rl=r=>ALL?RNm[r]+' · ':'',TRK={Z:0,S:1};
+  const row=(r,d,sub,pill,cls)=>`<li><button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${d.c}"`:`data-c="${d.c}"`}>${pic(d.c)}<span class="in"><b>${d.c}</b><small>${sub}</small></span><span class="pill ${cls}">${pill}</span></button></li>`;
   const none='<li class="none">None in this view.</li>';
-  $('traps').innerHTML=list.filter(d=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a)-vv(b)).slice(0,6).map(d=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
-  $('bans').innerHTML=list.filter(d=>vv(d)!=null&&vv(d)>0&&(sx(d).pick||0)>=1.5).map(d=>[d,vv(d)*sx(d).pick/(100-(sx(d).ban||0))]).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([d])=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${sx(d).ban==null?'?':sx(d).ban.toFixed(0)}% ban`,fmt(vv(d)),'pos')).join('')||none;
-  const RL=ROLES.find(r=>r[0]===role)[1];   // per-role cards name their role, so they don't read like the all-role cards on the homepage
-  $('bansh').innerHTML=`Best bans <span class="vn">${RL} · ${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${RL} · ${VN}</span>`;
-  const mv=list.filter(d=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b.tr-a.tr);
-  $('movers').innerHTML=[...mv.filter(d=>d.tr>0).slice(0,3),...mv.filter(d=>d.tr<0).slice(-3)].map(d=>row(d,`now ${d.t} in Emerald+ · ${fmt(d.score)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
-  $('movh').innerHTML=`Moved most since ${META.prev_patch} <span class="vn">${RL}</span>`;
+  $('maph').textContent=(ALL?'All roles':RNm[role])+' this patch';
+  $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
+  if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
+    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="background:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(min-width:1181px)').matches?999:matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
+    $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
+  $('traps').innerHTML=items.filter(([r,d])=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a[1])-vv(b[1])).slice(0,6).map(([r,d])=>row(r,d,`${rl(r)}${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
+  // best bans: score x pick rate, adjusted for how often it is already banned. All roles: summed over every role the champion is above average in.
+  let bans=[];
+  if(!ALL)bans=items.filter(([r,d])=>vv(d)!=null&&vv(d)>0&&(sx(d).pick||0)>=1.5).map(([r,d])=>[r,d,vv(d)*sx(d).pick/(100-(sx(d).ban||0)),`${sx(d).pick.toFixed(1)}% pick · ${sx(d).ban==null?'?':sx(d).ban.toFixed(0)}% ban`]);
+  else{const by=new Map();for(const [r,d] of items){const x=sx(d);if(vv(d)==null||x.pick==null)continue;if(!by.has(d.c))by.set(d.c,[]);by.get(d.c).push([r,d,x]);}
+    for(const L of by.values()){const ban=L.reduce((m,x)=>x[2].pick>m[2].pick?x:m)[2].ban||0,pos=L.filter(x=>vv(x[1])>0).sort((a,b)=>vv(b[1])*b[2].pick-vv(a[1])*a[2].pick);if(!pos.length)continue;
+      const sub=pos.length===1?`${RNm[pos[0][0]]} ${tierOf(pos[0][1])} · ${pos[0][2].pick.toFixed(1)}% pick · ${ban.toFixed(0)}% ban`:`${pos.slice(0,2).map(x=>RNm[x[0]]+' '+tierOf(x[1])).join(', ')} · ${ban.toFixed(0)}% ban`;
+      bans.push([pos[0][0],pos[0][1],pos.reduce((t,x)=>t+vv(x[1])*x[2].pick,0)/(100-ban),sub]);}}
+  $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
+  $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
+  const mv=items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b[1].tr-a[1].tr);
+  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}now ${d.t} in Emerald+ · ${fmt(d.score)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
+  $('movh').textContent=`Moved most since ${META.prev_patch}`;
   $('movc').hidden=!!ARCH;
-  const inRole=n=>list.find(d=>d.c===n);
-  $('next').innerHTML=NEXT[role].map(([c,t,kd])=>{const names=c.split(',').map(x=>x.trim()),one=inRole(names[0])&&names.length===1;
+  // all roles: skip entries whose champions are already listed (the same change shows up in several roles), show the first six
+  const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
+  const NXL=ALL?6:99;
+  $('next').innerHTML=nx.slice(0,NXL).map(([r,c,t,kd])=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
     const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
-    const inner=`${icon}<span class="in"><b>${c}</b><small>${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
-    return `<li>${one?`<button type="button" class="irow" data-c="${names[0]}">${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
+    const inner=`${icon}<span class="in"><b>${c}</b><small>${ALL&&one?RNm[r]+': ':''}${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
+    return `<li>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('')+(nx.length>NXL?`<li class="none">And ${nx.length-NXL} more on the role pages.</li>`:'');
   $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
+  $('nextc').hidden=!!ARCH||!nx.length;
 }
-// homepage: every Z and S pick across roles, and the best bans across roles, for the chosen rank and region.
-// Same math as xr_lists in build.py, which writes the Emerald+ version into the page.
-let xrKey='E';
-function renderXR(){if(PAGE!=='home'||!$('xs'))return;
-  const vk=VK(rank,reg),sk=STK(rank,reg);if(vk===xrKey)return;
-  if(CUR._meta.part){ensureFull().then(()=>{if(!CUR._meta.part)renderXR();});return;}
-  const RNm=Object.fromEntries(ROLES),TRK={Z:0,S:1},strong=[],by=new Map(),bans=[];
-  for(const [r] of ROLES)for(const e of CUR[r]){const x=e.v&&e.v[vk],st=e.st&&e.st[sk];
-    if(x&&(x[2]==='Z'||x[2]==='S'))strong.push([r,e,x]);
-    if(x&&st){if(!by.has(e.c))by.set(e.c,[]);by.get(e.c).push([r,x,st]);}}
-  strong.sort((a,b)=>TRK[a[2][2]]-TRK[b[2][2]]||b[2][0]-a[2][0]);
-  for(const [c,L] of by){const main=L.reduce((m,x)=>x[2][1]>m[2][1]?x:m),ban=main[2][2]||0;
-    const pos=L.filter(x=>x[1][0]>0).sort((a,b)=>b[1][0]*b[2][1]-a[1][0]*a[2][1]);if(!pos.length)continue;
-    bans.push([pos.reduce((t,x)=>t+x[1][0]*x[2][1],0)/(1-ban/100),c,pos,ban]);}
-  bans.sort((a,b)=>b[0]-a[0]);
-  $('xs').innerHTML=strong.map(([r,e,x])=>`<button type="button" class="xchip" data-jr="${r}" data-jc="${e.c}" style="--R:var(--R${r})" title="${e.c}, ${RNm[r]}: ${x[2]} tier, ${fmt(x[0])}"><span class="ri">${RICON[r]}</span>${pic(e.c)}<span class="xn">${e.c}</span><span class="tg sm" style="background:var(--${x[2]})">${x[2]}</span><b>${fmt(x[0])}</b></button>`).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
-  const bsub=(pos,ban)=>{const rl=pos.slice(0,2).map(([r,x])=>RNm[r]+' '+x[2]).join(', ');return pos.length===1?`${rl} · ${pos[0][2][1].toFixed(1)}% pick · ${ban.toFixed(0)}% ban`:`${rl} · ${ban.toFixed(0)}% ban`;};
-  $('xb').innerHTML=bans.slice(0,6).map(([v,c,pos,ban])=>`<li><button type="button" class="irow" data-jr="${pos[0][0]}" data-jc="${c}">${pic(c)}<span class="in"><b>${c}</b><small>${bsub(pos,ban)}</small></span><span class="pill pos">${fmt(pos[0][1][0])}</span></button></li>`).join('');
-  const mb=$('xmore');if(mb){mb.hidden=strong.length<=(matchMedia('(max-width:640px)').matches?8:12);const all=$('xs').classList.contains('all');mb.textContent=all?'Show fewer':`Show all ${strong.length}`;}
-  document.querySelectorAll('.xvn').forEach(el=>el.textContent=VNM(rank,reg));
-  xrKey=vk;
-}
-function drawMap(){if(!DATA[role])return;
+// chart layout: pick rate (x, log) against score (y) for the chosen rank and region
+function renderChart(){if(!$('sv'))$('board').innerHTML=`<div class="card chart-card"><div class="chart-h"><b>Pick rate vs strength</b><span>Right = picked more, up = wins more. Bottom right are the traps. Tap a portrait to open it.</span></div><div class="fig" id="fig"><svg id="sv" role="img" aria-label="Pick rate against score"></svg></div></div>`;drawMap();}
+function drawMap(){if(!DATA[role]||!$('sv'))return;
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const P=d=>(stat(d)||{}).pick,Y=d=>SV(d);
   const list=DATA[role].filter(d=>Y(d)!=null&&P(d)>0);
@@ -277,12 +275,12 @@ function drawMap(){if(!DATA[role])return;
   const free=(bx,by,w,d)=>bx>m.l&&bx+w<W-m.r&&!boxes.some(b=>bx<b[0]+b[2]&&bx+w>b[0]&&by<b[1]+16&&by+16>b[1])&&(top3.includes(d.c)||d.c===pick||!list.some(o=>{if(o===d)return false;const ox=x(P(o)),oy=y(Y(o));return ox+13>bx&&ox-13<bx+w&&oy+13>by&&oy-13<by+16;}));
   const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||top3.includes(b.c)-top3.includes(a.c)||Math.abs(Y(b))*Math.sqrt(P(b))-Math.abs(Y(a))*Math.sqrt(P(a)));
   const lim=small?4:9;
-  pri.forEach(d=>{if(d.c!==pick&&Object.keys(lab).length>=lim)return;const cx=x(P(d)),cy=y(Y(d)),w=d.c.length*7+6,by=cy-8;
+  pri.forEach(d=>{if(q&&!hit(d.c))return;if(d.c!==pick&&Object.keys(lab).length>=lim)return;const cx=x(P(d)),cy=y(Y(d)),w=d.c.length*7+6,by=cy-8;
     for(const [bx,side] of [[cx+18,'r'],[cx-18-w,'l']])if(free(bx,by,w,d)){boxes.push([bx,by,w]);lab[d.c]=side;break;}});
   const RR=small?9:12;
   g+=`<defs><clipPath id="cc" clipPathUnits="objectBoundingBox"><circle cx=".5" cy=".5" r=".5"/></clipPath></defs>`;
   list.slice().sort((a,b)=>(a.c===pick)-(b.c===pick)||P(a)-P(b)).forEach(d=>{const t=tierOf(d)||'E',cx=x(P(d)),cy=y(Y(d)),on=d.c===pick,r=on?RR+5:RR;
-    g+=`<g class="dot${on?' on':''}" data-c="${d.c}" transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)})"><title>${d.c} ${fmt(Y(d))}, ${P(d).toFixed(1)}% pick</title><circle r="${r+2.5}" fill="var(${on?'--acc':colT(t)})"/><image href="${IMGBASE}${slug(d.c)}.webp" x="${-r}" y="${-r}" width="${2*r}" height="${2*r}" clip-path="url(#cc)" preserveAspectRatio="xMidYMid slice"/></g>`;});
+    g+=`<g class="dot${on?' on':''}${hit(d.c)?'':' dim'}" data-c=""${d.c}" transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)})"><title>${d.c} ${fmt(Y(d))}, ${P(d).toFixed(1)}% pick</title><circle r="${r+2.5}" fill="var(${on?'--acc':colT(t)})"/><image href="${IMGBASE}${slug(d.c)}.webp" x="${-r}" y="${-r}" width="${2*r}" height="${2*r}" clip-path="url(#cc)" preserveAspectRatio="xMidYMid slice"/></g>`;});
   list.filter(d=>lab[d.c]).forEach(d=>{const on=d.c===pick,r=(on?RR+5:RR)+6,L=lab[d.c]==='l';g+=`<text x="${(x(P(d))+(L?-r:r)).toFixed(1)}" y="${(y(Y(d))+4).toFixed(1)}"${L?' text-anchor="end"':''} style="font-weight:${on?700:600}">${d.c}</text>`;});
   s.innerHTML=g;
 }
@@ -295,10 +293,8 @@ function render(){
   if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])render();});return;}
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
-  renderControls();renderBoard();renderPanel();renderSide();drawMap();renderXR();
-  $('nexth').innerHTML=`Changing next patch <span class="vn">${ROLES.find(r=>r[0]===role)[1]}</span>`;
-  $('nextc').hidden=!!ARCH||!NEXT[role].length;
-  $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
+  renderControls();renderBoard();renderPanel();renderSide();drawMap();
+
 }
 function select(c,open){pick=c;try{history.replaceState(null,'',location.pathname+location.search+'#'+slug(c));}catch(e){}document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===pick));document.querySelectorAll('.tv tbody tr').forEach(r=>r.classList.toggle('on',r.dataset.c===pick));renderPanel();drawMap();if(open)openPanel(true);}
 function toggleGuide(o){const g=$('guide');o=o??g.hidden;g.hidden=!o;$('gbtn').setAttribute('aria-expanded',o);}
@@ -320,13 +316,14 @@ document.addEventListener('click',e=>{
   if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
-  if(j){$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
+  if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
   if(r){navRole(r.dataset.r);return;}
+  if(t.closest('[data-go]')){e.preventDefault();$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
-  if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${x.children.length}`;return;}
+  if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
-  if(md){mode=md.dataset.mode;try{localStorage.setItem('tl-mode',mode);}catch(e){}renderControls();renderBoard();return;}
+  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
@@ -375,7 +372,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 {const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). Pulling toward zero made last patch a better guess (error ${b.mse_shrunk} vs ${b.mse_raw}).`;}
 renderGrade();
 }else{
-new ResizeObserver(()=>drawMap()).observe($('fig'));
+new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
 $('legend').innerHTML=`<span><u class="lowdemo">Dotted</u> score = few games. <span class="flag trap">trap</span> = picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;

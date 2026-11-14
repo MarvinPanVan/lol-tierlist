@@ -66,67 +66,31 @@ def slug(c): return re.sub(r'[^a-z0-9]', '', c.lower())
 E = html.escape
 UPD = P.get('updated', '')
 def dline(extra=''):
-    return f'<p class="dl">Patch <b>{PATCH}</b> · ranked solo/duo · 9 stat sites · {kfmt(GAMES)} Emerald+ games · updated {E(UPD)}{extra}</p>'
+    return f'<p class="dl">Patch {PATCH}, ranked solo/duo, updated {E(UPD)}.{extra}</p>'
 SHARE = '<button type="button" class="ext" data-share="">Share</button>'
 SHARE_ICO = '<button type="button" class="ext ico hico" data-share="" aria-label="Share this page" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
 def head_role(r):
     return (f'<header class="band head" style="--R:var(--R{r})"><div class="wrap"><div class="rh"><div class="rt"><span class="ri">{RICON[r]}</span>'
             f'<div><h1>{RNAME[r]} tier list {SHARE_ICO}</h1>{dline()}</div></div><p class="take">{E(P.get("takes", {}).get(r, ""))}</p></div></div></header>')
-# ---------- across all roles (homepage): Z and S picks, and the best bans. The site redraws both for other ranks/regions ----------
-def xr_lists(vk='E', sk='g'):
-    strong = sorted([(r, e) for r, _, _ in ROLES for e in D[r] if vk in e['v'] and e['v'][vk][2] in ('Z', 'S')], key=lambda x: (TR[x[1]['v'][vk][2]], -x[1]['v'][vk][0]))
-    by = {}
-    for r, _, _ in ROLES:
-        for e in D[r]:
-            if vk in e['v'] and sk in e['st']: by.setdefault(e['c'], []).append((r, e['v'][vk], e['st'][sk]))
-    bans = []
-    for c, L in by.items():
-        main = max(L, key=lambda x: x[2][1]); ban = main[2][2] or 0
-        pos = sorted([x for x in L if x[1][0] > 0], key=lambda x: -x[1][0] * x[2][1])
-        val = sum(x[1][0] * x[2][1] for x in pos) / (1 - ban / 100)
-        if pos: bans.append((val, c, pos, ban))
-    bans.sort(key=lambda x: -x[0])
-    return strong, bans[:6]
-def xr_html(root, moved=''):
-    strong, bans = xr_lists()
-    chips = ''.join(f'<button type="button" class="xchip" data-jr="{r}" data-jc="{E(e["c"])}" style="--R:var(--R{r})" title="{E(e["c"])}, {RNAME[r]}: {e["v"]["E"][2]} tier, {f1(e["v"]["E"][0])}">'
-                    f'<span class="ri">{RICON[r]}</span><img class="pic" src="{root}img/champ/{slug(e["c"])}.webp" alt="" width="22" height="22" loading="lazy"><span class="xn">{E(e["c"])}</span>'
-                    f'<span class="tg sm" style="background:var(--{e["v"]["E"][2]})">{e["v"]["E"][2]}</span><b>{f1(e["v"]["E"][0])}</b></button>' for r, e in strong)
-    def bsub(pos, ban):
-        rl = ', '.join(f'{RNAME[r]} {x[2]}' for r, x, _ in pos[:2])
-        return f'{rl} · {fx(pos[0][2][1])}% pick · {fx(ban, 0)}% ban' if len(pos) == 1 else f'{rl} · {fx(ban, 0)}% ban'
-    rows = ''.join(f'<li><button type="button" class="irow" data-jr="{pos[0][0]}" data-jc="{E(c)}"><img class="pic" src="{root}img/champ/{slug(c)}.webp" alt="" width="34" height="34" loading="lazy">'
-                   f'<span class="in"><b>{E(c)}</b><small>{bsub(pos, ban)}</small></span><span class="pill pos">{f1(pos[0][1][0])}</span></button></li>' for v, c, pos, ban in bans)
-    more = f'<button type="button" class="xmore" id="xmore" aria-expanded="false">Show all {len(strong)}</button>' if len(strong) > 12 else ''
-    return (f'<div class="xr"><div class="xcol"><section class="card ic"><div class="ich"><h3>Strongest this patch <span class="vn xvn">Emerald+</span></h3>'
-            f'<p class="cap">Every Z and S pick, all roles. Tap one to open it.</p></div><div class="xs" id="xs">{chips}</div>{more}</section>{moved}</div>'
-            f'<section class="card ic"><div class="ich"><h3>Best bans, all roles <span class="vn xvn">Emerald+</span></h3>'
-            f'<p class="cap">Strong and often picked across all its roles, adjusted for how often it is already banned.</p></div><ul class="ilist" id="xb">{rows}</ul></section></div>')
-
+def strongest(vk='E'):   # every Z and S pick across roles, Z first, then by score (same order as the site's "Strongest picks" card)
+    return sorted([(r, e) for r, _, _ in ROLES for e in D[r] if vk in e['v'] and e['v'][vk][2] in ('Z', 'S')], key=lambda x: (TR[x[1]['v'][vk][2]], -x[1]['v'][vk][0]))
 def head_home(root):
-    mv = sorted([(e['tr'], r, e['c']) for r, _, _ in ROLES for e in D[r] if e.get('tr') is not None and e['pick'] >= 1 and abs(e['tr']) >= .4], reverse=True)
-    pick = mv[:3] + [x for x in mv[::-1][:3] if x[0] < 0]
-    chips = ''.join(f'<a href="{root}{r}/{slug(c)}/"><img class="pic" src="{root}img/champ/{slug(c)}.webp" alt="" width="22" height="22" loading="lazy">{E(c)} <span class="mu">{RNAME[r]}</span><em class="{"up" if t > 0 else "dn"}">{"↑" if t > 0 else "↓"} {f1(t)}</em></a>' for t, r, c in pick)
-    mvcard = (f'<section class="card ic"><div class="ich"><h3>Moved most since {E(P.get("prev_patch", ""))}</h3><p class="cap">Change in Global Emerald+ score, all roles.</p></div>'
-              f'<div class="mvs mvc">{chips}</div></section>') if chips else ''
-    nx = P.get('next', {}); nxt = f" · next patch {E(nx.get('patch', ''))} on {E(nx.get('date', ''))}" if nx else ''
-    # patch leaders: the Z-tier champions, filled up to three with the highest-scoring S picks
-    lead = [(r, e) for r, _, _ in ROLES for e in D[r] if e['c'] in D['_meta']['facts']['z'].get(r, [])]
-    rest = sorted([(r, e) for r, _, _ in ROLES for e in D[r] if e['t'] == 'S' and e['pick'] >= 2], key=lambda x: -x[1]['score'])
-    lead = sorted(lead, key=lambda x: -x[1]['score'])[:3]; lead += rest[:3 - len(lead)]
-    lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
+    # the patch story: fixed for the patch (Emerald+, all regions). Everything under the control bar follows the visitor's rank and region.
+    strong = strongest()
+    lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
                  f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="background:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in lead)
-    hdl = f'<p class="dl">Patch <b>{PATCH}</b> · 9 stat sites · {kfmt(GAMES)} Emerald+ games · updated {E(UPD)}{nxt.replace(" next patch", " next")}</p>'
-    return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt">{hdl}'
-            f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div>{xr_html(root, mvcard)}</div></header>')
+                 f'<span><span class="tg" style="background:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in strong[:3])
+    nx = P.get('next', {})
+    when = f'Patch {PATCH}, updated {E(UPD)}.' + (f' Next patch on {E(nx.get("date", ""))}.' if nx else '')
+    return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt"><p class="dl">{when}</p>'
+            f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div></div></header>')
 RKN = [('E', 'Emerald+'), ('D', 'Diamond+'), ('M', 'Master+')]
 def head_champ(r, e, root):
     s_ = slug(e['c']); tc = lambda t: f'var(--{t})' if t else 'var(--E)'
     tiers = ''.join(f'<span style="background:{tc(e["v"][k][2])}">{n} {e["v"][k][2]} {f1(e["v"][k][0])}</span>' for k, n in RKN if k in e.get('v', {}))
     return (f'<header class="band head champ-head" style="--art:url(/img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
             f'<div class="ch"><img class="pic big" src="{root}img/champ/{s_}.webp" alt="" width="72" height="72"><div><h1>{E(e["c"])}</h1>'
-            f'<p class="dl">{RNAME[r]} · patch <b>{PATCH}</b> · {e["games"]:,} games in Global Emerald+ · updated {E(UPD)}</p></div></div>'
+            f'<p class="dl">{RNAME[r]}, patch {PATCH}: {e["games"]:,} games in Global Emerald+, updated {E(UPD)}.</p></div></div>'
             f'<div class="ctiers">{tiers}</div>'
             f'<p class="take">{E(e.get("note") or "")}</p><div class="hacts">{SHARE}</div></div></header>')
 
