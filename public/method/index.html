@@ -91,7 +91,7 @@ select,input{font:500 14px Inter,sans-serif;color:var(--ink);background:var(--ca
 select{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
 select:hover,input:hover{border-color:var(--faint)}
 .search{position:relative;margin-left:auto;flex:1 1 130px;max-width:300px}
-#ds{width:150px}
+#ds{width:150px;color:var(--mut)}#ds.on{color:var(--ink);border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}#ds option,#ds optgroup{color:var(--ink)}
 .search input{width:100%;padding-left:38px;padding-right:34px}
 .search::before{content:"";position:absolute;left:13px;top:50%;width:15px;height:15px;transform:translateY(-50%);background:var(--faint);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='black' stroke-width='2.4'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='black' stroke-width='2.4'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
 .search input:focus~kbd,.search input:not(:placeholder-shown)~kbd{opacity:0}
@@ -375,7 +375,7 @@ const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['sup
 const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only']];
 const DS=[['g','Global'],['euw','EUW'],['kr','KR'],['na','NA'],['dia','Diamond+'],['m','Master+']];
 const DSP=[...DS,['euwd','EUW Diamond+'],['euwm','EUW Master+']];
-const DSN={g:'Global, Emerald+',euw:'EUW, Emerald+',kr:'KR, Emerald+',na:'NA, Emerald+',dia:'Diamond+, 5 sites',m:'Master+, 2 sites',euwd:'EUW Diamond+',euwm:'EUW Master+'};
+const DSN={g:'Global, Emerald+',euw:'EUW, Emerald+',kr:'KR, Emerald+',na:'NA, Emerald+',dia:'Global Diamond+',m:'Global Master+',euwd:'EUW Diamond+',euwm:'EUW Master+'};
 const META=CUR._meta;let ARCH=null;
 const NEXT=META.next.roles;
 const GRADE=META.grade;
@@ -420,9 +420,9 @@ function renderControls(){
   $('views').innerHTML=[['score','Overall','Iron to Emerald'],['hi','High elo','Diamond and up']].map(([k,n,w])=>`<button type="button" class="two" data-l="${k}" aria-pressed="${k===lens}"${lim&&k==='hi'?' disabled title="Not available for this patch"':''}><span>${n}</span><small>${w}</small></button>`).join('');
   document.querySelectorAll('.gopt[data-l]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===lens);b.disabled=lim&&b.dataset.l==='hi';});
   $('ds').disabled=!!lim;
-  $('ds').value=DSP.some(([k])=>k===lens)?lens:'';
+  $('ds').value=DSP.some(([k])=>k===lens)?lens:'';$('ds').classList.toggle('on',!!$('ds').value);
   const list=DATA[role],miss=list.filter(d=>tierOf(d)==null).length;
-  $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:lens==='score'?'Overall, for Iron to Emerald. Blends Global, EUW, KR, NA and Master+.':lens==='hi'?'High elo, for Diamond and up. Diamond+ and Master+ games only, extra weight on EUW.':'Raw data from '+DSN[lens]+' only, not blended. Noisier than the two main views.')+(miss?` ${miss} champions have no data here.`:'');
+  $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:lens==='score'?'Overall, for Iron to Emerald. Blends Global, EUW, KR, NA and Master+.':lens==='hi'?'High elo, for Diamond and up. Diamond+ and Master+ games only, extra weight on EUW.':'Raw data: '+DSN[lens]+' only. Fewer games, so noisier.')+(miss?` ${miss} champions missing.`:'');
   $('legend').hidden=lim;
 }
 function renderTable(){
@@ -528,7 +528,8 @@ function render(){
 }
 function select(c,open){pick=c;try{history.replaceState(null,'',location.pathname+location.search+'#'+slug(c));}catch(e){}document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===pick));document.querySelectorAll('.tv tbody tr').forEach(r=>r.classList.toggle('on',r.dataset.c===pick));renderPanel();drawMap();if(open)openPanel(true);}
 function toggleGuide(o){const g=$('guide');o=o??g.hidden;g.hidden=!o;$('gbtn').setAttribute('aria-expanded',o);}
-function setLens(l){if(sortK===lens||sortK==='score'||sortK==='hi'||DSP.some(([x])=>x===sortK))sortK=l;lens=l;try{localStorage.setItem('tl-lens',l);}catch(e){}render();}
+let lastMain='score';
+function setLens(l){if(l==='score'||l==='hi')lastMain=l;if(sortK===lens||sortK==='score'||sortK==='hi'||DSP.some(([x])=>x===sortK))sortK=l;lens=l;try{localStorage.setItem('tl-lens',l);}catch(e){}render();}
 function search(){
   q=$('q').value.trim().toLowerCase();
   const out=[];if(q)for(const [r,n] of ROLES)for(const d of DATA[r])if(d.c.toLowerCase().includes(q))out.push([r,n,d]);
@@ -556,7 +557,7 @@ document.addEventListener('click',e=>{
   if(!t.closest('#bar'))toggleGuide(false);
 });
 document.addEventListener('keydown',e=>{if(PAGE==='method')return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';toggleGuide(false);}});
-if(PAGE!=='method'){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));$('ds').addEventListener('change',e=>{if(e.target.value)setLens(e.target.value);});
+if(PAGE!=='method'){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));$('ds').addEventListener('change',e=>setLens(e.target.value||lastMain));
 $('q').addEventListener('input',search);
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('res').querySelector('[data-jr]');if(b)b.click();}});}
 async function loadPatches(){try{const r=await fetch(SITE+'data/patches.json',{cache:'no-cache'});const j=await r.json();
