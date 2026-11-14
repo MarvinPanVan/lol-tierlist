@@ -101,6 +101,43 @@ def matchups(rk, role, c):   # -> {o: champion's own win rate, h/g: [[opponent, 
 # OP.GG's overview shows. Pick and win rates come x10 (runes: per mille, same thing). Skills: [max order, 15 levels, pick %, win %, games].
 BST = json.load(open('data/opgg_build_stats.json', encoding='utf-8')) if os.path.exists('data/opgg_build_stats.json') else {}
 SKL = json.load(open('data/opgg_skills.json', encoding='utf-8')) if os.path.exists('data/opgg_skills.json') else {}
+# OP.GG matchup builds: for each champion and its 6 most common opponents, the build used in that matchup
+# ({"role|champ": {opponent: {n: games, sp, rn, bo, co, st: [[option, % of games], ...]}}}), plus Riot's champion traits
+VSB = json.load(open('data/opgg_vs_builds.json', encoding='utf-8')) if os.path.exists('data/opgg_vs_builds.json') else {}
+_dd = json.load(open('data/ddragon_champions.json', encoding='utf-8')) if os.path.exists('data/ddragon_champions.json') else {}
+TRAITS = _dd.get('traits', {})
+TYPE_NAME = {'magic': 'magic-damage champions', 'physical': 'physical-damage champions', 'ranged': 'ranged champions',
+             'melee': 'melee champions', 'tank': 'tanks', 'fighter': 'fighters', 'mage': 'mages', 'assassin': 'assassins',
+             'marksman': 'marksmen', 'support': 'supports'}
+def ctypes(name):   # Riot's data only: class tags, range over 325 = ranged, damage type when one rating beats the other by 2+
+    t = TRAITS.get(name)
+    if not t: return set()
+    tags, rng, atk, mag = t
+    out = {'ranged' if rng > 325 else 'melee'} | {x.lower() for x in tags}
+    if mag >= atk + 2: out.add('magic')
+    elif atk >= mag + 2: out.add('physical')
+    return out
+def switches(role, c, kind, key, base):
+    # matchups where players clearly take this option more than usual: at least 10 points above its usual share and 3 standard
+    # errors (binomial, matchup games). If every such opponent shares a type the others mostly lack, name the type.
+    V = VSB.get(f'{role}|{c}') or {}
+    up, rest = [], []
+    for opp, m in V.items():
+        L = {(','.join(map(str, o)) if isinstance(o, list) else str(o)): sh for o, sh in m.get(kind, [])}
+        sh, n = L.get(key), m.get('n') or 0
+        if sh is None or not n: rest.append(opp); continue
+        d, p0 = sh - base, max(base, 1) / 100
+        if d >= 10 and d / 100 / math.sqrt(p0 * (1 - p0) / n) >= 3: up.append((opp, sh, n, d))
+        elif d < 3: rest.append(opp)
+    if not up: return None
+    up.sort(key=lambda x: -x[3]); typ = None
+    if rest:
+        best = 0
+        for t in TYPE_NAME:
+            if all(t in ctypes(o) for o, *_ in up):
+                sc = 1 - sum(t in ctypes(o) for o in rest) / len(rest)
+                if sc >= .5 and sc > best: best, typ = sc, t
+    return [TYPE_NAME.get(typ), [[nm(o), round(sh, 1), n] for o, sh, n, _ in up[:2]]]
 def build(role, c):
     v = BST.get(f'{role}|{c}')
     if not v: return None
@@ -112,6 +149,14 @@ def build(role, c):
          'co': [[ids, p(pk), p(w), g] for ids, pk, w, g in co],
          'bo': [[i, p(pk), p(w), g] for i, pk, w, g in bo],
          'st': [[ids, p(pk), p(w), g] for ids, pk, w, g in st]}
+    vs = {}
+    for kind, opts, keyf in [('sp', b['sp'], lambda o: ','.join(map(str, o[0]))), ('rn', b['rn'], lambda o: str(o[0])),
+                             ('bo', b['bo'], lambda o: str(o[0])), ('st', b['st'], lambda o: ','.join(map(str, o[0]))),
+                             ('co', b['co'], lambda o: ','.join(map(str, o[0])))]:
+        for o in opts[1:]:
+            sw = switches(role, c, kind, keyf(o), o[6] if kind == 'rn' else o[1])
+            if sw: vs[f'{kind}:{keyf(o)}'] = sw
+    if vs: b['vs'] = vs
     s = SKL.get(f'{role}|{c}')
     if s and s[0]:   # max order (OP.GG repeats it on some pages), first three levels, % of games with exactly this 15-level order
         mx = ''.join(dict.fromkeys(s[0]))

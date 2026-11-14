@@ -98,7 +98,7 @@ const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
-const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?nxFlag(d):'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?nxFlag(d):'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],cnt={};
   for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
@@ -138,7 +138,7 @@ function renderBoard(){if(!DATA[role])return;
     if(!cs.length&&(t==='Z'||t==='P'))return '';
     const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
-    return `<div class="row" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}>${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
+    return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}>${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
   }).join('');
   const mine=list.filter(d=>isMine(d.c)&&tierOf(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
   if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only">★<small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
@@ -219,36 +219,35 @@ const CMIN=150;
 // OP.GG does not say when players take which option, so nothing here says "take X against Y".
 const LK=()=>META.lk||{i:{},s:{},r:{}};
 const bimg=(kind,id,cl='')=>{const L=LK(),nm=kind==='item'?L.i[id]:kind==='sum'?(L.s[id]||[])[0]:(L.r[id]||[])[0];return `<img class="${cl}" src="${SITE}img/${kind}/${id}.webp" alt="${nm||''}" title="${nm||''}" width="28" height="28" loading="lazy">`;};
-// share of games first, win rate second. An option's win rate is greyed out when its gap to the most common option is within
-// sampling noise (1.64 standard errors), so nobody reads a coin flip as "this wins more".
-const bnum=(win,pick,games,ref)=>{const weak=ref&&games&&ref[1]&&Math.abs(win-ref[0])<1.64*Math.sqrt(2500/games+2500/ref[1]);
-  return `<span class="bst"><b>${pick<10?pick.toFixed(1):pick.toFixed(0)}%</b> of games · <span class="${weak?'wk':''}"${weak?' title="Too few games to say this wins more or less than the most common option"':''}>${win.toFixed(1)}% win</span></span>`;};
-function buildHTML(d){const b=d.bd;if(!b||ARCH)return '';const L=LK(),chg=new Set((d.it||[]).map(x=>x[0]));
-  const items=ids=>ids.map(id=>bimg('item',id,chg.has(L.i[id])?'chg':'')).join('');
-  const rn=x=>`${bimg('rune',x[0],'rn')}${bimg('rune',x[2],'rn tr')}`,rname=x=>`${(L.r[x[0]]||[])[0]||''} + ${(L.r[x[2]]||[])[0]||''}`;
-  const row=(lab,ic,nm,st)=>`<div class="brow"><span class="blab">${lab}</span><span class="bic">${ic}</span><span class="bnm">${nm}</span>${st}</div>`;
-  const sp=b.sp&&b.sp[0],rp=b.rn&&b.rn[0],st=b.st&&b.st[0],co=b.co&&b.co[0],bo=b.bo&&b.bo[0],sk=b.sk;
+// build card: one short row per part (spells, runes, skills, start, core, boots) with OP.GG's most common pick and its share
+// of games. Tapping a row opens the other options: share, win rate (dotted when within sampling noise of the usual pick),
+// and the matchups where players switch to that option (OP.GG matchup builds, d.bd.vs). Nothing here says what to do;
+// it shows what players actually do, and against whom.
+const pct=v=>v<10?v.toFixed(1)+'%':Math.round(v)+'%';
+const weakVs=(win,games,ref)=>ref&&games&&ref[1]&&Math.abs(win-ref[0])<1.64*Math.sqrt(2500/games+2500/ref[1]);
+function buildHTML(d){const b=d.bd;if(!b||ARCH)return '';const L=LK(),chg=new Set((d.it||[]).map(x=>x[0])),vs=b.vs||{};
+  const items=ids=>ids.map(id=>bimg('item',id,chg.has(L.i[id])?'chg':'')).join(''),inames=ids=>ids.map(i=>L.i[i]||'').join(' + ');
   const ab=k=>`<img src="${SITE}img/spell/${slug(d.c)}_${k.toLowerCase()}.webp" alt="${k}" title="${k}" width="26" height="26" loading="lazy">`;
-  // rune pages: [keystone, main style, second style, [3 main runes], [2 second runes], games, % of games, % win]
-  const main=[sp?row('Spells',sp[0].map(i=>bimg('sum',i)).join(''),sp[0].map(i=>(L.s[i]||[])[0]).join(' + '),bnum(sp[2],sp[1],sp[3])):'',
-    rp?row('Runes',rn(rp),rname(rp),bnum(rp[7],rp[6],rp[5])):'',
-    sk?row('Skills',sk[0].split('').map(ab).join(''),sk[0].split('').join(' > '),`<span class="bst" title="Levels 1 to 3">start ${sk[1].split('').join(' ')}</span>`):'',
-    st?row('Start',items(st[0]),st[0].map(i=>L.i[i]).join(' + '),bnum(st[2],st[1],st[3])):'',
-    co?row('Core',items(co[0]),co[0].map(i=>L.i[i]).join(', '),bnum(co[2],co[1],co[3])):'',
-    bo?row('Boots',items([bo[0]]),L.i[bo[0]]||'',bnum(bo[2],bo[1],bo[3])):''].join('');
-  if(!main)return '';
-  // "More": the other options; for a spell or keystone that differs from the most common pick, Riot's description of it
-  const desc=(kind,id)=>{const x=kind==='sum'?L.s[id]:L.r[id];return x&&x[1]?`<p class="bdesc"><b>${x[0]}:</b> ${x[1]}</p>`:'';};
-  const opt=(ic,nm,stt,extra='')=>`<div class="bopt"><span class="bic">${ic}</span><span class="bnm">${nm}</span>${stt}${extra}</div>`;
-  const sec=(t,rows)=>rows.length?`<p class="mlab">${t}</p>${rows.join('')}`:'';
-  const top=new Set(sp?sp[0]:[]);
-  const more=[sec('Summoner spells',(b.sp||[]).map((x,k)=>opt(x[0].map(i=>bimg('sum',i)).join(''),x[0].map(i=>(L.s[i]||[])[0]).join(' + '),bnum(x[2],x[1],x[3],k?[sp[2],sp[3]]:null),k?x[0].filter(i=>!top.has(i)).map(i=>desc('sum',i)).join(''):''))),
-    sec('Rune pages',(b.rn||[]).map((x,k)=>opt(`${bimg('rune',x[0],'rn')}${x[3].map(i=>bimg('rune',i,'rn sm')).join('')}${bimg('rune',x[2],'rn tr')}${x[4].map(i=>bimg('rune',i,'rn sm')).join('')}`,rname(x),bnum(x[7],x[6],x[5],k?[rp[7],rp[5]]:null),(k===0||x[0]!==rp[0]?desc('rune',x[0]):'')))),
-    sec('Core items, first three',(b.co||[]).map((x,k)=>opt(items(x[0]),x[0].map(i=>L.i[i]).join(', '),bnum(x[2],x[1],x[3],k?[co[2],co[3]]:null)))),
-    sec('Boots',(b.bo||[]).map((x,k)=>opt(items([x[0]]),L.i[x[0]]||'',bnum(x[2],x[1],x[3],k?[bo[2],bo[3]]:null)))),
-    sec('Starting items',(b.st||[]).map((x,k)=>opt(items(x[0]),x[0].map(i=>L.i[i]).join(' + '),bnum(x[2],x[1],x[3],k?[st[2],st[3]]:null))))].join('');
-  return `<div class="caph"><p class="cap">Build <span class="mu">(OP.GG, Global Emerald+)</span></p><a class="ctrl" href="${opgg(d.c,'build')}" target="_blank" rel="noopener">Full build ↗</a></div><div class="bld">${main}</div>`
-    +`<details class="pmore bmore"><summary>More options, with what each does</summary>${more}<p class="bnote">% of games = how often players pick it. Item win rates sit above ${d.c}'s own because whoever finishes three items is usually ahead already, so compare options with each other, not with 50%. <u class="lowdemo">Dotted</u> = too few games to say it wins more or less than the most common option. OP.GG doesn't record when players take what, so Riot's descriptions are here for you to judge your own game.</p></details>`;
+  // each part: [label, options, icons(o), name(o), share(o), win(o), games(o), key(o) for the switch data]
+  const P=[['Spells',b.sp,o=>o[0].map(i=>bimg('sum',i)).join(''),o=>o[0].map(i=>(L.s[i]||[])[0]).join(' + '),o=>o[1],o=>o[2],o=>o[3],o=>'sp:'+o[0].join(',')],
+    ['Runes',b.rn,o=>`${bimg('rune',o[0],'rn')}${bimg('rune',o[2],'rn tr')}`,o=>`${(L.r[o[0]]||[])[0]||''} + ${(L.r[o[2]]||[])[0]||''}`,o=>o[6],o=>o[7],o=>o[5],o=>'rn:'+o[0]],
+    ['Start',b.st,o=>items(o[0]),o=>inames(o[0]),o=>o[1],o=>o[2],o=>o[3],o=>'st:'+o[0].join(',')],
+    ['Core',b.co,o=>items(o[0]),o=>o[0].map(i=>L.i[i]||'').join(', '),o=>o[1],o=>o[2],o=>o[3],o=>'co:'+o[0].join(',')],
+    ['Boots',b.bo,o=>items([o[0]]),o=>L.i[o[0]]||'',o=>o[1],o=>o[2],o=>o[3],o=>'bo:'+o[0]]];
+  // [type of opponent or null, [[opponent, % of games with this option in that matchup, games], ...]]
+  const faces=k=>{const v=vs[k];if(!v)return '';const ex=v[1].map(([c,sh,n])=>`<span class="bvs" title="${d.c} players take it in ${sh.toFixed(0)}% of ${n.toLocaleString('en-US')} games against ${c}">${pic(c,'pic xs')}${c} <b>${pct(sh)}</b></span>`);
+    return v[0]?`More vs <b class="bty">${v[0]}</b>, like ${ex[0]}`:`More vs ${ex.join('')}`;};
+  const part=([lab,opts,ic,nm,sh,wn,gm,key])=>{if(!opts||!opts.length)return '';const o=opts[0],ref=[wn(o),gm(o)];
+    const head=`<span class="blab">${lab}</span><span class="bic">${ic(o)}</span><span class="bnm">${nm(o)}</span><span class="bsh">${pct(sh(o))}</span>`;
+    if(opts.length<2)return `<div class="brow">${head}<span class="bch"></span></div>`;
+    const alt=opts.slice(1).map(x=>{const weak=weakVs(wn(x),gm(x),ref),f=faces(key(x));
+      return `<div class="balt"><span class="bic">${ic(x)}</span><span class="bnm">${nm(x)}</span><span class="bst">${pct(sh(x))} · <span class="${weak?'wk':''}"${weak?' title="Too few games to say it wins more or less than the usual pick"':''}>${wn(x).toFixed(1)}% win</span></span>${f?`<span class="bsw">${f}</span>`:''}</div>`;}).join('');
+    return `<details class="brow sm-d"><summary>${head}<span class="bch" aria-hidden="true"></span></summary><div class="dc"><div class="bwin">${nm(o)}: ${wn(o).toFixed(1)}% win${lab==='Core'||lab==='Boots'?'. Item win rates run high, whoever finishes items is often ahead already.':''}</div>${alt}</div></details>`;};
+  const sk=b.sk?`<div class="brow"><span class="blab">Skills</span><span class="bic">${b.sk[0].split('').map(ab).join('')}</span><span class="bnm">${b.sk[0].split('').join(' > ')}</span><span class="bsh" title="Levels 1 to 3">start ${b.sk[1].split('').join(' ')}</span><span class="bch"></span></div>`:'';
+  const rows=[part(P[0]),part(P[1]),sk,part(P[2]),part(P[3]),part(P[4])].join('');
+  if(!rows)return '';
+  return `<div class="caph"><p class="cap">Build <span class="mu">OP.GG Emerald+</span></p><a class="ctrl" href="${opgg(d.c,'build')}" target="_blank" rel="noopener">Full build ↗</a></div>`
+    +`<div class="bld">${rows}</div><p class="bnote">% = share of games. Tap a row for what else players take.</p>`;
 }
 // matchups from OP.GG's full matchup lists (Global): Emerald+, or Diamond+ when the view is Diamond+ or Master+. Up to 5 hardest
 // and 5 easiest opponents with 150+ games, ranked after pulling each toward the champion's own win rate (update.py), as
@@ -259,15 +258,16 @@ function ctrs(d){const dia=R()!=='e'&&d.mud,m=dia?d.mud:d.mu,ok=a=>(a||[]).filte
 function ctrHTML(d){
   const {m,rk,cs,gs,thin}=ctrs(d);const inRole=c=>DATA[role].some(x=>x.c===c);
   const all=`<a class="ctrl" href="${opgg(d.c,'counters')}" target="_blank" rel="noopener">All matchups ↗</a>`;
-  const head=`<div class="caph"><p class="cap">Matchups <span class="mu">(OP.GG, Global ${rk}, ${CMIN}+ games)</span></p>${all}</div>`;
+  const head=`<div class="caph"><p class="cap">Matchups <span class="mu">OP.GG ${rk}${m?`, vs ${d.c}'s usual ${m.o.toFixed(1)}%`:''}</span></p>${all}</div>`;
   if(!cs.length&&!gs.length)return thin||((d.ctr||[]).length)||m?`${head}<p class="mi0">OP.GG's matchups for ${d.c} each have under ${CMIN} games, or none differs from ${d.c}'s usual win rate.</p>`:'';
   const card=([c,wr,n,cl],good)=>{const weak=cl===0,inner=`${pic(c,'pic xs')}<span>${c}</span><small${weak?' class="lowdemo"':''}>${wr.toFixed(0)}% · ${kfmt(n)} games</small>`,
     tip=`${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}`+(m?(weak?`. Too few games to be sure that differs from ${d.c}'s usual ${m.o.toFixed(1)}%.`:`, against ${m.o.toFixed(1)}% usually.`):''),cl2=`cc${good?' good':''}`;
     return inRole(c)?`<button type="button" class="${cl2}" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="${cl2}" title="${tip}">${inner}</span>`;};
   const grid=(L,good)=>`<div class="ctr">${L.map(x=>card(x,good)).join('')}</div>`;
   const more=cs.length>3||gs.length>3;
-  return `${head}${m?`<p class="mi0">Compared with ${d.c}'s usual ${m.o.toFixed(1)}% win rate. <u class="lowdemo">Dotted</u> = too few games to be sure.</p>`:''}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
-    +(more?`<details class="pmore"><summary>More matchups</summary>${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</details>`:'');
+  const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
+  return `${head}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
+    +(more?`<details class="pmore sm-d"><summary>More matchups</summary><div class="dc">${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</div></details>`:'')+foot;
 }
 // the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
@@ -429,6 +429,11 @@ function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
+// smooth open and close for expandable parts (details.sm-d, content in one .dc box); instant with reduced motion
+document.addEventListener('click',e=>{const sm=e.target.closest('details.sm-d>summary');if(!sm)return;const d=sm.parentElement,c=d.querySelector(':scope>.dc');
+  if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();if(d._a){d._a.cancel();d._a=null;}
+  if(d.open&&!d.classList.contains('closing')){d.classList.add('closing');const h=c.offsetHeight;d._a=c.animate([{height:h+'px',opacity:1},{height:'0px',opacity:0}],{duration:200,easing:'cubic-bezier(.4,0,.2,1)'});d._a.onfinish=()=>{d.open=false;d.classList.remove('closing');d._a=null;};}
+  else{d.classList.remove('closing');d.open=true;const h=c.offsetHeight;d._a=c.animate([{height:'0px',opacity:0},{height:h+'px',opacity:1}],{duration:260,easing:'cubic-bezier(.2,.7,.2,1)'});d._a.onfinish=()=>{d._a=null;};}});
 if(PAGE==='patch'){
 // patch notes page: mark the champions you starred on the tier list
 const mine=[...document.querySelectorAll('.pn-ix[data-pc]')].filter(a=>MINE.some(m=>m===a.dataset.pc||m.endsWith('|'+a.dataset.pc)));
