@@ -11,6 +11,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   (`public/assets/app.<hash>.css/js`); each page only keeps a small inline config (`window.TL`).
   Look: dark by default (light only if the visitor picks it), gold accent, own position icons, tinted tier rows,
   Z/S as big art cards, A/B normal chips, C/D compact. Page headers are plain HTML made by build.py.
+  Tier list CSS is one block near the end of the stylesheet ("the tier list, one system"): every tier row uses the same
+  column grid (auto-fill, min 190px; phones 2 columns) so columns line up; Z/S cards span 2 columns with splash art.
+  Change it there, not with new overrides elsewhere. The Chart layout is never remembered between visits (only Tiers and
+  Table are), and the header "Tier list" link switches back from the chart.
 - `pipeline/tiers.json` : the data for the current patch. Source of truth for what the site shows.
 - `pipeline/assets/mark.svg` : the logo (tier-row icon), used for favicon, brand mark and og.png.
 - `pipeline/build.py` : `python3 pipeline/build.py` builds every page from template + tiers.json: `public/index.html`,
@@ -142,6 +146,20 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      pick and win x10). Skill order: the row with `"metaType":"skill"` (max order in extraData, 15 level letters from the
      `translate:"no"` strong tags, pick, win, games) -> `data/opgg_skills.json`. update.py turns both into `bd` per champion.
      Build win rates are inflated (finishing items means you are ahead), so the card compares options with each other.
+   - OP.GG matchup builds ("more vs" lines on the build card): for every champion and its 6 most played opponents fetch
+     `/lol/champions/{key}/build/{position}?region=global&tier=emerald_plus&patch=16.xx&target_champion={opponent key}` and
+     parse it like the build page -> `data/opgg_vs_builds.json` {"role|champ": {opponent: {n: games, sp, rn, bo, co, st:
+     [[option, % of games]]}}}. update.py `switches()`: an option counts as "more vs X" when its share in that matchup is 10+
+     points above its usual share and 3+ standard errors; if 2+ such opponents share a type (Riot's class tags, range > 325 =
+     ranged, damage type from Data Dragon `info`, saved by the icons workflow in `ddragon_champions.json` "traits") that the
+     other opponents mostly lack, the card names the type ("more vs ranged champions, like Teemo"). ~1,500 pages, ~60 min.
+   - OP.GG runes page (`/lol/champions/{key}/runes/{position}?...`): up to 5 rune pages (the build page shows only 2) ->
+     `data/opgg_rune_pages.json`, same format as the build page's rune pages (pick and win per mille).
+   - OP.GG trends page (`/lol/champions/{key}/trends/{position}?...`): win rate by game length (under 25, 25-30, 30-35,
+     35-40, 40+ minutes; the records `{"game_length":N,"rate":R,"average":50}` before `"xAxisKey":"game_length"`) ->
+     `data/opgg_game_length.json`. OP.GG gives no game counts per bucket; update.py estimates them from the game lengths in
+     our own Riot matches (`data/riot/matches_*.jsonl`) and only says "wins more in long/short games" when the gap between
+     under 25 and 35+ is 2+ points and beyond that noise. League of Graphs and Lolalytics have similar curves but no counts.
    - OP.GG builds, for item changes: for every listed champion and role fetch (page JS, like below)
      `/lol/champions/{key}/build/{position}?region=global&tier=emerald_plus&patch=16.xx` (key: OP.GG slug, e.g.
      monkeyking, nunu, renata; position top/jungle/mid/adc/support). In the page data, rows keyed `core_items_N`,
@@ -173,9 +191,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    Rewrite notes that no longer match the numbers.
    Writing rules from Marvin: blunt, no em dashes, must not sound AI-written, explain jargon.
 5. `python3 pipeline/build.py`, then `python3 pipeline/scripts/assets.py` (favicon, apple-touch-icon, og.png and
-   og-<role>.png link previews with portraits; it reads the patch from the top bar pill and the date from `updated` in patch.json). Then check with playwright over a local server (`cd public && python3 -m http.server`; role paths and the
-   patch archive need http, not file://): no JS errors,
-   no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
+   og-<role>.png link previews with portraits; it reads the patch from the top bar pill and the date from `updated` in patch.json). Then run `python3 pipeline/scripts/check_site.py` (serves public/ itself; JS errors and sideways scrolling at 390/1024/
+   1440 in light and dark, broken links and images, meta, empty panels, the chart can be left, share pages redirect; must
+   print "no problems"), and still look at screenshots yourself: desktop, dark mode, the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.
 7. Mid-patch refresh around day 8 of each patch: same collection again (bigger samples), rerun, rebuild, push.
    Reminders for 26.23 are scheduled in Marvin's Claude session (20 Nov full update, 26 Nov refresh). After each
