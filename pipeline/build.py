@@ -284,7 +284,7 @@ def _roles(c, root, moves):   # where the champion stands now, every role it is 
         mv = ''
         if moves and e.get('tr') is not None and round(e['tr'], 1):
             weak = e.get('trz') is not None and abs(e['trz']) < 1.64
-            mv = (f'<span class="pn-mv{" pn-weak" if weak else " pos" if e["tr"] > 0 else " neg"}" title="Change since {P["prev_patch"]}{", could be chance" if weak else ""}">'
+            mv = (f'<span class="pn-mv{" pn-weak" if weak else " pos" if e["tr"] > 0 else " neg"}" title="Change since {P["prev_patch"]}{", too small to be sure" if weak else ""}">'
                   f'{"↑" if e["tr"] > 0 else "↓"}{f1(abs(e["tr"])).lstrip("+")}</span>')
         off = e['pick'] < 1
         ch.append(f'<a class="pn-r{" pn-off" if off else ""}" href="{root}{r}/{slug(c)}/" style="--R:var(--R{r})" title="{RNAME[r]}: {e["t"]} tier, score {f1(e["score"])}, {fx(e["pick"])}% pick">'
@@ -296,7 +296,7 @@ def _effect(c):   # what happened since last patch in the champion's most played
     w1, p1 = e['st']['g'][3], e['st']['g'][1]; w0, p0 = e.get('wr0'), e.get('pk0')
     clear = e.get('trz') is not None and abs(e['trz']) >= 1.64
     bits = ([f'win rate {fx(w0)}% → {fx(w1)}%'] if w0 is not None else []) + ([f'pick rate {fx(p0)}% → {fx(p1)}%'] if p0 is not None else [])
-    v = (f'<span class="pn-vd {"pos" if e["tr"] > 0 else "neg"}">Clearly {"better" if e["tr"] > 0 else "worse"}.</span>' if clear else '<span class="pn-vd">Could be chance.</span>')
+    v = (f'<span class="pn-vd {"pos" if e["tr"] > 0 else "neg"}">Clearly {"better" if e["tr"] > 0 else "worse"}.</span>' if clear else '<span class="pn-vd">No clear change.</span>')
     return f'{v} {RNAME[r]}, Global Emerald+: {E(", ".join(bits))}.'
 def _users(name):   # listed champions with the item in their OP.GG core build or boots, and as starting item: {champion: [roles]}, most played first
     core, start, pk = {}, {}, {}
@@ -329,7 +329,7 @@ def tldr(p, n):
             es = [(r, e) for r, _, _ in ROLES for e in D[r] if e['c'] == x['c'] and e.get('tr') is not None and e.get('trz') is not None and abs(e['trz']) >= 1.64]
             if es:
                 r, e = max(es, key=lambda t: abs(t[1]['tr'])); mv.append((abs(e['tr']), f'{x["c"]} ({RNAME[r]}) {"up" if e["tr"] > 0 else "down"} {f1(abs(e["tr"])).lstrip("+")}'))
-        out.append(f'Clear moves since {P["prev_patch"]}: {_and([t for _, t in sorted(mv, reverse=True)[:4]])}. The rest moved too little to rule out chance.'
+        out.append(f'Clear moves since {P["prev_patch"]}: {_and([t for _, t in sorted(mv, reverse=True)[:4]])}. The rest moved too little to be sure.'
                    if mv else 'None of the changed champions moved clearly in our numbers yet.')
     its = []
     for x in n.get('items', []):
@@ -383,7 +383,7 @@ def notes_body(p, root):
         return (f'<article class="card pn-c pn-{x["kind"]}" id="{slug(x["c"])}"><div class="pn-h"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="44" height="44" loading="lazy" onerror="this.remove()">'
                 f'<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>{_roles(x["c"], root, moves)}'
                 f'{facts(x, moves)}{body}</article>')
-    leg = 'Chips: tier and score per role right now (Emerald+, all regions). Score = win rate points above the role average, corrected for small samples.' + (f' Arrow = change since {P["prev_patch"]}, grey when it could be chance.' if moves else '')
+    leg = 'Chips: tier and score per role right now (Emerald+, all regions). Score = win rate points above the role average, corrected for small samples.' + (f' Arrow = change since {P["prev_patch"]}, grey when it is too small to be sure.' if moves else '')
     champs = (f'<section class="pn-sec" id="champions"><h2>Champions</h2><p class="cap">{E(leg)}</p>'
               + ''.join(f'<h3 class="pn-gh pn-{k}">{lab} <span>{len(xs)}</span></h3><div class="pn-grid{" pn-one" if len(xs) == 1 else ""}">{"".join(card(x) for x in xs)}</div>' for k, lab, xs in groups) + '</section>')
     items = ''

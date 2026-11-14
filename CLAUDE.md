@@ -23,7 +23,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - Patch notes pages: `/patch/<patch>/` for every patch in `patch.json` `notes`, `/patch/` = the newest live one. Built by
   build.py (`notes_body`): a short version made from the data (counts, clear score moves since last patch, items with how
   many listed champions build them, starred champions via JS), a sticky index (buffs / nerfs / adjusted / items), then per
-  champion: tier chips per role now (plus the change since last patch, grey = could be chance), "Riot says" (`why`: Riot's
+  champion: tier chips per role now (plus the change since last patch, grey = too small to be sure), "Riot says" (`why`: Riot's
   stated reason, short and in our own words), "So far" (live patch only: most played role, Global Emerald+ win and pick
   rate last patch → now from `wr0`/`pk0`, verdict from `trz`), "Means" (fixed rules in `meaning()`: which ranks change,
   only scaling, % health, base stats per level; or a hand-written `m` that only says what the numbers show), then the
