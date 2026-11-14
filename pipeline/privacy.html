@@ -8,12 +8,12 @@
 <link rel="canonical" href="https://lol-tierlist.pages.dev/privacy/">
 <link rel="icon" href="../favicon.ico" sizes="32x32">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<script>try{var t=localStorage.getItem("tl-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("tl-theme")==="light"?"light":"dark";}catch(e){document.documentElement.dataset.theme="dark";}</script>
 <style>
 @font-face{font-family:'Inter';font-weight:400;font-display:swap;src:url(../fonts/inter-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-weight:600;font-display:swap;src:url(../fonts/inter-latin-600-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-weight:800;font-display:swap;src:url(../fonts/inter-latin-800-normal.woff2) format('woff2')}
-:root{color-scheme:light dark;--bg:light-dark(#f5f6f8,#0b0c0f);--card:light-dark(#fff,#14161b);--line:light-dark(#e4e6eb,#252830);--ink:light-dark(#0f1115,#eceef2);--mut:light-dark(#646b78,#959cab);--acc:light-dark(#4f5bd5,#8f99ff)}
+:root{color-scheme:light dark;--bg:light-dark(#f5f6f8,#0b0c0f);--card:light-dark(#fff,#14161b);--line:light-dark(#e4e6eb,#252830);--ink:light-dark(#0f1115,#eceef2);--mut:light-dark(#646b78,#959cab);--acc:light-dark(#8a5f0c,#e3b34c)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}

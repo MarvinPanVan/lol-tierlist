@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>__TITLE__</title>
 <meta name="description" content="__DESC__">
-<meta name="theme-color" content="#0b0c0f">
-<script>try{var t=localStorage.getItem("tl-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<meta name="theme-color" content="#0a0b0e">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("tl-theme")==="light"?"light":"dark";}catch(e){document.documentElement.dataset.theme="dark";}</script>
 <link rel="canonical" href="__URL__">
 <link rel="icon" href="__ROOT__favicon.ico" sizes="32x32">
 <link rel="icon" href="__ROOT__favicon.svg" type="image/svg+xml">
@@ -324,26 +324,132 @@ body{transition:background-color .25s ease,color .25s ease}
 .fig{height:380px}.gr{grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:8px}.gr .cv{display:none}
 .cols{grid-template-columns:minmax(0,1fr)}.src{columns:1}
 table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10px 14px;border-bottom:1px solid var(--line)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:2px 0}.stack td::before{content:attr(data-l);color:var(--mut);flex:none}}
+/* ===== REDESIGN: dark first, gold accent, calm tinted tiers, art on the top tiers ===== */
+:root{--bg:light-dark(#f3f3f0,#0a0b0e);--card:light-dark(#ffffff,#121419);--surf:light-dark(#ecebe6,#181b21);--surf2:light-dark(#e2e1da,#20242c);--line:light-dark(#e1e0d9,#21252d);
+--acc:light-dark(#8a5f0c,#e3b34c);--acc-ink:#1b1405;--sel:var(--acc);
+--Rtop:#e07a4f;--Rjungle:#3fae6a;--Rmid:#5b8def;--Radc:#d9a43a;--Rsupport:#b07fe0}
+body{background:var(--bg)}
+.chip[aria-pressed=true]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.tv tbody tr.on{background:color-mix(in srgb,var(--acc) 10%,transparent)}
+.gbtn,.ctrl,.mxb,.mst{color:var(--acc)}
+.star[aria-pressed=true]{background:color-mix(in srgb,var(--acc) 14%,var(--card));border-color:color-mix(in srgb,var(--acc) 55%,transparent);color:var(--acc)}
+.arch{background:color-mix(in srgb,var(--acc) 10%,var(--card));border-color:color-mix(in srgb,var(--acc) 40%,transparent)}
+.arch button{background:var(--acc);color:var(--acc-ink)}
+/* header */
+.head{padding-top:clamp(18px,2.6vw,36px);padding-bottom:clamp(14px,2vw,22px)}
+.head h1{margin:0;font-size:clamp(26px,2.8vw,40px);max-width:none}
+.rh{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 44px;align-items:center}
+.rt{display:flex;align-items:center;gap:14px}
+.ri{display:inline-grid;place-items:center;flex:none;width:46px;height:46px;border-radius:13px;color:var(--R,var(--acc));background:color-mix(in srgb,var(--R,var(--acc)) 15%,var(--card));border:1px solid color-mix(in srgb,var(--R,var(--acc)) 32%,var(--line))}
+.ri svg{width:24px;height:24px}
+.dl{margin:5px 0 0;color:var(--mut);font:500 13px/1.45 Inter,sans-serif}
+.dl b{color:var(--ink);font-weight:600}
+.take{margin:0;font-size:15px;line-height:1.6;max-width:72ch;color:color-mix(in srgb,var(--ink) 88%,var(--mut))}
+.hacts{display:flex;gap:8px;margin-top:10px}
+.home h1{font-size:clamp(28px,3.1vw,46px);line-height:1.08;margin:6px 0 10px;max-width:25ch}
+.home .lede{max-width:72ch}
+.rcards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:22px}
+.rcd{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:122px;padding:14px;border-radius:14px;text-decoration:none;color:var(--ink);background:color-mix(in srgb,var(--R) 9%,var(--card));border:1px solid color-mix(in srgb,var(--R) 26%,var(--line));transition:border-color .15s,transform .2s var(--ease)}
+.rcd::after{content:"";position:absolute;inset:0;background:var(--art) right center/auto 100% no-repeat;opacity:.6;-webkit-mask-image:linear-gradient(90deg,transparent 28%,#000 100%);mask-image:linear-gradient(90deg,transparent 28%,#000 100%);pointer-events:none}
+.rcd>*{position:relative;z-index:1}
+.rcd:hover{border-color:var(--R);transform:translateY(-2px)}
+.rcd .rn{display:flex;align-items:center;gap:8px;font:700 13px Inter,sans-serif;color:var(--R)}
+.rcd .ri{width:30px;height:30px;border-radius:9px}.rcd .ri svg{width:17px;height:17px}
+.rcd .bp{display:flex;flex-direction:column;gap:5px}
+.rcd .bp small{font:500 11.5px Inter,sans-serif;color:var(--mut)}
+.rcd .bp b{font:800 19px/1.1 Inter,sans-serif;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.mvs{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:16px;font:500 13px Inter,sans-serif;color:var(--mut)}
+.mvs a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);background:var(--surf);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;font-weight:600}
+.mvs a:hover{border-color:var(--faint)}
+.mvs .pic{width:22px;height:22px;border-radius:50%}
+.mvs em{font-style:normal;font-weight:700}.mvs em.up{color:var(--pos)}.mvs em.dn{color:var(--neg)}
+.champ-head{position:relative;overflow:hidden;padding-top:clamp(24px,3vw,44px)}
+.champ-head::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 25%,transparent),var(--bg) 92%),var(--art) center 22%/cover no-repeat;opacity:.9;pointer-events:none}
+.champ-head .wrap{position:relative}
+.crumb{display:inline-block;color:var(--mut);text-decoration:none;font:600 13px Inter,sans-serif;margin-bottom:14px}.crumb:hover{color:var(--ink)}
+.ch{display:flex;align-items:center;gap:16px}
+.ch .pic.big{width:72px;height:72px;border-radius:16px}
+.ctiers{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 10px}
+.ctiers span{font:700 13px/1 Inter,sans-serif;padding:8px 12px;border-radius:999px;color:#14151a}
+/* role tabs with icons */
+#roles button{display:inline-flex;align-items:center;gap:7px}
+#roles button svg{width:16px;height:16px;flex:none}
+#roles button[aria-pressed=true] svg{color:var(--acc)}
+/* tier rows: calm tint, colored edge, letter in tier color */
+.row{grid-template-columns:58px minmax(0,1fr);background:color-mix(in srgb,var(--T) 5%,var(--card));border:1px solid color-mix(in srgb,var(--T) 18%,var(--line));border-left:3px solid var(--T)}
+.lab{background:transparent;color:light-dark(color-mix(in srgb,var(--T) 58%,#000),var(--T));font-size:40px}
+.lab small{color:var(--mut);opacity:1}
+.mine-row .lab{color:var(--acc)}
+/* chips: no mini bars, three sizes */
+.chip{grid-template-areas:"p n s";row-gap:2px;min-height:48px}
+.chip .ticks{display:none}
+.chips.bigs,.chips.smalls{display:grid}
+.chips.bigs{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.chip.big{grid-template-areas:"p n s" "p m m";min-height:76px;padding:10px 12px 10px 10px;overflow:hidden;column-gap:12px}
+.chip.big::before{content:"";position:absolute;inset:0;background:var(--art) right center/auto 135% no-repeat;opacity:.5;-webkit-mask-image:linear-gradient(90deg,transparent 38%,#000 96%);mask-image:linear-gradient(90deg,transparent 38%,#000 96%);pointer-events:none;border-radius:inherit}
+.chip.big>*{position:relative}
+.chip.big .pic{width:50px;height:50px;border-radius:12px}
+.chip.big .nm{font-size:16px;font-weight:700}
+.chip.big .sc{color:var(--ink);font-size:13.5px;background:color-mix(in srgb,var(--card) 70%,transparent);padding:4px 8px;border-radius:999px;align-self:start}
+.chip .cm{grid-area:m;font:500 12px Inter,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chips.smalls{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.chip.sm{min-height:38px;padding:5px 10px 5px 5px;column-gap:8px;border-radius:10px}
+.chip.sm .pic{width:26px;height:26px;border-radius:7px}
+.chip.sm .nm{font-size:13.5px}
+.chip.sm .sc{font-size:12px}
+.flag.trap{background:color-mix(in srgb,var(--neg) 15%,transparent);color:var(--neg)}
+/* panel: champion art on top */
+.pban{height:150px;margin:-20px -20px -58px;background:linear-gradient(180deg,transparent 35%,var(--card) 98%),var(--art) center 22%/cover no-repeat;border-radius:17px 17px 0 0}
+.ph{position:relative}
+.rng{display:block;font:500 11px Inter,sans-serif;color:var(--mut);margin-top:3px;white-space:nowrap}
+.mi{grid-column:1/-1;font-size:13px;color:var(--mut);padding:2px 4px 2px;line-height:1.5}
+.mi b{color:var(--ink)}
+/* since your last visit */
+.wrap#since{margin-bottom:14px}.since{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--acc) 9%,var(--card));border:1px solid color-mix(in srgb,var(--acc) 35%,var(--line));font-size:14px;line-height:1.55;animation:fade .25s both}
+.since b{color:var(--ink)}.since .x2{margin-left:auto;border:0;background:none;color:var(--mut);font:500 18px/1 Inter,sans-serif;cursor:pointer;padding:0 2px}
+/* table counters */
+.tv .ctrs{display:flex;gap:3px}.tv .thn{display:block;color:var(--mut);font:600 12.5px Inter,sans-serif;padding:12px 10px;white-space:nowrap}.row{overflow:visible}.tv .ctrs img{width:22px;height:22px;border-radius:50%}
+/* share */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font:600 13px Inter,sans-serif;padding:10px 16px;border-radius:999px;z-index:80;animation:fade .2s both}
+.filt{display:none}
+.more{display:contents}
+@media(max-width:1180px){.rcards{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scrollbar-width:none;margin-right:-4px}.rh{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:980px){.pban{margin:0 -18px -58px}}
+@media(max-width:640px){
+.bar{position:sticky;top:0;padding:8px 12px}
+.bar .wrap{grid-template-columns:minmax(0,1fr) auto}
+#roles{grid-column:1}
+#roles button:not([aria-pressed=true]) .rl{display:none}
+#roles button{justify-content:center;padding:0 8px}
+.filt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 13.5px Inter,sans-serif;border-radius:12px;padding:0 12px;min-height:42px;cursor:pointer}
+.filt[aria-expanded=true]{border-color:var(--acc);color:var(--acc)}
+.more{display:none}
+.bar.open .more{display:grid;grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:4px 0 6px}
+.bar.open .more>#views,.bar.open .more>.hintline,.bar.open .more>.guide,.bar.open .more>.search{grid-column:1/-1}
+.head{padding-top:14px;padding-bottom:10px}
+.ri{width:38px;height:38px}.ri svg{width:20px;height:20px}
+.take{font-size:14px}
+.home h1{font-size:25px}
+.rcards{grid-template-columns:repeat(5,148px);margin-left:-2px}
+.rcd{min-height:104px;padding:12px}
+.chips.bigs{grid-template-columns:minmax(0,1fr)}
+.chip.big{min-height:66px}.chip.big .pic{width:42px;height:42px}
+.chips.smalls{grid-template-columns:repeat(2,minmax(0,1fr))}
+.row{grid-template-columns:44px minmax(0,1fr)}.lab{font-size:30px}
+}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
 <!--B--><nav class="links" aria-label="Sections"><a href="#board-sec">Tier list</a><a href="#map-sec">Pick vs win</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav><!--/M--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
-<!--B--><header class="band hero-band">
-<div class="wrap hero">
-<div>
-<p class="meta"><span>Ranked solo/duo, Emerald+ to Master+</span><span>Updated 14 Nov 2026</span><span class="nxp">Next patch 26.23 on 18 Nov</span></p>
-<h1>Ekko, Xayah and Kog'Maw lead patch 26.22. More than half of the most-picked champions lose.</h1>
-<p class="lede">Built on <b>nine stat sites</b> from Korea, Europe and North America. Of the 65 champions picked in 5% or more of their role's games, <b>36 win less than half</b>. Scores are win rate points above the role average, corrected for sample size and one-trick inflation.</p>
-</div>
-<div class="best" id="best" aria-label="Best pick per role"></div>
-</div>
-</header>
+<!--B-->__HEAD__
 
 <nav class="bar" id="bar" aria-label="Tier list controls">
 <div class="wrap">
 <div class="seg" id="roles" role="group" aria-label="Role"></div>
+<button type="button" class="filt" id="filt" aria-expanded="false" aria-controls="more">Filters</button>
+<div class="more" id="more">
 <div class="seg" id="views" role="group" aria-label="View"></div>
 <div class="seg" id="modes" role="group" aria-label="Layout"></div>
 <select id="ds" aria-label="Raw data from one region and rank, not blended">
@@ -371,7 +477,6 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 </select>
 <select id="patchsel" aria-label="Patch"><option value="">Patch __PATCH__</option></select>
 <div class="search"><input id="q" type="search" placeholder="Find a champion" autocomplete="off" aria-label="Find a champion"><kbd aria-hidden="true">/</kbd><div class="res" id="res"></div></div>
-<div class="arch" id="arch" hidden></div>
 <div class="hintline"><button type="button" class="gbtn" id="gbtn" aria-expanded="false" aria-controls="guide">Which view is for me?</button><span id="hint"></span><span class="legend" id="legend"></span></div>
 <div class="guide" id="guide" hidden>
 <button type="button" class="gopt" data-l="score"><b>Overall <span class="rec">Recommended</span></b><span class="who">For Iron to Emerald, so most players.</span><span>Emerald+ games from Global, EUW, KR and NA, plus Master+, blended into one score. Biggest samples, least noise.</span></button>
@@ -379,9 +484,12 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 <div class="gopt raw"><b>Raw data</b><span class="who">Not needed to pick champions. Leave it off.</span><span>Overall and High elo already include every dataset in that menu. Raw data shows one of them alone, for example KR only to see what Korea wins with. Fewer games, so odd picks show up.</span></div>
 </div>
 </div>
+<div class="arch" id="arch" hidden></div>
+</div>
 </nav>
 
 <main class="band" id="board-sec" style="padding-top:18px">
+<div class="wrap" id="since" hidden></div>
 <div class="wrap main">
 <div class="board" id="board" aria-live="polite"></div>
 <aside class="panel" id="panel" aria-label="Champion detail"></aside>
@@ -464,11 +572,17 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 </section>
 <!--/M--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
 
+<script>window.TL={DATA:__DATA__,ROOT:'__ROOT__',PAGE:'__PAGE__',ROLE:'__ROLE__',CHAMP:'__CHAMP__'};</script>
 <script>
 {
-let DATA=__DATA__;const CUR=DATA;
-const ROOT='__ROOT__',PAGE='__PAGE__',INIT_ROLE='__ROLE__';
+let DATA=TL.DATA;const CUR=DATA;
+const ROOT=TL.ROOT,PAGE=TL.PAGE,INIT_ROLE=TL.ROLE,INIT_CHAMP=TL.CHAMP||'';
 const SITE=new URL(ROOT||'./',location.href).href,IMGBASE=SITE+'img/champ/';
+const RICON={top:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3h11l-3.5 3.5H6.5v4L3 14z" fill="currentColor"/><path d="M7.5 17h9.5V7.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".45"/></svg>',
+jungle:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 2.5c2.6 3.2 3.4 7.6 2.4 13.5M10.2 2.5c1.6 3 2 7 1.2 11.5M14.2 3c1 2.4 1.3 5.4.6 8.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+mid:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M3 9.5V3h6.5M17 10.5V17h-6.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".45"/></svg>',
+adc:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M17 17H6l3.5-3.5h4v-4L17 6z" fill="currentColor"/><path d="M12.5 3H3v9.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".45"/></svg>',
+support:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.2 16.5 5v4.6c0 4-2.7 6.9-6.5 8.2-3.8-1.3-6.5-4.2-6.5-8.2V5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 6.2v7.6M6.4 9.6h7.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'};
 const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['support','Support']];
 const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only']];
 const DS=[['g','Global'],['euw','EUW'],['kr','KR'],['na','NA'],['dia','Diamond+'],['m','Master+']];
@@ -524,9 +638,9 @@ const LIM=()=>!!(ARCH&&ARCH.kind==='limited');
 function tri(d){if(d.tr==null||Math.abs(d.tr)<.6)return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'↑':'↓'}</span>`;}
 function ticks(d){if(LIM())return '';return DS.map(([k])=>{const v=d[k];if(v==null)return '<i></i>';const h=2+Math.min(Math.abs(v),3)/3*5;return `<i><b style="${v>=0?'bottom:7px':'top:8px'};height:${h.toFixed(1)}px;background:var(${v>=0?'--pos':'--neg'})"></b></i>`;}).join('');}
 function renderControls(){if(!DATA[role])return;
-  $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}">${n}</button>`).join('');
+  $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}" aria-label="${n}">${RICON[k]}<span class="rl">${n}</span></button>`).join('');
   $('modes').innerHTML=[['tiers','Tiers'],['table','Table']].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
-  const lim=LIM();
+  const lim=LIM(),nf=(lens!=='score')+(mode!=='tiers')+(!!ARCH)+(!!q);if($('filt'))$('filt').textContent=nf?`Filters (${nf})`:'Filters';
   $('views').innerHTML=[['score','Overall','Iron to Emerald'],['hi','High elo','Diamond and up']].map(([k,n,w])=>`<button type="button" class="two" data-l="${k}" aria-pressed="${k===lens}"${lim&&k==='hi'?' disabled title="Not available for this patch"':''}><span>${n}</span><small>${w}</small></button>`).join('');
   document.querySelectorAll('.gopt[data-l]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===lens);b.disabled=lim&&b.dataset.l==='hi';});
   $('ds').disabled=!!lim;
@@ -537,7 +651,7 @@ function renderControls(){if(!DATA[role])return;
 }
 function renderTable(){if(!DATA[role])return;
   const list=DATA[role],k=keyOf();
-  const lim=LIM(),cols=[['c','Champion'],['t','Tier'],[k,lens==='score'?'Score':lens==='hi'?'High elo':'Value'],...(lim||lens==='hi'?[]:[['hi','High elo']]),...(lim?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games in '+DSN[SK()]]];
+  const lim=LIM(),cols=[['c','Champion'],['t','Tier'],[k,lens==='score'?'Score':lens==='hi'?'High elo':'Value'],...(lim||lens==='hi'?[]:[['hi','High elo']]),...(lim?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games in '+DSN[SK()]],...(lim?[]:[['ctr','Hardest matchups']])];
   const NA='<span class="mu">–</span>';
   const SC={wr:'wr',pick:'pick',ban:'ban',games:'n'};
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:d[c];
@@ -546,10 +660,11 @@ function renderTable(){if(!DATA[role])return;
     case 't':{const t=tierOf(d);return `<td><span class="tg" style="background:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
+    case 'ctr':{const cs=(HIGHV()?d.ctr_d:d.ctr)||d.ctr||[];return `<td><span class="ctrs">${cs.map(x=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}" width="22" height="22" loading="lazy">`).join('')}</span></td>`;}
     case 'games':{const w=val(d,c);return `<td class="n${w!=null&&w<LOWN?' mu':''}">${w==null?NA:Math.round(w).toLocaleString('en-US')}</td>`;}
     case 'hi':return `<td class="n">${v==null?NA:`${fmt(v)} <span class="tg sm" style="background:var(${colT(d.ht)})">${d.ht||''}</span>`}</td>`;
     default:return `<td class="n"><b>${fmt(v)}</b>${c===k&&lens==='score'?` <span class="mu se">±${(d.se??0).toFixed(1)}</span>`:''}</td>`;}};
-  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>`<th><button type="button" data-sort="${c}" aria-sort="${sortK===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sortK===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
+  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>c==='ctr'?`<th><span class="thn">${n}</span></th>`:`<th><button type="button" data-sort="${c}" aria-sort="${sortK===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sortK===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
   fitTable();
 }
 function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classList.remove('fit');if(!narrow()&&t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
@@ -557,18 +672,51 @@ const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
-const chipHTML=(d,k,tag)=>{const low=isLow(d),x=stat(d);return `<button type="button" class="chip${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${low?` title="${lens==='score'?`Few games, could be off by ±${d.se.toFixed(1)}`:`Only ${x?x.n.toLocaleString('en-US'):'a few'} games in ${DSN[SK()]}`}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span><span class="ticks" aria-hidden="true">${ticks(d)}</span></button>`;};
+const isTrap=d=>{const x=stat(d),v=d[keyOf()];return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
+const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
+const chipHTML=(d,k,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big';return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="${lens==='score'?`Few games, could be off by ±${d.se.toFixed(1)}`:`Only ${x?x.n.toLocaleString('en-US'):'a few'} games in ${DSN[SK()]}`}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}${isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':''}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+function poolHTML(mine){
+  const best=mine[0],hiv=HIGHV(),cnt={};
+  for(const d of mine)for(const c of ((hiv?d.ctr_d:d.ctr)||d.ctr||[]))if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
+  const bans=Object.entries(cnt).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,2);
+  let t=mine.length>1?`Best of yours this patch: <b>${best.c}</b> (${tierOf(best)}, ${fmt(best[keyOf()])}).`:'';
+  if(bans.length)t+=` Ban ${bans.map(([c,n])=>`<b>${c}</b>`).join(' or ')}: hard matchup for ${bans[0][1]} of your ${mine.length}.`;
+  else if(mine.length===1){const cs=(hiv?best.ctr_d:best.ctr)||best.ctr;if(cs&&cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(c=>`<b>${c}</b>`).join(', ')}.`;}
+  return t?`<p class="mi">${t}</p>`:'';
+}
+function sinceVisit(){
+  if(ARCH)return;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])sinceVisit();});return;}let seen=null;try{seen=JSON.parse(localStorage.getItem('tl-seen')||'null');}catch(e){}
+  const list=DATA[role],rn=ROLES.find(r=>r[0]===role)[1],t=Object.assign({},seen&&seen.t||{});
+  let html='';
+  if(seen&&seen.p&&seen.p!==META.patch){
+    const mv=list.filter(d=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b.tr-a.tr);
+    const up=mv.filter(d=>d.tr>0).slice(0,2),dn=mv.filter(d=>d.tr<0).slice(-2).reverse();
+    const ch=list.filter(d=>isMine(d.c)&&t[role+'|'+d.c]&&t[role+'|'+d.c]!==d.t).map(d=>`<b>${d.c}</b> ${t[role+'|'+d.c]} → ${d.t}`);
+    html=`<div class="since"><span><b>Patch ${META.patch} is in since your last visit.</b> ${rn}: ${[...up.map(d=>`<b>${d.c}</b> up ${fmt(d.tr)}`),...dn.map(d=>`<b>${d.c}</b> down ${fmt(d.tr)}`)].join(', ')||'no big moves'}.${ch.length?` Your champs: ${ch.join(', ')}.`:''}</span><button type="button" class="x2" id="sincex" aria-label="Close">×</button></div>`;
+  }
+  for(const d of list)if(isMine(d.c))t[role+'|'+d.c]=d.t;
+  try{localStorage.setItem('tl-seen',JSON.stringify({p:META.patch,t}));}catch(e){}
+  if(html){$('since').innerHTML=html;$('since').hidden=false;}
+}
+function flipRender(fn){
+  if(mode!=='tiers'||matchMedia('(prefers-reduced-motion: reduce)').matches){fn();return;}
+  const pos={};document.querySelectorAll('#board .row:not(.mine-row) .chip').forEach(el=>{pos[el.dataset.c]=el.getBoundingClientRect();});
+  fn();
+  document.querySelectorAll('#board .row:not(.mine-row) .chip').forEach(el=>{const a=pos[el.dataset.c];if(!a)return;const b=el.getBoundingClientRect(),dx=a.left-b.left,dy=a.top-b.top;
+    if(Math.abs(dx)<1&&Math.abs(dy)<1)return;el.animate([{transform:`translate(${dx}px,${dy}px)`,zIndex:5},{transform:'none',zIndex:5}],{duration:460,easing:'cubic-bezier(.2,.7,.2,1)'});});
+}
 function renderBoard(){if(!DATA[role])return;
   if(mode==='table'){renderTable();return;}
   const list=DATA[role],k=keyOf();
   $('board').innerHTML=TIERS.map(([t,cap],ti)=>{
     const cs=list.filter(d=>tierOf(d)===t).sort((a,b)=>(b[k]??-99)-(a[k]??-99));
     if(!cs.length&&(t==='Z'||t==='P'))return '';
-    const body=cs.length?cs.map(d=>chipHTML(d,k,false)).join(''):'<span class="empty">None</span>';
-    return `<div class="row" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}>${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips">${body}</div></div>`;
+    const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
+    const body=cs.length?cs.map(d=>chipHTML(d,k,false,size)).join(''):'<span class="empty">None</span>';
+    return `<div class="row" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}>${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
   }).join('');
   const mine=list.filter(d=>isMine(d.c)&&tierOf(d)).sort((a,b)=>(b[k]??-99)-(a[k]??-99));
-  if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only">★<small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,k,true)).join('')}</div></div>`);
+  if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only">★<small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,k,true)).join('')}${poolHTML(mine)}</div></div>`);
 }
 const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=(c,pg='build')=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/${pg}/${role}`;
@@ -582,9 +730,9 @@ function renderPanel(){if(!DATA[role])return;
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site">${k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site">Lolalytics, Emerald+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}</p>`;
   const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
-  $('panel').innerHTML=`<div class="pin"><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
-  <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a></div>
-  <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong></div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
+  $('panel').innerHTML=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
+  <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a><button type="button" class="ext" data-share="${d.c}">Share</button>${!ARCH&&PAGE!=='champ'?`<a class="ext" href="${champURL(d.c)}">Full page</a>`:''}</div>
+  <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong>${rngHTML(d)}</div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${LIM()?`<p class="cap">Win rate vs role average, Global Emerald+ only</p><div class="rows">${rows}</div>`:`<p class="cap">Win rate vs role average in points, by region and rank. Tap a cell to rank everyone by it.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
   ${tr}${histHTML(d)}${d.nx?`<p class="nx ${d.nx}">${META.next.patch}: ${d.nxt}.</p>`:''}
@@ -606,6 +754,13 @@ function histHTML(d){
   <text x="${X(li)+8}" y="${Y(v[li])+4}" class="lv">${fmt(v[li])}</text>
   <text x="${X(fi)}" y="${H-4}" class="pt">${P[fi]}</text><text x="${X(li)}" y="${H-4}" class="pt" text-anchor="end">${P[li]}</text></svg>`;
 }
+const cutT=v=>v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D',TRANK={S:4,A:3,B:2,C:1,D:0};
+function rngHTML(d){if(!'SABCD'.includes(d.t)||d.se==null)return '';const lo=cutT(d.score-d.se),hi=cutT(d.score+d.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===d.t?hi:hi===d.t?lo:lo+' to '+hi}</small>`;}
+const champURL=c=>SITE+role+'/'+slug(c)+'/';
+function share(c){const url=c?champURL(c):PAGE==='home'?SITE:SITE+role+'/',title=c?`${c} ${ROLES.find(r=>r[0]===role)[1]}, patch ${META.patch} | LoL Tier List`:document.title;
+  if(navigator.share&&matchMedia('(pointer:coarse)').matches){navigator.share({title,url}).catch(()=>{});return;}
+  const done=()=>{const t=document.createElement('div');t.className='toast';t.textContent='Link copied';document.body.appendChild(t);setTimeout(()=>t.remove(),1800);};
+  (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(done).catch(()=>{prompt('Copy this link',url);});}
 function ctrHTML(d){
   const hiv=HIGHV(),cs=(hiv?d.ctr_d:d.ctr)||d.ctr;if(!cs||!cs.length)return '';
   const inRole=c=>DATA[role].some(x=>x.c===c);
@@ -657,7 +812,7 @@ function renderGrade(){
   const sx=v=>(Math.max(-.2,Math.min(1,v))+.2)/1.2*100;
   $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Win rates vs OP.GG</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));const s=(v<0?"−":"")+Math.abs(v).toFixed(2);return e>78?`<em class="in" style="right:${100-e}%">${s}</em>`:`<em style="left:${e}%">${s}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--A')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
 }
-function renderBest(){
+function renderBest(){if(!$('best'))return;
   const tr={Z:0,S:1,A:2,B:3,C:4,D:5,P:6};
   $('best').innerHTML='<h2>Best pick per role (Overall)</h2>'+ROLES.map(([r,n])=>{const b=META.best&&META.best[r];const d=b?{c:b[0],t:b[1],score:b[2]}:CUR[r].filter(x=>x.t!=='P').sort((a,b)=>(tr[a.t]-tr[b.t])||(b.score-a.score))[0];return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="br">${n}</span><span class="bn">${pic(d.c,'pic sm')}${d.c}</span><span class="bs">${fmt(d.score)}</span><span class="tg" style="background:var(${colT(d.t)})">${d.t}</span></button>`;}).join('');
 }
@@ -674,7 +829,7 @@ function render(){
 function select(c,open){pick=c;try{history.replaceState(null,'',location.pathname+location.search+'#'+slug(c));}catch(e){}document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===pick));document.querySelectorAll('.tv tbody tr').forEach(r=>r.classList.toggle('on',r.dataset.c===pick));renderPanel();drawMap();if(open)openPanel(true);}
 function toggleGuide(o){const g=$('guide');o=o??g.hidden;g.hidden=!o;$('gbtn').setAttribute('aria-expanded',o);}
 let lastMain='score';
-function setLens(l){if(l==='score'||l==='hi'){lastMain=l;try{localStorage.setItem('tl-lens',l);}catch(e){}}if(sortK===lens||sortK==='score'||sortK==='hi'||DSP.some(([x])=>x===sortK))sortK=l;lens=l;render();}
+function setLens(l){if(l==='score'||l==='hi'){lastMain=l;try{localStorage.setItem('tl-lens',l);}catch(e){}}if(sortK===lens||sortK==='score'||sortK==='hi'||DSP.some(([x])=>x===sortK))sortK=l;lens=l;flipRender(render);}
 function search(){
   q=$('q').value.trim().toLowerCase();
   if(q&&!ARCH&&CUR._meta.part)ensureFull().then(()=>{if($('q').value.trim())search();});
@@ -688,6 +843,8 @@ document.addEventListener('click',e=>{
   if(PAGE==='method')return;
   const t=e.target;
   const st=t.closest('[data-star]');if(st){toggleMine(st.dataset.star);return;}
+  const sh=t.closest('[data-share]');if(sh){share(sh.dataset.share);return;}
+  if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}
   const r=t.closest('[data-r]'),l=t.closest('[data-l]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
@@ -699,6 +856,7 @@ document.addEventListener('click',e=>{
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
+  if(t.id==='sincex'){$('since').hidden=true;return;}
   if(!t.closest('.search'))$('res').style.display='none';
   if(!t.closest('#bar'))toggleGuide(false);
 });
@@ -721,10 +879,14 @@ async function setPatch(p){
   render();
 }
 const isRole=h=>ROLES.some(([k])=>k===h);
-const roleFromPath=()=>{const m=location.pathname.match(/\/(top|jungle|mid|adc|support)\/?$/);return m?m[1]:null;};
+const roleFromPath=()=>{const m=location.pathname.match(/\/(top|jungle|mid|adc|support)\/(?:[a-z0-9]+\/?)?$/);return m?m[1]:null;};
 const champFromHash=()=>{const h=decodeURIComponent(location.hash.slice(1)).toLowerCase();const d=DATA[role].find(x=>slug(x.c)===h);return d?d.c:null;};
-function navRole(r,champ){role=r;pick=champ||null;const url=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');try{history.pushState(null,'',url);}catch(e){try{history.replaceState(null,'','#'+(champ?slug(champ):r));}catch(e2){}}render();}
-function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])fromURL();});return;}pick=champFromHash()||pick;render();}
+function navRole(r,champ){try{localStorage.setItem('tl-role',r);}catch(e){}
+  if(PAGE==='champ'){location.href=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');return;}
+  role=r;pick=champ||null;
+  if(PAGE==='home'){try{history.replaceState(null,'',SITE+location.search+'#'+(champ?slug(champ):r));}catch(e){}render();return;}
+  const url=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');try{history.pushState(null,'',url);}catch(e){try{history.replaceState(null,'','#'+(champ?slug(champ):r));}catch(e2){}}render();}
+function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])fromURL();});return;}pick=champFromHash()||(PAGE==='champ'&&INIT_CHAMP?INIT_CHAMP:pick);if(PAGE!=='home')try{localStorage.setItem('tl-role',role);}catch(e){}render();}
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
@@ -734,12 +896,14 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>drawMap()).observe($('fig'));
-$('legend').innerHTML=`<span class="ticks" aria-hidden="true">${ticks({g:1.6,euw:2.2,kr:1.2,na:-.8,dia:1.4,m:2.4})}</span><span>Bars: Global, EUW, KR, NA, Diamond+, Master+. <u class="lowdemo">Dotted</u> score = few games.</span>`;
+$('legend').innerHTML=`<span><u class="lowdemo">Dotted</u> score = few games. <span class="flag trap">trap</span> = picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 renderBest();
 if(!['score','hi'].includes(lens))lens='score';
 role=INIT_ROLE;
+if(PAGE==='home'){try{const r=localStorage.getItem('tl-role');if(r&&isRole(r))role=r;}catch(e){}}
 fromURL();
+sinceVisit();
 loadPatches();
 setTimeout(()=>('requestIdleCallback' in window?requestIdleCallback:setTimeout)(()=>ensureFull()),1500);
 }
