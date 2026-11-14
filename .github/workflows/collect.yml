@@ -1,0 +1,32 @@
+name: Collect Riot matches
+on:
+  workflow_dispatch:
+    inputs:
+      minutes: { description: 'Minutes to collect', default: '40' }
+  push:
+    paths: ['pipeline/riot/run.txt']
+permissions:
+  contents: write
+concurrency: repo-writes
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Collect
+        env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+        run: python pipeline/riot/collect.py --minutes "${{ github.event.inputs.minutes || '40' }}" --regions euw1,kr
+      - name: Aggregate
+        run: python pipeline/riot/aggregate.py
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pipeline/data/riot
+          git diff --cached --quiet && exit 0
+          git commit -m "Riot API matches"
+          git pull --rebase && git push

@@ -1,0 +1,25 @@
+name: Champion portraits
+on:
+  workflow_dispatch:
+  push:
+    paths: ['pipeline/riot/icons.txt']
+permissions:
+  contents: write
+concurrency: repo-writes
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pillow
+      - run: python pipeline/scripts/icons.py
+      - name: Commit portraits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/img/champ pipeline/data/ddragon_champions.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Champion portraits from Data Dragon"
+          git pull --rebase && git push
