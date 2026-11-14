@@ -95,6 +95,20 @@ for role in ROLES:
     add('m_op', opgg('opgg_global_m', role), 'OP.GG Master+'); add('d_op', opgg('opgg_global_d', role), 'OP.GG Diamond+')
     add('euwd', opgg('opgg_euw_d', role), 'OP.GG EUW Diamond+'); add('euwm', opgg('opgg_euw_m', role), 'OP.GG EUW Master+')
     add('prev', opgg('opgg_global_e', role, P['prev_patch_code']), 'OP.GG Global E+ prev')
+    # last patch as the starting point for champions this patch did not change (Global Emerald+ only):
+    # prior = last patch's shrunk value, prior variance = true patch-to-patch change + last patch's own uncertainty
+    if 'prev' in comp:
+        g, pv = comp['g'], comp['prev']
+        same = [c for c in g.index if c in pv.index and c not in P['changed_this_patch']]
+        big = [c for c in same if g.loc[c, 'n'] >= 1000 and pv.loc[c, 'n'] >= 1000]
+        if len(big) >= 8:
+            ch = g.loc[big, 'raw'] - pv.loc[big, 'raw']
+            sc2 = max(0.03, float((ch ** 2).mean() - (2500 / g.loc[big, 'n']).mean() - (2500 / pv.loc[big, 'n']).mean()))
+            meta_tau[f'patch change|{role}'] = round(math.sqrt(sc2), 2)
+            for c in same:
+                v = 2500 / g.loc[c, 'n']; mu = pv.loc[c, 'sh']; pvar = sc2 + pv.loc[c, 'sd'] ** 2
+                post = (g.loc[c, 'raw'] / v + mu / pvar) / (1 / v + 1 / pvar)
+                g.loc[c, 'sh'] = post; g.loc[c, 'sd'] = math.sqrt(1 / (1 / v + 1 / pvar))
     dref = comp['d_op']
     # third-party Diamond+/Master+ sites (deltas against their own role mean; counts from the site or OP.GG Diamond+)
     for (site, rk), g in SITE[SITE.role == role].groupby(['site', 'rank']):

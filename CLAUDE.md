@@ -10,7 +10,17 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `pipeline/template.html` : the page (HTML, CSS, JS, all texts). Data goes in at `__DATA__`.
 - `pipeline/tiers.json` : the data for the current patch. Source of truth for what the site shows.
 - `pipeline/assets/mark.svg` : the logo (tier-row icon), used for favicon, brand mark and og.png.
-- `pipeline/build.py` : `python3 pipeline/build.py` writes `public/index.html` from template + tiers.json.
+- `pipeline/build.py` : `python3 pipeline/build.py` builds every page from template + tiers.json: `public/index.html`,
+  one page per role (`public/<role>/index.html`, own title, description and link preview), `public/method/` (site
+  grades, method, sources), `404.html`, `robots.txt`, `sitemap.xml`, and the patch archive in `public/data/`.
+  Template blocks: `<!--B-->` only on tier list pages, `<!--M-->` only on the method page. Placeholders `__ROOT__`,
+  `__PAGE__`, `__ROLE__`, `__TITLE__`, `__DESC__`, `__URL__`, `__OGIMG__`, `__PATCH__` are filled per page.
+- URLs: `/mid/` is the mid page, `#katarina` selects a champion, `?patch=26.21` opens an archived patch. Old `/#mid`
+  links still work.
+- Patch archive: `public/data/<patch>.json` per patch and `patches.json` (newest 6). build.py always writes the
+  current patch in full, so when a new patch comes in, the old file simply stays as the archive. Do not delete them.
+  `pipeline/archive_limited.py <patch> <code>` makes a reduced Global-only archive from `data/prev/` (used for 26.21,
+  because OP.GG only keeps the current and the previous patch).
 - `pipeline/data`, `pipeline/data2` : raw numbers read from the stat sites for the current patch.
 - `pipeline/update.py` : the whole method, raw files to tiers.json in one run (`python3 pipeline/update.py`).
   Prints a backtest (last patch vs this patch for unchanged champions), fitted spreads and the tiers.
@@ -54,8 +64,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.
    Rewrite notes that no longer match the numbers.
    Writing rules from Marvin: blunt, no em dashes, must not sound AI-written, explain jargon.
-5. `python3 pipeline/build.py`, then `python3 pipeline/scripts/assets.py` (favicon, apple-touch-icon and the
-   og.png link preview with the best pick per role; it reads the patch and date from the template pills). Then check with playwright (pipeline/scripts/shot3.py, ovf.py): no JS errors,
+5. `python3 pipeline/build.py`, then `python3 pipeline/scripts/assets.py` (favicon, apple-touch-icon, og.png and
+   og-<role>.png link previews with portraits; it reads the patch and date from the template pills). Then check with playwright over a local server (`cd public && python3 -m http.server`; role paths and the
+   patch archive need http, not file://): no JS errors,
    no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.
 

@@ -14,26 +14,37 @@ data=json.load(open('tiers.json',encoding='utf-8'))
 TR={'Z':0,'S':1,'A':2,'B':3,'C':4,'D':5,'P':6}
 COL={'Z':'#ff4fbf','S':'#ff6b6b','A':'#ff9f43','B':'#ffd23f','C':'#a6dc5c','D':'#6db3ff','P':'#b99dff'}
 ROLES=[('top','Top'),('jungle','Jungle'),('mid','Mid'),('adc','ADC'),('support','Support')]
+SL=lambda c: re.sub(r'[^a-z0-9]','',c.lower())
+IMG=lambda c: f"file://{PUB}/img/champ/{SL(c)}.webp"
+def sc(v): return ('+' if v>0 else '\u2212' if v<0 else '')+f"{abs(v):.1f}"
 rows=''
 for r,n in ROLES:
     d=sorted([x for x in data[r] if x['t']!='P'],key=lambda x:(TR[x['t']],-x['score']))[0]
-    s=('+' if d['score']>0 else '−' if d['score']<0 else '')+f"{abs(d['score']):.1f}"
-    rows+=f'<div class="r"><span class="rl">{n}</span><span class="cn">{d["c"]}</span><span class="sc">{s}</span><span class="tg" style="background:{COL[d["t"]]}">{d["t"]}</span></div>'
-fonts=''.join(f"@font-face{{font-family:'{fam}';font-weight:{w};src:url(file://{PUB}/fonts/{f}-latin-{w}-normal.woff2)}}" for fam,f,ws in [('Inter','inter',(400,500,600,700)),('Barlow Condensed','barlow-condensed',(600,700,800))] for w in ws)
-og=f'''<html><head><style>{fonts}
-body{{margin:0;width:1200px;height:630px;background:#0f1013;color:#ededf0;font-family:Inter;display:grid;grid-template-columns:1fr 470px;gap:56px;padding:64px 72px;box-sizing:border-box}}
-.b{{display:flex;align-items:center;gap:14px;font:800 34px 'Barlow Condensed'}} .b svg{{width:48px;height:48px}}
-h1{{font:800 104px/0.95 'Barlow Condensed';margin:46px 0 18px;letter-spacing:-1px}}
-p{{font-size:25px;line-height:1.4;color:#9da1aa;margin:0}} .u{{margin-top:30px;font-size:20px;color:#9da1aa}}
-.card{{background:#17191e;border:1px solid #272a31;border-radius:22px;padding:22px 26px;align-self:center}}
-.card h2{{font:800 30px 'Barlow Condensed';margin:0 0 6px}}
-.r{{display:grid;grid-template-columns:96px 1fr auto 46px;gap:14px;align-items:center;padding:13px 0;border-top:1px solid #272a31}} .r:first-of-type{{border-top:0}}
-.rl{{color:#9da1aa;font-size:20px}} .cn{{font:700 32px 'Barlow Condensed'}} .sc{{color:#9da1aa;font-size:20px}}
-.tg{{font:800 24px 'Barlow Condensed';color:#121316;border-radius:7px;text-align:center;padding:3px 0}}
-</style></head><body><div><div class="b">{mark}LoL Tier List</div><h1>Patch {patch} tier list</h1>
+    rows+=f'<div class="r"><span class="rl">{n}</span><span class="cn"><img src="{IMG(d["c"])}">{d["c"]}</span><span class="sc">{sc(d["score"])}</span><span class="tg" style="background:{COL[d["t"]]}">{d["t"]}</span></div>'
+fonts=''.join(f"@font-face{{font-family:'{fam}';font-weight:{w};src:url(file://{PUB}/fonts/{f}-latin-{w}-normal.woff2)}}" for fam,f,ws in [('Inter','inter',(400,500,600,700,800)),('Barlow Condensed','barlow-condensed',(600,700,800))] for w in ws)
+CSS=f"""{fonts}
+body{{margin:0;width:1200px;height:630px;background:radial-gradient(900px 500px at 85% 0%,rgba(255,79,191,.16),transparent 60%),#0b0c0f;color:#eceef2;font-family:Inter;box-sizing:border-box;padding:60px 68px}}
+.b{{display:flex;align-items:center;gap:14px;font:800 30px Inter;letter-spacing:-.02em}} .b svg{{width:46px;height:46px}}
+h1{{font:800 86px/1 Inter;letter-spacing:-.04em;margin:40px 0 16px}}
+p{{font-size:24px;line-height:1.4;color:#959cab;margin:0}} .u{{margin-top:26px;font-size:19px;color:#959cab}}
+.card{{background:#14161b;border:1px solid #252830;border-radius:24px;padding:20px 24px}}
+.r{{display:grid;grid-template-columns:90px 1fr auto 44px;gap:14px;align-items:center;padding:11px 0;border-top:1px solid #252830}} .r:first-of-type{{border-top:0}}
+.rl{{color:#959cab;font-size:19px}} .cn{{display:flex;align-items:center;gap:12px;font:700 27px Inter;letter-spacing:-.02em}} .cn img{{width:42px;height:42px;border-radius:11px}}
+.sc{{color:#959cab;font-size:19px;font-weight:600}}
+.tg{{font:800 24px 'Barlow Condensed';color:#14151a;border-radius:8px;text-align:center;padding:4px 0}}
+.grid{{display:grid;grid-template-columns:1fr 1fr;gap:12px}} .c{{display:flex;align-items:center;gap:14px;background:#14161b;border:1px solid #252830;border-radius:18px;padding:12px 16px}}
+.c img{{width:54px;height:54px;border-radius:13px}} .c b{{font:700 26px Inter;letter-spacing:-.02em;flex:1}} .c span.s{{color:#959cab;font-size:19px;font-weight:600}}"""
+og=f'''<html><head><style>{CSS}
+body{{display:grid;grid-template-columns:1fr 480px;gap:52px}}</style></head><body><div><div class="b">{mark}LoL Tier List</div><h1>Patch {patch}<br>tier list</h1>
 <p>Every role, built from nine stat sites. Win rate above the role average, corrected for sample size and one-tricks.</p><div class="u">Updated {upd} &middot; lol-tierlist.pages.dev</div></div>
-<div class="card"><h2>Best pick per role</h2>{rows}</div></body></html>'''
+<div class="card" style="align-self:center"><div style="font:700 17px Inter;color:#959cab;margin-bottom:4px">Best pick per role</div>{rows}</div></body></html>'''
 open('/tmp/og.html','w',encoding='utf-8').write(og)
+ROLEPAGES={}
+for r,n in ROLES:
+    L=sorted([x for x in data[r] if x['t']!='P'],key=lambda x:(TR[x['t']],-x['score']))[:6]
+    cells=''.join(f'<div class="c"><img src="{IMG(x["c"])}"><b>{x["c"]}</b><span class="s">{sc(x["score"])}</span><span class="tg" style="background:{COL[x["t"]]};width:40px">{x["t"]}</span></div>' for x in L)
+    ROLEPAGES[r]=f'''<html><head><style>{CSS}</style></head><body><div style="display:flex;justify-content:space-between;align-items:center"><div class="b">{mark}LoL Tier List</div><div style="font-size:19px;color:#959cab">Patch {patch} &middot; updated {upd}</div></div>
+<h1 style="font-size:72px;margin:34px 0 28px">{n} tier list</h1><div class="grid">{cells}</div></body></html>'''
 FULL='<svg style="display:block;width:100vw;height:100vh" '
 icon='<html><body style="margin:0;background:transparent">'+mark.replace('<svg ',FULL)+'</body></html>'
 open('/tmp/icon.html','w').write(icon)
@@ -45,6 +56,10 @@ async def main():
         pg=await b.new_page(viewport={'width':1200,'height':630})
         await pg.goto('file:///tmp/og.html'); await pg.wait_for_timeout(400)
         await pg.screenshot(path=f'{PUB}/og.png')
+        for r,h in ROLEPAGES.items():
+            open('/tmp/og_r.html','w',encoding='utf-8').write(h)
+            await pg.goto('file:///tmp/og_r.html'); await pg.wait_for_timeout(300)
+            await pg.screenshot(path=f'{PUB}/og-{r}.png')
         pg=await b.new_page(viewport={'width':180,'height':180})
         await pg.goto('file:///tmp/touch.html'); await pg.screenshot(path=f'{PUB}/apple-touch-icon.png')
         pngs=[]
