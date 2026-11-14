@@ -550,6 +550,14 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .cc{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:7px;row-gap:3px;align-items:center;text-align:left;border-radius:10px;padding:7px 9px;font-size:13px;min-width:0}
 .cc .pic.xs{margin:0;width:20px;height:20px}
 .cc.good small{color:var(--pos)}
+.gl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:4px 0 6px}
+.glc{display:grid;grid-template-rows:auto 46px auto;justify-items:center;row-gap:4px;font-size:11.5px;color:var(--mut)}
+.glv{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;font-size:12.5px}.glv.lowdemo{color:var(--faint)}
+.glb{position:relative;width:100%;height:46px;border-radius:9px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.glb::before{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:1px dashed color-mix(in srgb,var(--ink) 25%,transparent)}
+.glb i{position:absolute;left:30%;right:30%;border-radius:4px;min-height:2px}.glb i.up{bottom:50%;background:var(--pos)}.glb i.dn{top:50%;background:var(--neg)}
+.gll{white-space:nowrap}
+.glt{margin:2px 0 14px;font-size:13px;color:var(--mut)}
 .bld{display:grid;margin:2px 0 6px;border-radius:12px;background:color-mix(in srgb,var(--ink) 3.5%,transparent)}
 .brow{border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}.brow:first-child{border-top:0}
 .brow,.brow>summary{display:grid;grid-template-columns:46px auto minmax(0,1fr) auto 14px;align-items:center;column-gap:10px;font-size:13px}
@@ -899,7 +907,7 @@ const fmt=v=>{if(v==null)return 'n/a';const r=Math.round(v*10)/10;return (r>0?'+
 const colT=t=>{t=(t||'').replace('+','');return {Z:'--Z',S:'--S',A:'--A',B:'--B',C:'--C',D:'--D',P:'--P'}[t]||'--E';};
 const narrow=()=>matchMedia('(max-width:980px)').matches;
 let role='top',rank='e',reg='all',pick=null,q='',mode='tiers',sortK='cur',sortD=-1;
-try{const s=localStorage.getItem('tl-mode');if(s)mode=s;}catch(e){}
+try{const s=localStorage.getItem('tl-mode');if(s==='tiers'||s==='table')mode=s;}catch(e){}   // the chart is never remembered: the list is the page
 try{const s=localStorage.getItem('tl-view');if(s){const [a,b]=s.split('|');if(RN[a])rank=a;if(GN[b])reg=b;}else if(localStorage.getItem('tl-lens')==='hi')rank='d';}catch(e){}
 // every view (rank x region) is scored the same way; older limited archives only have Emerald+, all regions
 const R=()=>LIM()?'e':rank,G=()=>LIM()?'all':reg;
@@ -1029,7 +1037,7 @@ function renderPanel(){if(!DATA[role])return;
   ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap">Every rank and region. Tap one to show that list.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
   ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.${nlink(META.next.patch,d.c)}</p>`:''}
-  ${buildHTML(d)}${ctrHTML(d)}
+  ${glHTML(d)}${buildHTML(d)}${ctrHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+:</span>${sites}</div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
   if(P0.dataset.key===key&&P0.firstElementChild){const t=document.createElement('template');t.innerHTML=PH;morph(P0.firstElementChild,t.content.firstElementChild);}
@@ -1084,6 +1092,13 @@ const CMIN=150;
 // OP.GG does not say when players take which option, so nothing here says "take X against Y".
 const LK=()=>META.lk||{i:{},s:{},r:{}};
 const bimg=(kind,id,cl='')=>{const L=LK(),nm=kind==='item'?L.i[id]:kind==='sum'?(L.s[id]||[])[0]:(L.r[id]||[])[0];return `<img class="${cl}" src="${SITE}img/${kind}/${id}.webp" alt="${nm||''}" title="${nm||''}" width="28" height="28" loading="lazy">`;};
+// win rate by game length (OP.GG trends, Global Emerald+): each bucket against the champion's own win rate. Bucket sizes
+// are estimates (OP.GG gives none), so a value is dotted when its gap could be luck. The sentence only speaks when short
+// and long games clearly differ (update.py: 2+ points and beyond sampling noise).
+function glHTML(d){const g=d.gl;if(!g||ARCH)return '';const LB={0:'Under 25',25:'25-30',30:'30-35',35:'35-40',40:'40+'};
+  const col=([ln,r,n,cl])=>{const dv=r-g.w,h=Math.min(22,Math.abs(dv)*3.6);return `<div class="glc" title="${LB[ln]} min: ${r.toFixed(1)}% win in about ${kfmt(n)} games${cl?'':', too few to be sure it differs'}"><span class="glv${cl?'':' lowdemo'}">${r.toFixed(1)}</span><span class="glb"><i class="${dv>=0?'up':'dn'}" style="height:${h.toFixed(1)}px"></i></span><span class="gll">${LB[ln]}</span></div>`;};
+  const v=g.v==='late'?`Wins more the longer the game goes: ${g.d.toFixed(1)} points better over 35 minutes than under 25.`:g.v==='early'?`Wins more in short games: ${Math.abs(g.d).toFixed(1)} points better under 25 minutes than over 35.`:'About the same at every game length.';
+  return `<div class="caph"><p class="cap">Game length <span class="mu">OP.GG Emerald+, win % by minutes, line = ${d.c}'s usual ${g.w.toFixed(1)}%</span></p></div><div class="gl">${g.b.map(col).join('')}</div><p class="glt">${v}</p>`;}
 // build card: one short row per part (spells, runes, skills, start, core, boots) with OP.GG's most common pick and its share
 // of games. Tapping a row opens the other options: share, win rate (dotted when within sampling noise of the usual pick),
 // and the matchups where players switch to that option (OP.GG matchup builds, d.bd.vs). Nothing here says what to do;
@@ -1105,7 +1120,8 @@ function buildHTML(d){const b=d.bd;if(!b||ARCH)return '';const L=LK(),chg=new Se
   const part=([lab,opts,ic,nm,sh,wn,gm,key])=>{if(!opts||!opts.length)return '';const o=opts[0],ref=[wn(o),gm(o)];
     const head=`<span class="blab">${lab}</span><span class="bic">${ic(o)}</span><span class="bnm">${nm(o)}</span><span class="bsh">${pct(sh(o))}</span>`;
     if(opts.length<2)return `<div class="brow">${head}<span class="bch"></span></div>`;
-    const alt=opts.slice(1).map(x=>{const weak=weakVs(wn(x),gm(x),ref),f=faces(key(x));
+    const seen=new Set([key(o)]);
+    const alt=opts.slice(1).map(x=>{const weak=weakVs(wn(x),gm(x),ref),f=seen.has(key(x))?'':faces(key(x));seen.add(key(x));
       return `<div class="balt"><span class="bic">${ic(x)}</span><span class="bnm">${nm(x)}</span><span class="bst">${pct(sh(x))} · <span class="${weak?'wk':''}"${weak?' title="Too few games to say it wins more or less than the usual pick"':''}>${wn(x).toFixed(1)}% win</span></span>${f?`<span class="bsw">${f}</span>`:''}</div>`;}).join('');
     return `<details class="brow sm-d"><summary>${head}<span class="bch" aria-hidden="true"></span></summary><div class="dc"><div class="bwin">${nm(o)}: ${wn(o).toFixed(1)}% win${lab==='Core'||lab==='Boots'?'. Item win rates run high, whoever finishes items is often ahead already.':''}</div>${alt}</div></details>`;};
   const sk=b.sk?`<div class="brow"><span class="blab">Skills</span><span class="bic">${b.sk[0].split('').map(ab).join('')}</span><span class="bnm">${b.sk[0].split('').join(' > ')}</span><span class="bsh" title="Levels 1 to 3">start ${b.sk[1].split('').join(' ')}</span><span class="bch"></span></div>`:'';
@@ -1244,13 +1260,13 @@ document.addEventListener('click',e=>{
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
   if(r){navRole(r.dataset.r);return;}
-  if(t.closest('[data-go]')){e.preventDefault();$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
   if(t.closest('#nxmore')){const x=$('next'),all=!x.classList.contains('all'),b=$('nxmore');x.classList.toggle('all',all);b.setAttribute('aria-expanded',all);b.textContent=all?'Show fewer':`Show all ${b.dataset.n}`;return;}
   if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
-  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode!=='chart')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}

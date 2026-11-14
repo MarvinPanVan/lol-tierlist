@@ -123,7 +123,9 @@ def switches(role, c, kind, key, base):
     V = VSB.get(f'{role}|{c}') or {}
     up, rest = [], []
     for opp, m in V.items():
-        L = {(','.join(map(str, o)) if isinstance(o, list) else str(o)): sh for o, sh in m.get(kind, [])}
+        L = {}
+        for o, sh in m.get(kind, []):
+            k_ = ','.join(map(str, o)) if isinstance(o, list) else str(o); L[k_] = L.get(k_, 0) + (sh or 0)
         sh, n = L.get(key), m.get('n') or 0
         if sh is None or not n: rest.append(opp); continue
         d, p0 = sh - base, max(base, 1) / 100
@@ -138,10 +140,34 @@ def switches(role, c, kind, key, base):
                 sc = 1 - sum(t in ctypes(o) for o in rest) / len(rest)
                 if sc >= .5 and sc > best: best, typ = sc, t
     return [TYPE_NAME.get(typ), [[nm(o), round(sh, 1), n] for o, sh, n, _ in up[:2]]]
+# OP.GG runes page: up to 5 rune pages (the build page only shows 2), same format as the build page's
+RNP = json.load(open('data/opgg_rune_pages.json', encoding='utf-8')) if os.path.exists('data/opgg_rune_pages.json') else {}
+# OP.GG trends page: win rate by game length, buckets under 25, 25-30, 30-35, 35-40 and 40+ minutes. OP.GG gives no game
+# counts per bucket, so they are estimated from the game lengths in our own Riot matches (Diamond+, remakes left out).
+GLEN = json.load(open('data/opgg_game_length.json', encoding='utf-8')) if os.path.exists('data/opgg_game_length.json') else {}
+def _gl_shares():
+    import glob
+    d = [json.loads(l)['d'] for f in glob.glob('data/riot/matches_*.jsonl') for l in open(f, encoding='utf-8')]
+    d = [x / 60 for x in d if x >= 900]
+    if len(d) < 500: return [.38, .33, .21, .06, .02]
+    b = [0] * 5
+    for m in d: b[0 if m < 25 else 1 if m < 30 else 2 if m < 35 else 3 if m < 40 else 4] += 1
+    return [x / len(d) for x in b]
+GL_SHARE = _gl_shares()
+def game_length(role, c, n, win):
+    v = GLEN.get(f'{role}|{c}')
+    if not v or len(v) != 5 or not n or win is None: return None
+    rows = [[ln, round(r, 1), round(n * sh), 1 if abs(r - win) >= 1.64 * math.sqrt(2500 / (n * sh)) else 0] for (ln, r), sh in zip(v, GL_SHARE)]
+    # short games (under 25) against long ones (35+, weighted by how many games they have)
+    ls = GL_SHARE[3] + GL_SHARE[4]; late = (v[3][1] * GL_SHARE[3] + v[4][1] * GL_SHARE[4]) / ls; d = late - v[0][1]
+    lim = max(2, 1.64 * math.sqrt(2500 / (n * GL_SHARE[0]) + 2500 / (n * ls)))
+    return {'b': rows, 'v': 'late' if d >= lim else 'early' if -d >= lim else 'flat', 'd': round(d, 1), 'w': round(win, 1)}
 def build(role, c):
     v = BST.get(f'{role}|{c}')
     if not v: return None
     sp, rn, co, bo, st = v
+    rp = [x for x in (RNP.get(f'{role}|{c}') or []) if x[6] and x[6] >= 10 and x[7] is not None]
+    if rp: rn = rp
     tot = rn[0][5] / (rn[0][6] / 1000) if rn and rn[0][6] else None   # games of this champion in this role
     p = lambda x: round(x / 10, 1)
     b = {'sp': [[ids, p(pk), p(w), round(pk / 1000 * tot) if tot else None] for ids, pk, w in sp],
@@ -153,9 +179,13 @@ def build(role, c):
     for kind, opts, keyf in [('sp', b['sp'], lambda o: ','.join(map(str, o[0]))), ('rn', b['rn'], lambda o: str(o[0])),
                              ('bo', b['bo'], lambda o: str(o[0])), ('st', b['st'], lambda o: ','.join(map(str, o[0]))),
                              ('co', b['co'], lambda o: ','.join(map(str, o[0])))]:
-        for o in opts[1:]:
-            sw = switches(role, c, kind, keyf(o), o[6] if kind == 'rn' else o[1])
-            if sw: vs[f'{kind}:{keyf(o)}'] = sw
+        if not opts: continue
+        share = {}
+        for o in opts: share[keyf(o)] = share.get(keyf(o), 0) + (o[6] if kind == 'rn' else o[1])   # rune pages: per keystone
+        for k_ in share:
+            if k_ == keyf(opts[0]): continue
+            sw = switches(role, c, kind, k_, share[k_])
+            if sw: vs[f'{kind}:{k_}'] = sw
     if vs: b['vs'] = vs
     s = SKL.get(f'{role}|{c}')
     if s and s[0]:   # max order (OP.GG repeats it on some pages), first three levels, % of games with exactly this 15-level order
@@ -306,6 +336,7 @@ for role in ROLES:
         e['ctr'] = CTR['e'].get(role, {}).get(c); e['ctr_d'] = CTR['d'].get(role, {}).get(c)
         e['mu'] = matchups('e', role, c); e['mud'] = matchups('d', role, c)
         e['bd'] = build(role, c)
+        e['gl'] = game_length(role, c, val('g', c, 'n'), val('g', c, 'win'))
         res.append(e)
     out[role] = res
 
