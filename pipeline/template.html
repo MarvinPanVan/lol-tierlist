@@ -1005,7 +1005,7 @@ async function setPatch(p){
 const isRole=h=>ROLES.some(([k])=>k===h);
 const roleFromPath=()=>{const m=location.pathname.match(/\/(top|jungle|mid|adc|support)\/(?:[a-z0-9]+\/?)?$/);return m?m[1]:null;};
 const champFromHash=()=>{const h=decodeURIComponent(location.hash.slice(1)).toLowerCase();const d=DATA[role].find(x=>slug(x.c)===h);return d?d.c:null;};
-function navRole(r,champ){try{localStorage.setItem('tl-role',r);}catch(e){}
+function navRole(r,champ){
   if(PAGE==='champ'){location.href=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');return;}
   role=r;pick=champ||null;
   if(PAGE==='home'){try{history.replaceState(null,'',SITE+location.search+'#'+(champ?slug(champ):r));}catch(e){}render();return;}
@@ -1017,9 +1017,6 @@ function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h
     if(CUR._meta.part&&!ARCH){ensureFull().then(()=>{if(!CUR._meta.part)fromURL();else render();});return;}
     const want=decodeURIComponent(h).toLowerCase(),r=ROLES.map(([k])=>k).find(k=>(DATA[k]||[]).some(x=>slug(x.c)===want));if(r){role=r;c=champFromHash();}}
   pick=c||(PAGE==='champ'&&INIT_CHAMP?INIT_CHAMP:pick);
-  if(PAGE!=='home')try{localStorage.setItem('tl-role',role);}catch(e){}
-  // homepage opens on the role used last; put it in the address so the URL always matches the list you see
-  if(PAGE==='home'&&!h&&role!==INIT_ROLE)try{history.replaceState(null,'',location.pathname+location.search+'#'+role);}catch(e){}
   render();}
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
@@ -1033,7 +1030,8 @@ new ResizeObserver(()=>drawMap()).observe($('fig'));
 $('legend').innerHTML=`<span><u class="lowdemo">Dotted</u> score = few games. <span class="flag trap">trap</span> = picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
-if(PAGE==='home'){try{const r=localStorage.getItem('tl-role');if(r&&isRole(r))role=r;}catch(e){}}
+// the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.
+try{localStorage.removeItem('tl-role');}catch(e){}
 fromURL();
 sinceVisit();
 loadPatches();

@@ -26,8 +26,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
   build.py. The panel shows a small chart once 3 or more patches exist.
 - Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
-- Homepage = patch overview (data line, headline, role cards with each role's best pick, movers), then the list of
-  the role the visitor used last. Champion pages: `/mid/ahri/` for every listed champion (static header with art,
+- Homepage = patch overview (data line, headline, role cards with each role's best pick, movers), then the Top list.
+  `/` always opens like a first visit (the logo leads there); `/#adc` opens ADC, `/#xayah` finds Xayah's role. Champion pages: `/mid/ahri/` for every listed champion (static header with art,
   tiers, note; the list loads below). They embed no data and load `data/<patch>.json`.
 - Art: `public/img/tile/<slug>.webp` (square face crops) and `public/img/splash/<slug>.webp` (960x540), downloaded by
   the icons workflow (only missing files). In CSS custom properties use root paths (`/img/...`), because relative
