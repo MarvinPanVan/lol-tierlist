@@ -226,7 +226,8 @@ section,main,.board{scroll-margin-top:calc(var(--barh,98px) + 12px)}
 .fig .ax{fill:var(--faint)}
 .fig circle{cursor:pointer;transition:r .15s}
 .side h3{margin-top:4px}
-.nextc{margin-top:24px}.nextc[hidden]{display:none}.nextc .list{columns:2;column-gap:48px;margin:6px 0 0}.nextc .list li{break-inside:avoid}
+.below{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:24px;margin-top:24px}.below>[hidden]{display:none}.nextc .list{margin:6px 0 0}
+.mv{font-weight:600}.mv.up{color:var(--pos)}.mv.dn{color:var(--neg)}
 .side .cap{margin-bottom:6px}
 .list{margin:0 0 22px;padding:0;list-style:none}
 .list:last-child{margin-bottom:0}
@@ -305,7 +306,7 @@ body{transition:background-color .25s ease,color .25s ease}
 .x{display:block}
 .scrim.open{display:block;position:fixed;inset:0;background:rgba(10,12,16,.4);backdrop-filter:blur(2px);z-index:40;animation:fade .2s both}
 .split{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.theme{margin-left:auto}.bar select{flex:1 1 40%}.hero-band{padding-top:18px;padding-bottom:16px}.hero-band h1{font-size:26px;margin-bottom:12px}.hero-band .lede{display:none}.meta{margin-bottom:10px;font-size:12.5px;gap:2px 12px}.meta .nxp{display:none}.meta span+span::before{display:none}.nextc .list{columns:1}.guide{grid-template-columns:minmax(0,1fr)}.hintline{gap:8px 18px}.kv{flex-wrap:wrap}.kv>div,.kv>[data-tip]{flex:1 1 calc(50% - 4px)}.chip .pic{width:28px;height:28px;border-radius:8px}.best{grid-template-columns:repeat(5,160px);overflow-x:auto;scrollbar-width:none;margin:0 -2px}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%;max-width:none}#views,.guide{grid-column:1/-1}#ds{width:100%}.search kbd{display:none}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
+@media(max-width:640px){.theme{margin-left:auto}.bar select{flex:1 1 40%}.hero-band{padding-top:18px;padding-bottom:16px}.hero-band h1{font-size:26px;margin-bottom:12px}.hero-band .lede{display:none}.meta{margin-bottom:10px;font-size:12.5px;gap:2px 12px}.meta .nxp{display:none}.meta span+span::before{display:none}.guide{grid-template-columns:minmax(0,1fr)}.hintline{gap:8px 18px}.kv{flex-wrap:wrap}.kv>div,.kv>[data-tip]{flex:1 1 calc(50% - 4px)}.chip .pic{width:28px;height:28px;border-radius:8px}.best{grid-template-columns:repeat(5,160px);overflow-x:auto;scrollbar-width:none;margin:0 -2px}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%;max-width:none}#views,.guide{grid-column:1/-1}#ds{width:100%}.search kbd{display:none}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
 .bar .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#roles,.arch,.hintline{grid-column:1/-1}.bar select{width:100%}#hint{display:none}.legend{font-size:12px}
 .row{grid-template-columns:50px minmax(0,1fr)}.lab{font-size:30px}.lab small{font-size:9.5px}
 .chips{gap:6px;padding:8px}.chip{min-height:46px;padding:6px 9px 6px 6px;column-gap:8px}.chip .nm{font-size:14px}
@@ -393,7 +394,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 <ul class="list" id="traps"></ul>
 </div>
 </div>
-<div class="wrap card pad nextc" id="nextc"><h3 id="nexth">Changing next patch</h3><ul class="list" id="next"></ul></div>
+<div class="wrap below"><div class="card pad" id="movc"><h3 id="movh">Moved most since last patch</h3><p class="cap">Change in score, Global Emerald+. Tap one to open it.</p><ul class="list" id="movers"></ul></div><div class="card pad nextc" id="nextc"><h3 id="nexth">Changing next patch</h3><ul class="list" id="next"></ul></div></div>
 </section>
 
 <!--/B--><!--M--><header class="band hero-band"><div class="wrap"><p class="meta"><span>Patch 26.22</span><span>Updated 14 Nov 2026</span></p><h1>How the tier list is made</h1><p class="lede">Where the numbers come from, how they are combined into one score and tier, how far the big stat sites can be trusted, and what a tier list cannot tell you.</p></div></header>
@@ -485,16 +486,24 @@ let role='top',lens='score',pick=null,q='',mode='tiers',sortK='score',sortD=-1;
 try{const s=localStorage.getItem('tl-mode');if(s)mode=s;}catch(e){}
 try{const s=localStorage.getItem('tl-lens');if(s)lens=s;}catch(e){}
 const keyOf=()=>lens;
+const SK=()=>lens==='score'?'g':lens==='hi'?'dia':lens;
+const stat=(d,k=SK())=>{const x=d.st&&d.st[k];return x?{n:x[0],pick:x[1],ban:x[2],wr:x[3]}:k==='g'?{n:d.games,pick:d.pick,ban:d.ban,wr:d.wr}:null;};
+const LOWN=1500;
+const isLow=d=>{if(lens==='score')return d.se>=.8;const x=stat(d);return !x||x.n<LOWN;};
 function hiTier(d){return d.ht||null;}
 function tierOf(d){
   if(lens==='score')return d.t;
   if(lens==='hi')return hiTier(d);
   const v=d[lens];if(v==null)return null;
-  if(d.pick<1.5&&v>=.8)return 'P';
-  if(v>=2.5&&d.pick>=2)return 'Z';
+  const pk=(stat(d)||d).pick;
+  if(pk<1.5&&v>=.8)return 'P';
+  if(v>=2.5&&pk>=2)return 'Z';
   return v>=1.5?'S':v>=.8?'A':v>=.2?'B':v>=-.5?'C':'D';
 }
 const slug=c=>c.toLowerCase().replace(/[^a-z0-9]/g,'');
+const ALIAS={mf:'Miss Fortune',tf:'Twisted Fate',j4:'Jarvan IV',asol:'Aurelion Sol',ww:'Warwick',gp:'Gangplank',tk:'Tahm Kench',lb:'LeBlanc',ks:"K'Sante",xz:'Xin Zhao',yi:'Master Yi',mundo:'Dr. Mundo',morde:'Mordekaiser',nunu:'Nunu & Willump',renata:'Renata Glasc',kog:"Kog'Maw",kha:"Kha'Zix",cho:"Cho'Gath",vel:"Vel'Koz",bel:"Bel'Veth",rek:"Rek'Sai"};
+const hit=c=>{if(!q)return true;const k=slug(q);return !k||slug(c).includes(k)||ALIAS[k]===c||c.toLowerCase().includes(q);};
+const starts=c=>{const k=slug(q);return slug(c).startsWith(k)||ALIAS[k]===c;};
 const pic=(c,cl='pic')=>`<img class="${cl}" src="${IMGBASE}${slug(c)}.webp" alt="" width="64" height="64" loading="lazy" decoding="async" onerror="this.remove()">`;
 const LIM=()=>!!(ARCH&&ARCH.kind==='limited');
 function tri(d){if(d.tr==null||Math.abs(d.tr)<.6)return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'↑':'↓'}</span>`;}
@@ -513,18 +522,19 @@ function renderControls(){
 }
 function renderTable(){
   const list=DATA[role],k=keyOf();
-  const lim=LIM(),cols=[['c','Champion'],['t','Tier'],[k,lens==='score'?'Score':lens==='hi'?'High elo':'Value'],...(lim||lens==='hi'?[]:[['hi','High elo']]),...(lim?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games']];
+  const lim=LIM(),cols=[['c','Champion'],['t','Tier'],[k,lens==='score'?'Score':lens==='hi'?'High elo':'Value'],...(lim||lens==='hi'?[]:[['hi','High elo']]),...(lim?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games in '+DSN[SK()]]];
   const NA='<span class="mu">–</span>';
-  const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:d[c];
+  const SC={wr:'wr',pick:'pick',ban:'ban',games:'n'};
+  const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:d[c];
   const rows=list.filter(d=>tierOf(d)).slice().sort((a,b)=>{const x=val(a,sortK),y=val(b,sortK);if(typeof x==='string')return sortD*(x<y?-1:x>y?1:0);return sortD*((x??-999)-(y??-999));});
   const cell=(d,c)=>{const v=d[c];switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
     case 't':{const t=tierOf(d);return `<td><span class="tg" style="background:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
-    case 'wr':case 'pick':case 'ban':return `<td class="n">${v==null?NA:v.toFixed(c==='ban'?0:1)}</td>`;
-    case 'games':return `<td class="n">${v==null?NA:v.toLocaleString('en-US')}</td>`;
+    case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
+    case 'games':{const w=val(d,c);return `<td class="n${w!=null&&w<LOWN?' mu':''}">${w==null?NA:Math.round(w).toLocaleString('en-US')}</td>`;}
     case 'hi':return `<td class="n">${v==null?NA:`${fmt(v)} <span class="tg sm" style="background:var(${colT(d.ht)})">${d.ht||''}</span>`}</td>`;
     default:return `<td class="n"><b>${fmt(v)}</b>${c===k&&lens==='score'?` <span class="mu se">±${(d.se??0).toFixed(1)}</span>`:''}</td>`;}};
-  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>`<th><button type="button" data-sort="${c}" aria-sort="${sortK===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sortK===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${q&&!d.c.toLowerCase().includes(q)?' dim':''}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
+  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>`<th><button type="button" data-sort="${c}" aria-sort="${sortK===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sortK===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
   fitTable();
 }
 function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classList.remove('fit');if(!narrow()&&t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
@@ -532,7 +542,7 @@ const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
-const chipHTML=(d,k,tag)=>{const low=d.se>=.8;return `<button type="button" class="chip${q&&!d.c.toLowerCase().includes(q)?' dim':''}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${low?` title="Few games, could be off by ±${d.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span><span class="ticks" aria-hidden="true">${ticks(d)}</span></button>`;};
+const chipHTML=(d,k,tag)=>{const low=isLow(d),x=stat(d);return `<button type="button" class="chip${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${low?` title="${lens==='score'?`Few games, could be off by ±${d.se.toFixed(1)}`:`Only ${x?x.n.toLocaleString('en-US'):'a few'} games in ${DSN[SK()]}`}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(d[k])}</b></span><span class="ticks" aria-hidden="true">${ticks(d)}</span></button>`;};
 function renderBoard(){
   if(mode==='table'){renderTable();return;}
   const list=DATA[role],k=keyOf();
@@ -549,16 +559,16 @@ const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=c=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/build/${role}`;
 function renderPanel(){
   const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';return;}
-  const rn=ROLES.find(r=>r[0]===role)[1],ht=hiTier(d);
-  const hcell=k=>{const v=d[k];if(v==null)return `<td class="na">–</td>`;const a=Math.min(Math.abs(v),3)/3;return `<td data-l="${k}" class="${lens===k?'on':''}" title="${DSN[k]}: show the whole tier list from this dataset" style="--h:color-mix(in srgb,var(${v>=0?'--pos':'--neg'}) ${Math.round(6+a*44)}%,transparent)">${fmt(v)}</td>`;};
+  const rn=ROLES.find(r=>r[0]===role)[1],ht=hiTier(d),sx=stat(d)||{};
+  const hcell=k=>{const v=d[k];if(v==null)return `<td class="na">–</td>`;const a=Math.min(Math.abs(v),3)/3;return `<td data-l="${k}" class="${lens===k?'on':''}" title="${DSN[k]}: ${d.st&&d.st[k]?d.st[k][0].toLocaleString('en-US')+' games. ':''}Tap to rank everyone by it." style="--h:color-mix(in srgb,var(${v>=0?'--pos':'--neg'}) ${Math.round(6+a*44)}%,transparent)">${fmt(v)}</td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RK.map(r=>`<th>${r}</th>`).join('')}</tr></thead><tbody>${GRID.map(([n,...ks])=>`<tr><th>${n}</th>${ks.map(hcell).join('')}</tr>`).join('')}</tbody></table>`;
   const rows=DSP.map(([k,n])=>{const v=d[k];if(v==null)return '';const c=Math.max(-4,Math.min(4,v)),w=Math.abs(c)/4*50;return `<div class="r"><span>${n}</span><div class="trk"><div class="fill" style="left:${c<0?50-w:50}%;width:${w}%;background:var(${v<0?'--neg':'--pos'})"></div></div><span class="val">${fmt(v)}</span></div>`;}).join('');
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site">${k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site">Lolalytics, Emerald+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}</p>`;
   const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
-  $('panel').innerHTML=`<div class="pin"><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${d.games.toLocaleString('en-US')} games in Emerald+${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
+  $('panel').innerHTML=`<div class="pin"><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
   <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a></div>
-  <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong></div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${d.pick.toFixed(1)}%</strong></div><div><span>Ban</span><strong>${d.ban==null?'–':d.ban.toFixed(0)+'%'}</strong></div></div>
+  <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong></div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${LIM()?`<p class="cap">Win rate vs role average, Global Emerald+ only</p><div class="rows">${rows}</div>`:`<p class="cap">Win rate vs role average in points, by region and rank. Tap a cell to rank everyone by it.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
   ${tr}${d.nx?`<p class="nx ${d.nx}">${META.next.patch}: ${d.nxt}.</p>`:''}
@@ -568,12 +578,18 @@ function renderSide(){
   const list=DATA[role];
   $('traps').innerHTML=list.filter(d=>d.pick>=5&&d.score<=-.3).sort((a,b)=>a.score-b.score).map(d=>`<li><button type="button" data-c="${d.c}">${pic(d.c,'pic xs')}${d.c}</button><span>${d.pick.toFixed(1)}% pick, ${fmt(d.score)}</span></li>`).join('')||'<li><span>None this patch</span><span></span></li>';
   $('bans').innerHTML=list.filter(d=>d.score>0&&d.pick>=1.5).map(d=>[d,d.score*d.pick/(100-d.ban)]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([d])=>`<li><button type="button" data-c="${d.c}">${pic(d.c,'pic xs')}${d.c}</button><span>${fmt(d.score)}, ${d.pick.toFixed(1)}% pick, ${d.ban.toFixed(0)}% ban</span></li>`).join('');
+  const mv=list.filter(d=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b.tr-a.tr);
+  const mrow=d=>`<li><button type="button" data-c="${d.c}">${pic(d.c,'pic xs')}${d.c}</button><span class="mv ${d.tr>0?'up':'dn'}">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</span></li>`;
+  $('movers').innerHTML=[...mv.filter(d=>d.tr>0).slice(0,4),...mv.filter(d=>d.tr<0).slice(-4)].map(mrow).join('');
+  $('movh').textContent=`Moved most since ${META.prev_patch}`;
+  $('movc').hidden=!!ARCH||!mv.length;
   $('next').innerHTML=NEXT[role].map(([c,t,k])=>`<li><span>${c}</span><span style="color:var(${k==='buff'?'--pos':'--neg'})">${t}</span></li>`).join('');
 }
 function drawMap(){
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const k=lens==='score'||DSP.some(([x])=>x===lens)?(lens==='score'?'score':lens):'hi';
-  const list=DATA[role].filter(d=>d[k]!=null&&d.pick>0);
+  const P=d=>(stat(d)||d).pick;
+  const list=DATA[role].filter(d=>d[k]!=null&&P(d)>0);
   const m={l:58,r:16,t:18,b:40},small=W<520;
   const x=p=>m.l+(Math.log(Math.max(.4,Math.min(26,p)))-Math.log(.4))/(Math.log(26)-Math.log(.4))*(W-m.l-m.r);
   const ymin=-4,ymax=3.5,y=v=>m.t+(ymax-Math.max(ymin,Math.min(ymax,v)))/(ymax-ymin)*(H-m.t-m.b);
@@ -588,13 +604,13 @@ function drawMap(){
   g+=`<text class="q" x="${W-m.r-8}" y="${y(0)+20}" text-anchor="end">Popular, losing</text>`;
   g+=`<text class="q" x="${m.l+8}" y="${y(ymax)+18}">Strong, rarely picked</text>`;
   const boxes=[],lab=[];
-  const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||Math.abs(b[k])*Math.sqrt(b.pick)-Math.abs(a[k])*Math.sqrt(a.pick));
-  pri.forEach((d,i)=>{const cx=x(d.pick),cy=y(d[k]);const w=d.c.length*7+6;const bx=cx+8,by=cy-8;
+  const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||Math.abs(b[k])*Math.sqrt(P(b))-Math.abs(a[k])*Math.sqrt(P(a)));
+  pri.forEach((d,i)=>{const cx=x(P(d)),cy=y(d[k]);const w=d.c.length*7+6;const bx=cx+8,by=cy-8;
     if(cx+8+w>W-m.r)return;const lim=small?6:16;if(d.c!==pick&&lab.length>=lim)return;
     if(boxes.some(b=>bx<b[0]+b[2]&&bx+w>b[0]&&by<b[1]+16&&by+16>b[1]))return;boxes.push([bx,by,w]);lab.push(d.c);});
-  list.forEach(d=>{const t=tierOf(d)||'E',cx=x(d.pick),cy=y(d[k]),on=d.c===pick;
-    g+=`<circle cx="${cx}" cy="${cy}" r="${on?9:6}" fill="var(${colT(t)})" stroke="${on?'var(--ink)':'var(--card)'}" stroke-width="${on?2.5:1.5}" data-c="${d.c}"><title>${d.c} ${fmt(d[k])}, ${d.pick.toFixed(1)}% pick</title></circle>`;});
-  list.filter(d=>lab.includes(d.c)).forEach(d=>{g+=`<text x="${x(d.pick)+10}" y="${y(d[k])+4}" style="font-weight:${d.c===pick?700:500}">${d.c}</text>`;});
+  list.forEach(d=>{const t=tierOf(d)||'E',cx=x(P(d)),cy=y(d[k]),on=d.c===pick;
+    g+=`<circle cx="${cx}" cy="${cy}" r="${on?9:6}" fill="var(${colT(t)})" stroke="${on?'var(--ink)':'var(--card)'}" stroke-width="${on?2.5:1.5}" data-c="${d.c}"><title>${d.c} ${fmt(d[k])}, ${P(d).toFixed(1)}% pick</title></circle>`;});
+  list.filter(d=>lab.includes(d.c)).forEach(d=>{g+=`<text x="${x(P(d))+10}" y="${y(d[k])+4}" style="font-weight:${d.c===pick?700:500}">${d.c}</text>`;});
   s.innerHTML=g;
 }
 function renderGrade(){
@@ -620,8 +636,8 @@ let lastMain='score';
 function setLens(l){if(l==='score'||l==='hi')lastMain=l;if(sortK===lens||sortK==='score'||sortK==='hi'||DSP.some(([x])=>x===sortK))sortK=l;lens=l;try{localStorage.setItem('tl-lens',l);}catch(e){}render();}
 function search(){
   q=$('q').value.trim().toLowerCase();
-  const out=[];if(q)for(const [r,n] of ROLES)for(const d of DATA[r])if(d.c.toLowerCase().includes(q))out.push([r,n,d]);
-  out.sort((a,b)=>(a[2].c.toLowerCase().startsWith(q)?0:1)-(b[2].c.toLowerCase().startsWith(q)?0:1)||b[2].pick-a[2].pick);
+  const out=[];if(q)for(const [r,n] of ROLES)for(const d of DATA[r])if(hit(d.c))out.push([r,n,d]);
+  out.sort((a,b)=>(starts(a[2].c)?0:1)-(starts(b[2].c)?0:1)||b[2].pick-a[2].pick);
   $('res').innerHTML=out.slice(0,8).map(([r,n,d])=>{const t=tierOf(d)||d.t;return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="rc">${pic(d.c,'pic xs')}${d.c}<span class="rr">${n}</span></span><span class="tg" style="background:var(${colT(t)})">${t}</span></button>`;}).join('')||(q?'<button type="button" disabled>No match</button>':'');
   $('res').style.display=q?'block':'none';
   renderBoard();

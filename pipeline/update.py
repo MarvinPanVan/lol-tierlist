@@ -89,7 +89,7 @@ for role in ROLES:
         if d is None: return
         dl = deltas(d); t2 = fit_tau2(dl, d.n); s, sd = shrink(dl, d.n, t2)
         meta_tau[f'{label}|{role}'] = round(math.sqrt(t2), 2)
-        comp[key] = pd.DataFrame({'raw': dl, 'sh': s, 'sd': sd, 'n': d.n, 'pick': d.pick, 'ban': d.ban})
+        comp[key] = pd.DataFrame({'raw': dl, 'sh': s, 'sd': sd, 'n': d.n, 'pick': d.pick, 'ban': d.ban, 'win': d.win})
     add('g', base, 'OP.GG Global E+'); add('euw', opgg('opgg_euw_e', role), 'OP.GG EUW E+')
     add('kr', opgg('opgg_kr_e', role), 'OP.GG KR E+'); add('na', opgg('opgg_na_e', role), 'OP.GG NA E+')
     add('m_op', opgg('opgg_global_m', role), 'OP.GG Master+'); add('d_op', opgg('opgg_global_d', role), 'OP.GG Diamond+')
@@ -169,6 +169,15 @@ for role in ROLES:
         e['dia'] = None if D_raw is None else round(D_raw, 2)
         for k in ['euwd', 'euwm', 'krd', 'krm', 'nad', 'nam']:
             v = val(k, c, 'raw'); e[k] = None if v is None else round(v, 2)
+        # games, pick, ban and win rate per dataset, so the site can show the numbers of the view you are in
+        st = {}
+        for k, ck in [('g', 'g'), ('euw', 'euw'), ('kr', 'kr'), ('na', 'na'), ('dia', 'd_op'), ('m', 'm_op'), ('euwd', 'euwd'), ('euwm', 'euwm'),
+                      ('krd', 'krd'), ('krm', 'krm'), ('nad', 'nad'), ('nam', 'nam')]:
+            dd = comp.get(ck)
+            if dd is not None and c in dd.index:
+                r = dd.loc[c]
+                st[k] = [int(r.n), round(float(r.pick), 2), None if pd.isna(r.ban) else round(float(r.ban), 1), round(float(r.win), 2)]
+        e['st'] = st
         E_sh = avg([(val('euwd', c), 1), (val('euwm', c), 1)])
         pick_d = float(dref.loc[c, 'pick']) if c in dref.index else None
         e['pick_d'] = None if pick_d is None else round(pick_d, 2)
