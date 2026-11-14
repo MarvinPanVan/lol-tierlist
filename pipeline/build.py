@@ -132,7 +132,7 @@ def head_home(root):
     strong = strongest()
     lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
                  f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="background:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in strong[:3])
+                 f'<span><span class="tg" style="--T:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in strong[:3])
     nx = P.get('next', {})
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
@@ -335,7 +335,7 @@ def _roles(c, root, moves):   # where the champion stands now, every role it is 
                   f'{"↑" if e["tr"] > 0 else "↓"}{f1(abs(e["tr"])).lstrip("+")}</span>')
         off = e['pick'] < 1
         ch.append(f'<a class="pn-r{" pn-off" if off else ""}" href="{root}{r}/{slug(c)}/" style="--R:var(--R{r})" title="{RNAME[r]}: {e["t"]} tier, score {f1(e["score"])}, {fx(e["pick"])}% pick">'
-                  f'<span class="ri">{RICON[r]}</span>{RNAME[r]} <span class="tg sm" style="background:var(--{e["t"]})">{e["t"]}</span> <b>{f1(e["score"])}</b>{mv}</a>')
+                  f'<span class="ri">{RICON[r]}</span>{RNAME[r]} <span class="tg sm" style="--T:var(--{e["t"]})">{e["t"]}</span> <b>{f1(e["score"])}</b>{mv}</a>')
     return f'<div class="pn-rs">{"".join(ch)}</div>'
 def _effect(c):   # what happened since last patch in the champion's most played role, Global Emerald+ (live patch only)
     r, e = _main_role(c)
@@ -413,7 +413,7 @@ def notes_body(p, root):
     def ix(x, item=False):
         if item: return f'<li><a class="pn-ix" href="{root}patch/{p}/i-{slug(x["c"])}/">{_ipic(x, root)}<span class="pn-ixn">{E(x["c"])}</span></a></li>'
         r, e = _main_role(x['c'])
-        tg = f'<span class="tg sm" style="background:var(--{e["t"]})" title="{RNAME[r]}, now">{e["t"]}</span>' if e else ''
+        tg = f'<span class="tg sm" style="--T:var(--{e["t"]})" title="{RNAME[r]}, now">{e["t"]}</span>' if e else ''
         return f'<li><a class="pn-ix" href="{root}patch/{p}/{slug(x["c"])}/" data-pc="{E(x["c"])}"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="26" height="26"><span class="pn-ixn">{E(x["c"])}</span>{tg}</a></li>'
     idx = ''.join(f'<p class="pn-ih pn-{k}">{lab} <span>{len(xs)}</span></p><ul>{"".join(ix(x) for x in xs)}</ul>' for k, lab, xs in groups)
     if n.get('items'): idx += f'<p class="pn-ih">Items <span>{len(n["items"])}</span></p><ul>{"".join(ix(x, True) for x in n["items"])}</ul>'
@@ -503,7 +503,7 @@ for q, n in NOTES.items():
 # ---------- link preview pictures (1200x630): build.py describes each one as HTML, scripts/assets.py renders only the ones whose
 # HTML changed (hashes in data/og_hashes.json), so the repo does not grow with every build. Placeholders: __PUB__ (public/ on
 # disk), __FONTS__, __MARK__ (filled by assets.py).
-TCOL = {'Z': '#ff4fbf', 'S': '#ff6b6b', 'A': '#ff9f43', 'B': '#ffd23f', 'C': '#a6dc5c', 'D': '#6db3ff', 'P': '#b99dff'}
+TCOL = {'Z': '#f8ca65', 'S': '#f7ac72', 'A': '#c4b08f', 'B': '#9da5b0', 'C': '#8592a2', 'D': '#717e92', 'P': '#a798cb'}
 KCOL = {'buff': '#3fd17f', 'nerf': '#ff7a68'}
 OG_CSS = """__FONTS__
 *{box-sizing:border-box}body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0b0c0f;color:#eceef2;font-family:Inter;position:relative}

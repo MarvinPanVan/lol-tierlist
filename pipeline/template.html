@@ -35,7 +35,7 @@
 --sh1:0 1px 2px light-dark(rgba(16,24,40,.05),rgba(0,0,0,.4));
 --sh2:0 1px 2px light-dark(rgba(16,24,40,.04),rgba(0,0,0,.35)),0 10px 28px -12px light-dark(rgba(16,24,40,.16),rgba(0,0,0,.6));
 --r:14px;--ease:cubic-bezier(.2,.7,.2,1);
---Z:#ff4fbf;--S:#ff6b6b;--A:#ff9f43;--B:#ffd23f;--C:#a6dc5c;--D:#6db3ff;--P:#b99dff;--E:#9aa1ad}
+--Z:light-dark(#8d5f00,#f8ca65);--S:light-dark(#a65322,#f7ac72);--A:light-dark(#826e50,#c4b08f);--B:light-dark(#707883,#9da5b0);--C:light-dark(#7a8492,#8592a2);--D:light-dark(#8b94a3,#717e92);--P:light-dark(#705b9b,#a798cb);--E:light-dark(#6b727e,#8b939f)}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -130,7 +130,7 @@ button.gopt:hover{border-color:var(--faint)}
 .chip{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"p n s" "p t t";align-items:center;column-gap:10px;row-gap:4px;min-height:52px;padding:8px 12px 8px 8px;border-radius:12px;border:1px solid transparent;background:var(--surf);color:var(--ink);cursor:pointer;text-align:left;transition:background .18s var(--ease),box-shadow .18s var(--ease),transform .18s var(--ease),opacity .2s,border-color .18s}
 .chip:hover{background:var(--surf2)}
 .chip[aria-pressed=true]{background:var(--card);border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
-.chip.low .sc b{color:var(--faint);text-decoration:underline dotted 1.5px;text-underline-offset:3px}
+.chip.low .sc b{color:var(--faint)}
 .chip.dim{opacity:.25}
 .chip .pic{grid-area:p;align-self:center}
 .chip .nm{grid-area:n;font:600 14.5px/1.1 Inter,sans-serif;letter-spacing:-.01em;white-space:nowrap}
@@ -170,7 +170,7 @@ button.gopt:hover{border-color:var(--faint)}
 .tv td.tc b{font:600 14.5px Inter,sans-serif;letter-spacing:-.01em}
 .tv tbody tr{cursor:pointer;transition:background .12s}.tv tbody tr:hover{background:var(--surf)}.tv tbody tr.on{background:color-mix(in srgb,var(--acc) 9%,transparent)}
 .tv tbody tr.dim{opacity:.3}
-.tg{display:inline-block;font:800 13px/1 'Barlow Condensed',sans-serif;padding:5px 8px;border-radius:7px;color:#14151a;min-width:26px;text-align:center;letter-spacing:.02em}
+.tg{display:inline-block;font:800 13px/1 'Barlow Condensed',sans-serif;padding:5px 8px;border-radius:7px;color:color-mix(in srgb,var(--T,var(--E)) 78%,var(--ink));background:color-mix(in srgb,var(--T,var(--E)) 17%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T,var(--E)) 30%,transparent);min-width:26px;text-align:center;letter-spacing:.02em}
 .tg.sm{font:700 11px/1 Inter,sans-serif;padding:3px 5px;min-width:20px;border-radius:5px;letter-spacing:0}
 
 /* detail panel */
@@ -223,7 +223,7 @@ button.cc{cursor:pointer}button.cc:hover{background:var(--surf2)}
 .rolesub .fp{white-space:nowrap;color:var(--acc);font-weight:600;text-decoration:none}.rolesub .fp:hover{text-decoration:underline}
 .ctrl{font:600 12.5px Inter,sans-serif;color:var(--acc);text-decoration:none;margin-left:4px}.ctrl:hover{text-decoration:underline}
 .site{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;background:var(--surf);border-radius:999px;padding:3px 3px 3px 10px;white-space:nowrap}
-.site b{font:700 11px/1 Inter,sans-serif;min-width:22px;text-align:center;padding:4px 6px;border-radius:999px;color:#14151a}
+.site b{font:700 11px/1 Inter,sans-serif;min-width:22px;text-align:center;padding:4px 6px;border-radius:999px;color:color-mix(in srgb,var(--T,var(--E)) 78%,var(--ink));background:color-mix(in srgb,var(--T,var(--E)) 17%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T,var(--E)) 30%,transparent)}
 
 /* sections */
 .alt{background:transparent}
@@ -328,7 +328,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 /* ===== REDESIGN: dark first, gold accent, calm tinted tiers, art on the top tiers ===== */
 :root{--bg:light-dark(#f3f3f0,#0a0b0e);--card:light-dark(#ffffff,#121419);--surf:light-dark(#ecebe6,#181b21);--surf2:light-dark(#e2e1da,#20242c);--line:light-dark(#e1e0d9,#21252d);
 --acc:light-dark(#8a5f0c,#e3b34c);--acc-ink:#1b1405;--sel:var(--acc);--mut:light-dark(#585e69,#959cab);--faint:light-dark(#646a75,#858c9b);
---Rtop:#e07a4f;--Rjungle:#3fae6a;--Rmid:#5b8def;--Radc:#d9a43a;--Rsupport:#b07fe0}
+--Rtop:#d6967d;--Rjungle:#86b58f;--Rmid:#85abd6;--Radc:#c3ab72;--Rsupport:#b29cce}
 body{background:var(--bg)}
 .chip[aria-pressed=true]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 .tv tbody tr.on{background:color-mix(in srgb,var(--acc) 10%,transparent)}
@@ -636,7 +636,7 @@ details.brow{display:block}
 .hm td{background:color-mix(in srgb,var(--T,var(--E)) 13%,var(--surf));background-image:none}
 .hm td button{display:flex;align-items:center;justify-content:center;gap:7px}
 .hm td b{font-weight:650}
-.hm td i{font:800 12.5px/1 'Barlow Condensed',sans-serif;font-style:normal;min-width:19px;padding:3px 0;border-radius:5px;background:var(--T);color:#14151a;text-align:center;letter-spacing:.02em}
+.hm td i{font:800 12.5px/1 'Barlow Condensed',sans-serif;font-style:normal;min-width:19px;padding:3px 0;border-radius:5px;color:color-mix(in srgb,var(--T) 78%,var(--ink));background:color-mix(in srgb,var(--T) 17%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T) 30%,transparent);text-align:center;letter-spacing:.02em}
 .hm td.on{box-shadow:inset 0 0 0 2px var(--acc)}
 .tv th.cur button{color:var(--ink)}.tv td.cur{background:color-mix(in srgb,var(--acc) 5%,transparent)}
 @media(max-width:640px){.bar.open .more>#ranks button,.bar.open .more>#regs button{flex:1 1 0;padding:0 6px}.gopt.reg{grid-column:auto}.guide{grid-template-columns:minmax(0,1fr)}}
@@ -733,9 +733,13 @@ details.brow{display:block}
    Z/S: wide cards over two columns with the champion's splash art. A/B and P: normal chips. C/D: same columns, shorter.
    Rows: a light tint of the tier color and a color bar on the left, no outlines. ---- */
 .board{gap:8px}
-.row{position:relative;grid-template-columns:60px minmax(0,1fr);border:0;border-radius:16px;background:color-mix(in srgb,var(--T) 5%,var(--card));min-height:0;overflow:visible}
-.row::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--T)}
-.lab{font-size:38px;padding:10px 4px}
+.row{position:relative;grid-template-columns:64px minmax(0,1fr);column-gap:8px;border:0;border-radius:16px;background:color-mix(in srgb,var(--T) 3.5%,var(--card));min-height:0;overflow:visible}
+.row::before{content:none}
+.lab{font-size:40px;padding:10px 4px;margin:4px 0 4px 4px;border-radius:12px;background:color-mix(in srgb,var(--T) 9%,transparent)}
+.lab .lt{color:var(--T)}
+.t-Z{--Th:light-dark(#a37424,#ffe17c);--Tl:light-dark(#7e5100,#e7ba54)}.t-S{--Th:light-dark(#bd6839,#ffc388);--Tl:light-dark(#96440e,#e69c62)}.t-A{--Th:light-dark(#978364,#dbc6a5);--Tl:light-dark(#736042,#b4a080)}.t-B{--Th:light-dark(#858d98,#b3bbc6);--Tl:light-dark(#626a74,#8e96a0)}.t-C{--Th:light-dark(#8f99a8,#9aa8b8);--Tl:light-dark(#6b7583,#768393)}.t-D{--Th:light-dark(#a0aab9,#8693a8);--Tl:light-dark(#7c8594,#636f83)}.t-P{--Th:light-dark(#846fb1,#bdaee2);--Tl:light-dark(#624d8b,#9889bb)}
+.row[class*=t-] .lab .lt{background:linear-gradient(180deg,var(--Th,var(--T)) 10%,var(--T) 55%,var(--Tl,var(--T)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.mine-row .lab .lt{background:none;color:var(--acc)}
 .chips,.chips.bigs,.chips.smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;padding:8px 8px 8px 0;align-content:start}
 .chip{grid-template-areas:"p n s";min-height:48px;padding:7px 10px 7px 7px;column-gap:10px;border:1px solid transparent;border-radius:11px;background:color-mix(in srgb,var(--ink) 4.5%,var(--card))}
 .chip:hover{background:color-mix(in srgb,var(--ink) 9%,var(--card));border-color:transparent}
@@ -760,10 +764,22 @@ details.brow{display:block}
 .chip.big .sc{align-self:center;font-size:21px;gap:5px;background:none;box-shadow:none;padding:0;text-shadow:0 1px 10px light-dark(transparent,rgba(0,0,0,.7))}
 .chip.big .sc b{font-weight:800;letter-spacing:-.02em}
 .chip.big .tri{font-size:15px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.chip .chpf{grid-area:p;position:relative;align-self:center;display:block;line-height:0}
+.chip .chpf .pic{display:block}
+.bdg{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;color:#0b0c0f;vertical-align:-3px}
+.bdg svg{width:9px;height:9px;fill:currentColor}
+.bdg.buff{background:var(--pos)}.bdg.nerf{background:var(--neg)}.bdg.trap{background:var(--card);color:var(--neg);box-shadow:inset 0 0 0 1.5px var(--neg)}
+.chip .bdg{position:absolute;right:-5px;bottom:-5px;box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
+.chip .bdg.trap{box-shadow:inset 0 0 0 1.5px var(--neg),0 0 0 2px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
+.chip .bdg+.bdg{right:auto;left:-5px}
+.chip.big .bdg{width:19px;height:19px;right:-6px;bottom:-6px}.chip.big .bdg svg{width:11px;height:11px}.chip.big .bdg+.bdg{left:-6px}
+.lowsc{color:var(--faint);font-weight:600}
+.legend .bdg.demo+.bdg.demo{margin-left:3px}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
 .chip.big[aria-pressed=true]{background:color-mix(in srgb,var(--T) 7%,var(--card))}
 @media(max-width:640px){
-.row{grid-template-columns:36px minmax(0,1fr);border-radius:14px}.row::before{top:10px;bottom:10px}
+.row{grid-template-columns:38px minmax(0,1fr);column-gap:5px;border-radius:14px}.lab{margin:3px 0 3px 3px;border-radius:10px}
 .lab{font-size:27px;padding:6px 2px}.lab small{font-size:8.5px}
 .chips,.chips.bigs,.chips.smalls{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:6px 6px 6px 0}
 .chip{min-height:44px;padding:5px 7px 5px 5px;column-gap:7px;border-radius:10px}
@@ -777,9 +793,27 @@ details.brow{display:block}
 .chip.big{grid-column:1/-1;min-height:70px;padding:9px 14px 9px 9px;column-gap:11px}
 .chip.big .pic{width:48px;height:48px;border-radius:12px}
 .chip.big .nm{font-size:16.5px}.chip.big .cm{font-size:12px}.chip.big .sc{font-size:18px}}
+.row.t-Z .chip.big:only-child{grid-column:1/-1}
 .row.t-S .chip.big{min-height:74px}.row.t-S .chip.big .pic{width:50px;height:50px}.row.t-S .chip.big .sc{font-size:19px}
-:root[data-theme=light] .chip.big::before{opacity:.38}
-:root[data-theme=light] .chip.big::after{background:linear-gradient(90deg,transparent 50%,rgba(255,255,255,.4))}
+/* light mode is its own look, not a dimmed dark mode: cool neutral page, white rows, solid tier blocks with white letters,
+   art at full strength on the right of the big cards with the name on clean white */
+:root[data-theme=light]{--bg:#eef0f3;--surf:#eceef1;--surf2:#e2e5ea;--line:#dde1e7}
+:root[data-theme=light] .row{background:var(--card);box-shadow:0 1px 2px rgba(16,24,40,.06),0 0 0 1px rgba(16,24,40,.04)}
+:root[data-theme=light] .lab{background:color-mix(in srgb,var(--T) 11%,#fff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T) 16%,transparent)}
+:root[data-theme=light] .row[class*=t-] .lab .lt{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--T)}
+:root[data-theme=light] .mine-row .lab{background:color-mix(in srgb,var(--acc) 14%,var(--card))}
+:root[data-theme=light] .chip{background:#f3f4f6}
+:root[data-theme=light] .chip:hover{background:#eaecef}
+:root[data-theme=light] .chip[aria-pressed=true]{background:color-mix(in srgb,var(--acc) 7%,#fff)}
+:root[data-theme=light] .chip.big{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+:root[data-theme=light] .chip.big[aria-pressed=true]{box-shadow:0 0 0 1px var(--acc)}
+:root[data-theme=light] .chip.big::before{opacity:1;filter:none;-webkit-mask-image:linear-gradient(90deg,transparent 46%,rgba(0,0,0,.75) 64%,#000 84%);mask-image:linear-gradient(90deg,transparent 46%,rgba(0,0,0,.75) 64%,#000 84%)}
+@media(max-width:640px){:root[data-theme=light] .chip.big::before{-webkit-mask-image:linear-gradient(90deg,transparent 56%,rgba(0,0,0,.8) 72%,#000 88%);mask-image:linear-gradient(90deg,transparent 56%,rgba(0,0,0,.8) 72%,#000 88%)}}
+:root[data-theme=light] .chip.big::after{background:none}
+:root[data-theme=light] .chip.big .sc{background:rgba(255,255,255,.92);color:var(--ink);padding:6px 10px;border-radius:10px;text-shadow:none;box-shadow:0 2px 8px rgba(16,24,40,.22)}
+:root[data-theme=light] .chip.big .cm{color:var(--mut)}
+:root[data-theme=light] .chip .bdg{box-shadow:0 0 0 2px #f3f4f6}
+:root[data-theme=light] .chip .bdg.trap{box-shadow:inset 0 0 0 1.5px var(--neg),0 0 0 2px #f3f4f6}
 @media(max-width:640px){.row.t-S .chip.big{min-height:62px}.row.t-S .chip.big .pic{width:42px;height:42px}.row.t-S .chip.big .sc{font-size:17px}}
 @media(max-width:380px){.row{grid-template-columns:32px minmax(0,1fr)}.lab{font-size:24px}
 .chip:not(.big){column-gap:6px;padding-right:6px}.chip:not(.big) .pic{width:24px;height:24px}
@@ -788,7 +822,7 @@ details.brow{display:block}
 </style>
 </head>
 <body>
-<div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
+<div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#f8ca65"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#f7ac72"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#c4b08f"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#9da5b0"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
 <!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="#board-sec" data-mode="counter">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#champions">Champions</a><a class="opt" href="#items">Items</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
 <!--B-->__HEAD__
 
@@ -895,7 +929,7 @@ details.brow{display:block}
 </ul>
 </div>
 </section>
-<!--/M--><!--N-->__HEAD__<!--/N--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__patch/">Patch notes</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
+<!--/M--><!--N-->__HEAD__<!--/N--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#f8ca65"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#f7ac72"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#c4b08f"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#9da5b0"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__patch/">Patch notes</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
 
 <script>window.TL={DATA:__DATA__,ROOT:'__ROOT__',PAGE:'__PAGE__',ROLE:'__ROLE__',CHAMP:__CHAMP__};</script>
 <script>
@@ -982,9 +1016,9 @@ function renderTable(){if(!DATA[role])return;
   const sk=sortK==='cur'?'r_'+R():sortK;
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:c.startsWith('r_')?SV(d,VK(c[2])):d[c];
   const rows=list.filter(d=>tierOf(d)).slice().sort((a,b)=>{const x=val(a,sk),y=val(b,sk);if(typeof x==='string')return sortD*(x<y?-1:x>y?1:0);return sortD*((x??-999)-(y??-999));});
-  const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="background:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
+  const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="--T:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
     switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxFlag(d):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
-    case 't':{const t=tierOf(d);return `<td><span class="tg" style="background:var(${colT(t)})">${t}</span></td>`;}
+    case 't':{const t=tierOf(d);return `<td><span class="tg" style="--T:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
     case 'ctr':{const {cs}=ctrs(d);return `<td><span class="ctrs">${cs.length?cs.map(([x,wr,n])=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}: ${wr.toFixed(0)}% in ${n.toLocaleString('en-US')} games" width="22" height="22" loading="lazy">`).join(''):'<span class="mu">–</span>'}</span></td>`;}
@@ -1007,7 +1041,7 @@ const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
-const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?nxFlag(d):'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}><span class="chpf">${pic(d.c)}${badges(d)}</span><span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="--T:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],cnt={};
   for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
@@ -1048,10 +1082,10 @@ function renderBoard(){if(!DATA[role])return;
     if(!cs.length&&(t==='Z'||t==='P'))return '';
     const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
-    return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}>${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
+    return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}><span class="lt">${t}</span>${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
   }).join('');
   const mine=list.filter(d=>isMine(d.c)&&tierOf(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
-  if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only">★<small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
+  if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only"><span class="lt">★</span><small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
 }
 const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=(c,pg='build')=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/${pg}/${role}`;
@@ -1064,10 +1098,10 @@ function renderPanel(){if(!DATA[role])return;
     return `<td class="${on?'on':''}" style="--T:var(${colT(x.t)})"><button type="button" data-rk="${r}" data-rg="${g}" title="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)} ±${x.se.toFixed(1)}${n?`, ${n[0].toLocaleString('en-US')} games`:''}. Tap to show this list." aria-label="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)}. Show this list"><b>${fmt(x.s)}</b><i>${x.t}</i></button></td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RKS.map(([,n])=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${RGS.map(([g,n])=>`<tr><th>${n}</th>${RKS.map(([r])=>gcell(r,g)).join('')}</tr>`).join('')}</tbody></table>`;
   const SNM={'Mobalytics experts':'Mobalytics'};
-  const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site"${SNM[k]?` title="${k}"`:''}>${SNM[k]||k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site" title="Lolalytics, Emerald+">Lolalytics E+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
+  const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site"${SNM[k]?` title="${k}"`:''}>${SNM[k]||k}<b style="--T:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site" title="Lolalytics, Emerald+">Lolalytics E+<b style="--T:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tex=[pkShift(d),chance(d)&&Math.abs(d.tr)>=.05?'too small to be sure':''].filter(Boolean).join(', ');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global Emerald+): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}${tex?`, ${tex}`:''}</p>`;
-  const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
+  const tt=t=>t?`<span class="tg sm" style="--T:var(${colT(t)})">${t}</span>`:'';
   const PH=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${!ARCH&&PAGE!=='champ'?`<a href="${champURL(d.c)}" title="Open the full page for ${d.c}">${d.c}<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`:d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSRC()}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
   <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}" title="${isMine(d.c)?'Remove from your champions':'Save to your champions (this browser only)'}">${isMine(d.c)?'★ My champ':'☆ My champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener" title="Builds and runes on OP.GG">OP.GG build ↗</a><button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="kv"><div class="km" data-tip="Win rate points above the role average in ${VNM()}, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>${VNM()}</u></span><strong>${tt(vx.t)}${fmt(vx.s)}<small> ±${vx.se==null?'?':vx.se.toFixed(1)}</small></strong>${rngHTML(d)}</div><div><span>Win</span><strong>${sx.wr==null?'–':sx.wr.toFixed(1)+'%'}</strong></div><div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
@@ -1111,6 +1145,10 @@ const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};
 // next patch tag on chips and table rows: says that the change is coming, not that it happened
+const BDG={buff:'<path d="M5 1.5 9 8H1z"/>',nerf:'<path d="M1 2h8L5 8.5z"/>',trap:'<path d="M4 1h2l-.3 5.2H4.3zM4.1 7.3h1.8V9H4.1z"/>'};
+const badge=(k,t,lab)=>`<span class="bdg ${k}" title="${t}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[k]}</svg><span class="sr">${lab}</span></span>`;
+// next-patch change and "trap" sit as small marks on the portrait corner, so names stay on one line
+const badges=d=>(d.nx&&META.next?badge(d.nx,`${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}`,`${d.nx} soon`):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
 const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
 // links to the patch notes page when it has the champion or item
 const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/${item?'i-':''}${slug(c)}/">All numbers</a>`:'';   // the change's own page: its address is the link to share
@@ -1214,7 +1252,7 @@ function renderCounter(){
   let res='';
   if(CPE){const rows=((D.r||{})[role]||{})[CPE]||[];
     const item=([i,wr,n,cl])=>{const c=D.names[i],d=list.find(x=>x.c===c),tt=d?tierOf(d):null,w=wr/10;
-      return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="background:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
+      return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="--T:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
     const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,12);
     res=`<div class="cph"><div class="cpsel">${pic(CPE)}<div><h3>Best picks into ${CPE}</h3><p class="cap">${RN}, OP.GG ${rk==='e'?'Emerald+':'Diamond+'}: win rate against ${CPE} in lane. Ranked with the number of games in mind, so 52% over 2,000 games beats 55% over 250.</p></div><button type="button" class="cpchg" id="cpchange">Change enemy</button></div></div>`
       +(mine.length?`<p class="mlab">Your champions</p><div class="cpl">${mine.map(item).join('')}</div><p class="mlab">Everyone</p>`:'')
@@ -1240,7 +1278,7 @@ function renderSide(){if(!DATA[role])return;
   $('maph').textContent=(ALL?'All roles':RNm[role])+' this patch';
   $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
   if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
-    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="background:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="--T:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
     const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
     $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
   $('traps').innerHTML=items.filter(([r,d])=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a[1])-vv(b[1])).slice(0,6).map(([r,d])=>row(r,d,`${rl(r)}${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
@@ -1325,7 +1363,7 @@ function search(){
   if(q&&!ARCH&&CUR._meta.part)ensureFull().then(()=>{if($('q').value.trim())search();});
   const out=[];if(q)for(const [r,n] of ROLES)for(const d of (DATA[r]||[]))if(hit(d.c))out.push([r,n,d]);
   out.sort((a,b)=>(starts(a[2].c)?0:1)-(starts(b[2].c)?0:1)||b[2].pick-a[2].pick);
-  $('res').innerHTML=out.slice(0,8).map(([r,n,d])=>{const t=tierOf(d)||d.t;return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="rc">${pic(d.c,'pic xs')}${d.c}<span class="rr">${n}</span></span><span class="tg" style="background:var(${colT(t)})">${t}</span></button>`;}).join('')||(q?'<button type="button" disabled>No match</button>':'');
+  $('res').innerHTML=out.slice(0,8).map(([r,n,d])=>{const t=tierOf(d)||d.t;return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="rc">${pic(d.c,'pic xs')}${d.c}<span class="rr">${n}</span></span><span class="tg" style="--T:var(${colT(t)})">${t}</span></button>`;}).join('')||(q?'<button type="button" disabled>No match</button>':'');
   $('res').style.display=q?'block':'none';
   renderBoard();
 }
@@ -1418,7 +1456,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><u class="lowdemo">Dotted</u> = few games.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = clearly moved since ${META.prev_patch}.</span><span><span class="flag trap">trap</span> = picked a lot, still losing.</span>${META.next?`<span><span class="flag buff">buff soon</span> = changes in ${META.next.patch}, ${META.next.date}.</span>`:''}`;
+$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="bdg buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg></span><span class="bdg nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg></span> = buff or nerf in ${META.next.patch}, ${META.next.date}.</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.

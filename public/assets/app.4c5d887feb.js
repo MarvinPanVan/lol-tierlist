@@ -81,9 +81,9 @@ function renderTable(){if(!DATA[role])return;
   const sk=sortK==='cur'?'r_'+R():sortK;
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:c.startsWith('r_')?SV(d,VK(c[2])):d[c];
   const rows=list.filter(d=>tierOf(d)).slice().sort((a,b)=>{const x=val(a,sk),y=val(b,sk);if(typeof x==='string')return sortD*(x<y?-1:x>y?1:0);return sortD*((x??-999)-(y??-999));});
-  const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="background:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
+  const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="--T:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
     switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxFlag(d):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
-    case 't':{const t=tierOf(d);return `<td><span class="tg" style="background:var(${colT(t)})">${t}</span></td>`;}
+    case 't':{const t=tierOf(d);return `<td><span class="tg" style="--T:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
     case 'ctr':{const {cs}=ctrs(d);return `<td><span class="ctrs">${cs.length?cs.map(([x,wr,n])=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}: ${wr.toFixed(0)}% in ${n.toLocaleString('en-US')} games" width="22" height="22" loading="lazy">`).join(''):'<span class="mu">–</span>'}</span></td>`;}
@@ -106,7 +106,7 @@ const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
-const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?nxFlag(d):'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}><span class="chpf">${pic(d.c)}${badges(d)}</span><span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="--T:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],cnt={};
   for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
@@ -147,10 +147,10 @@ function renderBoard(){if(!DATA[role])return;
     if(!cs.length&&(t==='Z'||t==='P'))return '';
     const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
-    return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}>${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
+    return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}><span class="lt">${t}</span>${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
   }).join('');
   const mine=list.filter(d=>isMine(d.c)&&tierOf(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
-  if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only">★<small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
+  if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only"><span class="lt">★</span><small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
 }
 const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=(c,pg='build')=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/${pg}/${role}`;
@@ -163,10 +163,10 @@ function renderPanel(){if(!DATA[role])return;
     return `<td class="${on?'on':''}" style="--T:var(${colT(x.t)})"><button type="button" data-rk="${r}" data-rg="${g}" title="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)} ±${x.se.toFixed(1)}${n?`, ${n[0].toLocaleString('en-US')} games`:''}. Tap to show this list." aria-label="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)}. Show this list"><b>${fmt(x.s)}</b><i>${x.t}</i></button></td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RKS.map(([,n])=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${RGS.map(([g,n])=>`<tr><th>${n}</th>${RKS.map(([r])=>gcell(r,g)).join('')}</tr>`).join('')}</tbody></table>`;
   const SNM={'Mobalytics experts':'Mobalytics'};
-  const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site"${SNM[k]?` title="${k}"`:''}>${SNM[k]||k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site" title="Lolalytics, Emerald+">Lolalytics E+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
+  const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site"${SNM[k]?` title="${k}"`:''}>${SNM[k]||k}<b style="--T:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site" title="Lolalytics, Emerald+">Lolalytics E+<b style="--T:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tex=[pkShift(d),chance(d)&&Math.abs(d.tr)>=.05?'too small to be sure':''].filter(Boolean).join(', ');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global Emerald+): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}${tex?`, ${tex}`:''}</p>`;
-  const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
+  const tt=t=>t?`<span class="tg sm" style="--T:var(${colT(t)})">${t}</span>`:'';
   const PH=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${!ARCH&&PAGE!=='champ'?`<a href="${champURL(d.c)}" title="Open the full page for ${d.c}">${d.c}<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`:d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSRC()}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
   <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}" title="${isMine(d.c)?'Remove from your champions':'Save to your champions (this browser only)'}">${isMine(d.c)?'★ My champ':'☆ My champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener" title="Builds and runes on OP.GG">OP.GG build ↗</a><button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="kv"><div class="km" data-tip="Win rate points above the role average in ${VNM()}, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>${VNM()}</u></span><strong>${tt(vx.t)}${fmt(vx.s)}<small> ±${vx.se==null?'?':vx.se.toFixed(1)}</small></strong>${rngHTML(d)}</div><div><span>Win</span><strong>${sx.wr==null?'–':sx.wr.toFixed(1)+'%'}</strong></div><div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
@@ -210,6 +210,10 @@ const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};
 // next patch tag on chips and table rows: says that the change is coming, not that it happened
+const BDG={buff:'<path d="M5 1.5 9 8H1z"/>',nerf:'<path d="M1 2h8L5 8.5z"/>',trap:'<path d="M4 1h2l-.3 5.2H4.3zM4.1 7.3h1.8V9H4.1z"/>'};
+const badge=(k,t,lab)=>`<span class="bdg ${k}" title="${t}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[k]}</svg><span class="sr">${lab}</span></span>`;
+// next-patch change and "trap" sit as small marks on the portrait corner, so names stay on one line
+const badges=d=>(d.nx&&META.next?badge(d.nx,`${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}`,`${d.nx} soon`):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
 const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
 // links to the patch notes page when it has the champion or item
 const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/${item?'i-':''}${slug(c)}/">All numbers</a>`:'';   // the change's own page: its address is the link to share
@@ -313,7 +317,7 @@ function renderCounter(){
   let res='';
   if(CPE){const rows=((D.r||{})[role]||{})[CPE]||[];
     const item=([i,wr,n,cl])=>{const c=D.names[i],d=list.find(x=>x.c===c),tt=d?tierOf(d):null,w=wr/10;
-      return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="background:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
+      return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="--T:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
     const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,12);
     res=`<div class="cph"><div class="cpsel">${pic(CPE)}<div><h3>Best picks into ${CPE}</h3><p class="cap">${RN}, OP.GG ${rk==='e'?'Emerald+':'Diamond+'}: win rate against ${CPE} in lane. Ranked with the number of games in mind, so 52% over 2,000 games beats 55% over 250.</p></div><button type="button" class="cpchg" id="cpchange">Change enemy</button></div></div>`
       +(mine.length?`<p class="mlab">Your champions</p><div class="cpl">${mine.map(item).join('')}</div><p class="mlab">Everyone</p>`:'')
@@ -339,7 +343,7 @@ function renderSide(){if(!DATA[role])return;
   $('maph').textContent=(ALL?'All roles':RNm[role])+' this patch';
   $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
   if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
-    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="background:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="--T:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
     const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
     $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
   $('traps').innerHTML=items.filter(([r,d])=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a[1])-vv(b[1])).slice(0,6).map(([r,d])=>row(r,d,`${rl(r)}${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
@@ -424,7 +428,7 @@ function search(){
   if(q&&!ARCH&&CUR._meta.part)ensureFull().then(()=>{if($('q').value.trim())search();});
   const out=[];if(q)for(const [r,n] of ROLES)for(const d of (DATA[r]||[]))if(hit(d.c))out.push([r,n,d]);
   out.sort((a,b)=>(starts(a[2].c)?0:1)-(starts(b[2].c)?0:1)||b[2].pick-a[2].pick);
-  $('res').innerHTML=out.slice(0,8).map(([r,n,d])=>{const t=tierOf(d)||d.t;return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="rc">${pic(d.c,'pic xs')}${d.c}<span class="rr">${n}</span></span><span class="tg" style="background:var(${colT(t)})">${t}</span></button>`;}).join('')||(q?'<button type="button" disabled>No match</button>':'');
+  $('res').innerHTML=out.slice(0,8).map(([r,n,d])=>{const t=tierOf(d)||d.t;return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="rc">${pic(d.c,'pic xs')}${d.c}<span class="rr">${n}</span></span><span class="tg" style="--T:var(${colT(t)})">${t}</span></button>`;}).join('')||(q?'<button type="button" disabled>No match</button>':'');
   $('res').style.display=q?'block':'none';
   renderBoard();
 }
@@ -517,7 +521,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><u class="lowdemo">Dotted</u> = few games.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = clearly moved since ${META.prev_patch}.</span><span><span class="flag trap">trap</span> = picked a lot, still losing.</span>${META.next?`<span><span class="flag buff">buff soon</span> = changes in ${META.next.patch}, ${META.next.date}.</span>`:''}`;
+$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="bdg buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg></span><span class="bdg nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg></span> = buff or nerf in ${META.next.patch}, ${META.next.date}.</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.

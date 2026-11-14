@@ -13,7 +13,7 @@ patch=re.search(r'class="pill">Patch ([\d.]+)</span>',tpl).group(1)
 upd=json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'patch.json')))['updated']
 data=json.load(open('tiers.json',encoding='utf-8'))
 TR={'Z':0,'S':1,'A':2,'B':3,'C':4,'D':5,'P':6}
-COL={'Z':'#ff4fbf','S':'#ff6b6b','A':'#ff9f43','B':'#ffd23f','C':'#a6dc5c','D':'#6db3ff','P':'#b99dff'}
+COL={'Z':'#f8ca65','S':'#f7ac72','A':'#c4b08f','B':'#9da5b0','C':'#8592a2','D':'#717e92','P':'#a798cb'}
 ROLES=[('top','Top'),('jungle','Jungle'),('mid','Mid'),('adc','ADC'),('support','Support')]
 SL=lambda c: re.sub(r'[^a-z0-9]','',c.lower())
 IMG=lambda c: f"file://{PUB}/img/champ/{SL(c)}.webp"
@@ -26,7 +26,7 @@ for r,n in ROLES:
     rows+=f'<div class="r"><span class="rl">{n}</span><span class="cn"><img src="{IMG(d["c"])}">{d["c"]}</span><span class="sc">{sc(d["score"])}</span><span class="tg" style="background:{COL[d["t"]]}">{d["t"]}</span></div>'
 fonts=''.join(f"@font-face{{font-family:'{fam}';font-weight:{w};src:url(file://{PUB}/fonts/{f}-latin-{w}-normal.woff2)}}" for fam,f,ws in [('Inter','inter',(400,500,600,700,800)),('Barlow Condensed','barlow-condensed',(600,700,800))] for w in ws)
 CSS=f"""{fonts}
-body{{margin:0;width:1200px;height:630px;background:radial-gradient(900px 500px at 85% 0%,rgba(255,79,191,.16),transparent 60%),#0b0c0f;color:#eceef2;font-family:Inter;box-sizing:border-box;padding:60px 68px}}
+body{{margin:0;width:1200px;height:630px;background:radial-gradient(900px 500px at 85% 0%,rgba(248,202,101,.11),transparent 60%),#0b0c0f;color:#eceef2;font-family:Inter;box-sizing:border-box;padding:60px 68px}}
 .b{{display:flex;align-items:center;gap:14px;font:800 30px Inter;letter-spacing:-.02em}} .b svg{{width:46px;height:46px}}
 h1{{font:800 86px/1 Inter;letter-spacing:-.04em;margin:40px 0 16px}}
 p{{font-size:24px;line-height:1.4;color:#959cab;margin:0}} .u{{margin-top:26px;font-size:19px;color:#959cab}}

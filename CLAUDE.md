@@ -10,7 +10,15 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `pipeline/template.html` : the page layout, CSS and JS. build.py ships the CSS and JS as shared cached files
   (`public/assets/app.<hash>.css/js`); each page only keeps a small inline config (`window.TL`).
   Look: dark by default (light only if the visitor picks it), gold accent, own position icons, tinted tier rows,
-  Z/S as big art cards, A/B normal chips, C/D compact. Page headers are plain HTML made by build.py.
+  Z/S as big art cards (a lone Z card takes the whole row), A/B normal chips, C/D compact.
+  Tier colors (`--Z`..`--P` in the template, also `TCOL` in build.py, `COL` in assets.py and the logo `mark.svg`): one muted
+  ramp, Z gold, S amber, A sand, B silver, C slate, D steel, P lilac apart. Each tier is strictly darker than the one above in
+  dark mode (OKLCH lightness), so no lower tier outshines a higher one. Letter sheen = `.t-X{--Th;--Tl}`: the tier color
+  +0.07 / -0.05 OKLCH lightness, precomputed; recompute them if the palette changes. Role colors share one lightness too.
+  Light mode has its own block (`:root[data-theme=light]`): cool grey page, white rows, tinted label with a solid letter,
+  splash art at full strength on the right of the big cards with the score in a white pill. Buff/nerf next patch and
+  "trap" are small badges on the portrait corner (legend explains them); a low-sample score is plain grey on the chips
+  (panel lists still use dotted = could be luck). Page headers are plain HTML made by build.py.
   Tier list CSS is one block near the end of the stylesheet ("the tier list, one system"): every tier row uses the same
   column grid (auto-fill, min 190px; phones 2 columns) so columns line up; Z/S cards span 2 columns with splash art.
   Change it there, not with new overrides elsewhere. The Chart layout is never remembered between visits (only Tiers and
