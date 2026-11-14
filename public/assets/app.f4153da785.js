@@ -211,7 +211,7 @@ const CHW={buff:'Buffed',nerf:'Nerfed'};
 // next patch tag on chips and table rows: says that the change is coming, not that it happened
 const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
 // links to the patch notes page when it has the champion or item
-const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/#${item?'i-':''}${slug(c)}">All numbers</a>`:'';
+const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/${item?'i-':''}${slug(c)}/">All numbers</a>`:'';   // the change's own page: its address is the link to share
 const chLine=d=>d.ch?`${CHW[d.ch[0]]||'Changed'}: ${d.ch[1]}`:'';
 const ITW={buff:'buffed',nerf:'nerfed'};
 const itLine=d=>d.it?`Core item ${ITW[d.it[0][1]]||'changed'}: ${d.it.map(x=>x[0]).join(', ')}`:'';
@@ -230,10 +230,21 @@ const bimg=(kind,id,cl='')=>{const L=LK(),nm=kind==='item'?L.i[id]:kind==='sum'?
 // win rate by game length (OP.GG trends, Global Emerald+): each bucket against the champion's own win rate. Bucket sizes
 // are estimates (OP.GG gives none), so a value is dotted when its gap could be luck. The sentence only speaks when short
 // and long games clearly differ (update.py: 2+ points and beyond sampling noise).
-function glHTML(d){const g=d.gl;if(!g||ARCH)return '';const LB={0:'Under 25',25:'25-30',30:'30-35',35:'35-40',40:'40+'};
-  const col=([ln,r,n,cl])=>{const dv=r-g.w,h=Math.min(22,Math.abs(dv)*3.6);return `<div class="glc" title="${LB[ln]} min: ${r.toFixed(1)}% win in about ${kfmt(n)} games${cl?'':', too few to be sure it differs'}"><span class="glv${cl?'':' lowdemo'}">${r.toFixed(1)}</span><span class="glb"><i class="${dv>=0?'up':'dn'}" style="height:${h.toFixed(1)}px"></i></span><span class="gll">${LB[ln]}</span></div>`;};
-  const v=g.v==='late'?`Wins more the longer the game goes: ${g.d.toFixed(1)} points better over 35 minutes than under 25.`:g.v==='early'?`Wins more in short games: ${Math.abs(g.d).toFixed(1)} points better under 25 minutes than over 35.`:'About the same at every game length.';
-  return `<div class="caph"><p class="cap">Win rate by game length <span class="mu">OP.GG Emerald+</span></p></div><div class="gl">${g.b.map(col).join('')}</div><p class="glt">${v} <span class="mu">Dashed line = ${g.w.toFixed(1)}%, ${d.c}'s usual.</span></p>`;}
+function glHTML(d){const g=d.gl;if(!g||ARCH)return '';
+  const W=340,H=112,L=14,R=14,T=22,Bm=24,xs=i=>L+i*(W-L-R)/4;
+  const span=Math.max(5,...g.b.map(x=>Math.abs(x[1]-g.w)))+1.2,ys=v=>T+(H-T-Bm)*(1-(v-(g.w-span))/(2*span));
+  const pts=g.b.map((x,i)=>[xs(i),ys(x[1])]),path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const LB=['<25','25-30','30-35','35-40','40+'],avgY=ys(g.w);
+  const area=`M${xs(0)} ${avgY} `+pts.map(p=>'L'+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')+` L${xs(4)} ${avgY} Z`;
+  const svg=`<svg class="glc" viewBox="0 0 ${W} ${H}" role="img" aria-label="Win rate by game length: ${g.b.map((x,i)=>LB[i]+' minutes '+x[1].toFixed(1)+'%').join(', ')}">
+    <path d="${area}" class="gla"/><line x1="${L}" x2="${W-R}" y1="${avgY}" y2="${avgY}" class="glm"/>
+    <path d="${path}" class="gll"/>
+    ${g.b.map((x,i)=>`<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="4" class="${x[3]?'on':'off'}"><title>${LB[i]} min: ${x[1].toFixed(1)}% win in about ${kfmt(x[2])} games${x[3]?'':', too few to be sure it differs'}</title></circle>
+      <text x="${pts[i][0]}" y="${pts[i][1]-9}" class="glv${x[3]?'':' off'}">${x[1].toFixed(1)}</text>
+      <text x="${pts[i][0]}" y="${H-6}" class="glx">${LB[i]}</text>`).join('')}
+  </svg>`;
+  const v=g.v==='late'?`Wins more the longer the game goes: <b>+${g.d.toFixed(1)}</b> points over 35 minutes compared with under 25.`:g.v==='early'?`Wins more in short games: <b>${Math.abs(g.d).toFixed(1)}</b> points better under 25 minutes than over 35.`:'About the same at every game length.';
+  return `<div class="caph"><p class="cap">Win rate by game length <span class="mu">OP.GG Emerald+, minutes</span></p></div><div class="glw">${svg}<p class="glk"><span class="glkm"></span>${d.c}'s usual ${g.w.toFixed(1)}% <span class="glkh"></span>too few games to be sure</p></div><p class="glt">${v}</p>`;}
 // build card: one short row per part (spells, runes, skills, start, core, boots) with OP.GG's most common pick and its share
 // of games. Tapping a row opens the other options: share, win rate (dotted when within sampling noise of the usual pick),
 // and the matchups where players switch to that option (OP.GG matchup builds, d.bd.vs). Nothing here says what to do;
@@ -297,7 +308,7 @@ function renderSide(){if(!DATA[role])return;
   $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
   if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
     $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="background:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
-    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(min-width:1181px)').matches?999:matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
+    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
     $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
   $('traps').innerHTML=items.filter(([r,d])=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a[1])-vv(b[1])).slice(0,6).map(([r,d])=>row(r,d,`${rl(r)}${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
   // best bans: score x pick rate, adjusted for how often it is already banned. All roles: summed over every role the champion is above average in.
@@ -454,6 +465,8 @@ if(PAGE==='patch'){
 // patch notes page: mark the champions you starred on the tier list
 const mine=[...document.querySelectorAll('.pn-ix[data-pc]')].filter(a=>MINE.some(m=>m===a.dataset.pc||m.endsWith('|'+a.dataset.pc)));
 mine.forEach(a=>a.classList.add('mine'));
+// a change's own page (/patch/<p>/<champion>/) opens at its card
+if(INIT_CHAMP&&!location.hash){const el=document.getElementById(INIT_CHAMP);if(el){el.classList.add('pn-focus');requestAnimationFrame(()=>el.scrollIntoView({block:'start'}));}}
 // "Copy link" on each card: the change's own page, so chats show that change. Phones get the share sheet.
 document.addEventListener('click',e=>{const b=e.target.closest('.pn-share');if(!b)return;const u=b.dataset.u,lab=b.textContent,done=t=>{b.textContent=t;setTimeout(()=>b.textContent=lab,1600);};
   if(navigator.share&&matchMedia('(pointer:coarse)').matches){navigator.share({title:b.dataset.t,url:u}).catch(()=>{});return;}

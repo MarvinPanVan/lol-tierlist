@@ -483,16 +483,12 @@ def share_text(p, x, item=False):
     if not parts: d += _plain(x.get('short', ''))
     return title, d
 def share_page(p, x, item=False):
-    sid = _sid(x, item); title, d = share_text(p, x, item); url = f'{SITE}patch/{p}/{sid}/'
-    h = (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-         f'<title>{E(title)} | LoL Tier List</title><meta name="robots" content="noindex"><link rel="canonical" href="{SITE}patch/{p}/">'
-         f'<meta name="description" content="{E(d)}"><meta property="og:type" content="article"><meta property="og:site_name" content="LoL Tier List">'
-         f'<meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(d)}"><meta property="og:url" content="{url}">'
-         f'<meta property="og:image" content="{SITE}og/patch/{p}/{sid}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
-         f'<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0b0c0f">'
-         f'<script>location.replace("../#{sid}")</script></head>'
-         f'<body style="background:#0b0c0f;color:#eceef2;font:16px/1.5 system-ui,sans-serif;padding:24px"><p><a style="color:#e3b34c" href="../#{sid}">{E(title)}: open the patch notes</a></p></body></html>')
-    write(f'patch/{p}/{sid}/index.html', h)
+    # a full copy of the patch notes that opens at this change, so the address bar itself holds the shareable link
+    sid = _sid(x, item); title, d = share_text(p, x, item); url = f'{SITE}patch/{p}/{sid}/'; rel = f'patch/{p}/{sid}/index.html'
+    page(rel, 'N', '../../../', 'patch', 'top', f'{title} | LoL Tier List', title, d, url, f'{SITE}og/patch/{p}/{sid}.jpg', champ=sid, head=notes_body(p, '../../../'))
+    path = os.path.join(PUB, rel); h = open(path, encoding='utf-8').read()   # search engines: list the patch page, not 40 copies
+    h = h.replace(f'<link rel="canonical" href="{url}">', f'<link rel="canonical" href="{SITE}patch/{p}/"><meta name="robots" content="noindex">', 1)
+    open(path, 'w', encoding='utf-8').write(h)
 for q, n in NOTES.items():
     for x in n['champs']: share_page(q, x)
     for x in n.get('items', []): share_page(q, x, True)

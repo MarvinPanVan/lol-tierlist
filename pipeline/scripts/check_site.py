@@ -1,8 +1,8 @@
 """Check the built site before pushing: python3 pipeline/scripts/check_site.py  (needs playwright and Google Chrome)
 Serves public/ itself, then checks: JS errors and sideways scrolling at phone, laptop and desktop widths in light and dark
 mode; broken internal links, images and 4xx responses; duplicate ids, unnamed buttons, title and description lengths,
-og images; that champion pages fill their panel; that the Chart layout can always be left again; the share pages of the
-patch notes redirect to their card. Prints PROBLEM lines (fix them) and info lines. Exit code 1 if there is a problem."""
+og images; that champion pages fill their panel; that the Chart layout can always be left again; that a change's own
+page in the patch notes keeps its address and opens at its card. Prints PROBLEM lines (fix them) and info lines. Exit code 1 if there is a problem."""
 import os, re, sys, json, random, threading, functools, http.server
 from playwright.sync_api import sync_playwright
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -76,9 +76,10 @@ with sync_playwright() as p:
         if pg.evaluate("!document.querySelector('#panel h3')||!document.querySelector('#panel h3').textContent.trim()"): problems.append(f'empty panel on {u}')
     # 5) patch notes share pages send people to their card
     sp = [os.path.relpath(r_, PUB) for r_, _, fs in os.walk(os.path.join(PUB, 'patch')) for f in fs if f == 'index.html' and r_.count(os.sep) - PUB.count(os.sep) == 3]
-    for rel in sp[:4]:
-        pg.goto(f'{B}/{rel}/'.replace(os.sep, '/')); pg.wait_for_timeout(600)
-        if '#' not in pg.url: problems.append(f'share page does not redirect: {rel}')
+    for rel in sp[:4]:   # a change's own page: keeps its address (the link to share) and opens at its card
+        u = f'{B}/{rel}/'.replace(os.sep, '/'); pg.goto(u); pg.wait_for_timeout(700)
+        r_ = pg.evaluate("(()=>{const e=document.querySelector('.pn-focus');if(!e)return null;const b=e.getBoundingClientRect();return [b.top,innerHeight,location.pathname]})()")
+        if not r_ or not (-5 <= r_[0] < r_[1]) or not r_[2].endswith('/' + rel.split(os.sep)[-1] + '/'): problems.append(f'change page does not open at its card: {rel} {r_}')
     for u in ['/', '/mid/', '/mid/ekko/']: info.append(f'size {u}: {len(pg.request.get(B + u).body()) // 1024} KB')
     if errs: problems.append(f'page errors: {errs[:3]}')
     if bad: problems.append(f'4xx/5xx: {sorted(set(bad))[:5]}')
