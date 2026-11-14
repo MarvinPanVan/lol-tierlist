@@ -15,6 +15,14 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   grades, method, sources), `404.html`, `robots.txt`, `sitemap.xml`, and the patch archive in `public/data/`.
   Template blocks: `<!--B-->` only on tier list pages, `<!--M-->` only on the method page. Placeholders `__ROOT__`,
   `__PAGE__`, `__ROLE__`, `__TITLE__`, `__DESC__`, `__URL__`, `__OGIMG__`, `__PATCH__` are filled per page.
+- Each page embeds only its own role plus a slim `_meta` (with `best` per role and `hist` = number of patches); the
+  site fetches `data/<patch>.json` when you switch roles or search, and quietly after the first render.
+- `pipeline/privacy.html` : the privacy page (English + German), built to `public/privacy/`. Contact is Discord
+  `marvinpanvan` only (Marvin's choice, no real name, no Impressum). If the site starts using anything new that
+  touches visitors (another service, cookies, embeds), update this page.
+- `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
+  build.py. The panel shows a small chart once 3 or more patches exist.
+- Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
 - URLs: `/mid/` is the mid page, `#katarina` selects a champion, `?patch=26.21` opens an archived patch. Old `/#mid`
   links still work.
 - Patch archive: `public/data/<patch>.json` per patch and `patches.json` (newest 6). build.py always writes the
@@ -61,6 +69,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      Global Emerald+ (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
      KR and NA Diamond+/Master+ are view-only: Raw data menu and the region by rank grid in the panel, not in Overall
      or High elo. Notes count all 12 datasets for "above/below average in all N".
+   - OP.GG counters: the tier list's Counter column (three hardest matchups) for Global Emerald+ and Diamond+, every
+     role -> `data/opgg_counters.json` (`{"e": {role: {champ: [c1, c2, c3]}}, "d": ...}`). The icons only exist in
+     the rendered page, not in the server HTML: navigate to each page in the browser, wait ~3 s, read `img.alt` in
+     the Counter column. Stopgap until the Riot data has enough games per matchup.
    - Quick way to read OP.GG: open any op.gg champions page in the browser, then in the page's JS fetch
      `/lol/champions?region=kr&tier=master_plus&position=top&patch=16.xx` and parse the server-rendered table with
      DOMParser (columns Win rate, Pick rate, Ban rate; "Total analyzed samples" is in the page text). Region values
@@ -76,6 +88,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    patch archive need http, not file://): no JS errors,
    no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.
+7. Mid-patch refresh around day 8 of each patch: same collection again (bigger samples), rerun, rebuild, push.
+   Reminders for 26.23 are scheduled in Marvin's Claude session (20 Nov full update, 26 Nov refresh). After each
+   refresh, schedule the next patch's two reminders.
 
 ## Riot API collector (prototype, development key)
 

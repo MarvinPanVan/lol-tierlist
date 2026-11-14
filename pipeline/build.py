@@ -21,12 +21,24 @@ def write(rel, h):
     path = os.path.join(PUB, rel); os.makedirs(os.path.dirname(path), exist_ok=True)
     open(path, 'w', encoding='utf-8').write(h)
 
+# each page carries only its own role (plus a small summary); the site loads data/<patch>.json when you switch roles or search
+def best(r):
+    L = sorted([e for e in D[r] if e['t'] != 'P'], key=lambda e: (TR[e['t']], -e['score']))
+    return [L[0]['c'], L[0]['t'], L[0]['score']] if L else None
+META_SLIM = {k: v for k, v in D['_meta'].items() if k != 'tau'}
+META_SLIM['best'] = {r: best(r) for r, _, _ in ROLES}
+_arch = {f for f in os.listdir(os.path.join(PUB, 'data')) if re.fullmatch(r'\d+\.\d+\.json', f)} if os.path.isdir(os.path.join(PUB, 'data')) else set()
+META_SLIM['hist'] = len(_arch | {f'{PATCH}.json'})   # patches with data; the panel shows a history chart from 3 on
+def data_for(role, page_kind):
+    m = dict(META_SLIM, part=True)
+    return json.dumps({'_meta': m} if page_kind == 'method' else {'_meta': m, role: D[role]}, ensure_ascii=False, separators=(',', ':'))
+
 def page(rel, keep, root, page_kind, role, title, ogtitle, desc, url, ogimg):
     h = strip(T, keep)
     rep = {'__TITLE__': html.escape(title), '__OGTITLE__': html.escape(ogtitle, quote=True), '__DESC__': html.escape(desc, quote=True),
            '__URL__': url, '__OGIMG__': ogimg, '__ROOT__': root, '__PAGE__': page_kind, '__ROLE__': role, '__PATCH__': PATCH}
     for k, v in rep.items(): h = h.replace(k, v)
-    write(rel, h.replace('__DATA__', RAW))
+    write(rel, h.replace('__DATA__', data_for(role, page_kind)))
 
 def top_line(role):
     L = sorted([e for e in D[role] if e['t'] in 'ZS'], key=lambda e: (TR[e['t']], -e['score']))[:5]
@@ -55,14 +67,25 @@ for f in os.listdir(os.path.join(PUB, 'data')):
         pl.append({'patch': f[:-5], 'kind': m.get('kind', 'full'), 'label': m.get('label', '')})
 pl.sort(key=lambda x: [int(p) for p in x['patch'].split('.')], reverse=True)
 json.dump({'current': PATCH, 'patches': pl[:6]}, open(os.path.join(PUB, 'data', 'patches.json'), 'w'), indent=0)
+# score history: Global Emerald+ (the one dataset every archived patch has), oldest to newest, last 12 patches
+hp = [x['patch'] for x in reversed(pl[:12])]
+H = {'patches': hp, 'roles': {}}
+for p_ in hp:
+    a = json.load(open(os.path.join(PUB, 'data', f'{p_}.json'), encoding='utf-8'))
+    for r, _, _ in ROLES:
+        for e in a.get(r, []):
+            H['roles'].setdefault(r, {}).setdefault(e['c'], [None] * len(hp))[hp.index(p_)] = e.get('g')
+json.dump(H, open(os.path.join(PUB, 'data', 'history.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
 write('404.html', f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Page not found | LoL Tier List</title><meta name="robots" content="noindex"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>@font-face{{font-family:Inter;font-weight:800;src:url(/fonts/inter-latin-800-normal.woff2) format('woff2')}}@font-face{{font-family:Inter;font-weight:400;src:url(/fonts/inter-latin-400-normal.woff2) format('woff2')}}
 :root{{color-scheme:light dark}}body{{margin:0;min-height:100svh;display:grid;place-items:center;font:16px/1.6 Inter,system-ui,sans-serif;background:light-dark(#f5f6f8,#0b0c0f);color:light-dark(#0f1115,#eceef2)}}
 main{{text-align:center;padding:24px}}h1{{font-weight:800;font-size:44px;letter-spacing:-.03em;margin:16px 0 6px}}p{{color:light-dark(#646b78,#959cab);margin:0 0 22px}}
 a{{display:inline-block;padding:11px 18px;border-radius:999px;background:light-dark(#0f1115,#eceef2);color:light-dark(#fff,#0b0c0f);text-decoration:none;font-weight:600}}img{{width:56px;height:56px}}</style></head>
 <body><main><img src="/favicon.svg" alt=""><h1>Nothing here</h1><p>That page doesn't exist. The tier list does.</p><a href="/">Open the tier list</a></main></body></html>''')
+PRIV = open(os.path.join(HERE, 'privacy.html'), encoding='utf-8').read()
+write('privacy/index.html', PRIV.replace('__UPDATED__', P.get('privacy_updated', '14 Nov 2026')))
 write('robots.txt', f'User-agent: *\nAllow: /\n\nSitemap: {SITE}sitemap.xml\n')
 today = datetime.date.today().isoformat()
-urls = [SITE] + [SITE + r + '/' for r, _, _ in ROLES] + [SITE + 'method/']
+urls = [SITE] + [SITE + r + '/' for r, _, _ in ROLES] + [SITE + 'method/', SITE + 'privacy/']
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod></url>\n' for u in urls) + '</urlset>\n')
-print('built: index, ' + ', '.join(r for r, _, _ in ROLES) + ', method, 404, robots, sitemap')
+print('built: index, ' + ', '.join(r for r, _, _ in ROLES) + ', method, privacy, 404, robots, sitemap')

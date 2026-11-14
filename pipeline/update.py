@@ -80,6 +80,9 @@ for r in ROLES:
         c, t, w, p, b, g = it.split(','); rows.append(('METAsrc', 'D', r, nm(c), t, float(w), float(p), float(b), np.nan))
 SITE = pd.DataFrame(rows, columns=['site', 'rank', 'role', 'c', 'tier', 'win', 'pick', 'ban', 'games'])
 MOBA = json.load(open('data2/moba_highelo.json'))
+# OP.GG's three hardest matchups per champion (tier list Counter column), Emerald+ and Diamond+. Stopgap until the Riot data has enough games.
+CTR = json.load(open('data/opgg_counters.json')) if os.path.exists('data/opgg_counters.json') else {'e': {}, 'd': {}}
+CTR = {rk: {r: {nm(c): [nm(x) for x in cs] for c, cs in v.items()} for r, v in CTR.get(rk, {}).items()} for rk in ['e', 'd']}
 
 out, meta_tau, prev_cmp = {}, {}, []
 for role in ROLES:
@@ -199,6 +202,7 @@ for role in ROLES:
         sites['Mobalytics experts'] = mt
         e['sites'] = sites
         e['ll'] = lolal.loc[c, 'tier'] if lolal is not None and c in lolal.index else None
+        e['ctr'] = CTR['e'].get(role, {}).get(c); e['ctr_d'] = CTR['d'].get(role, {}).get(c)
         res.append(e)
     out[role] = res
 
@@ -249,9 +253,9 @@ def note(e):
             out.append((7, f'Less bad in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if high < 0 else f'Gets better with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
         elif high - low_elo <= -.8:
             out.append((7, f'Even worse in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if low_elo < 0 else f'Falls off with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
-    if e['pick'] >= 8 and e['score'] <= -.3: out.append((9, f'Very popular ({e["pick"]:.1f}% pick) and still losing.'))
-    elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular ({e["pick"]:.1f}% pick) and still winning.'))
-    elif e['pick'] < 1.5: out.append((8, f'Rarely picked ({e["pick"]:.1f}%), mostly by mains. Expect less if you are new to it.'))
+    if e['pick'] >= 8 and e['score'] <= -.3: out.append((9, f'Very popular ({e["pick"]:.1f}% pick in Emerald+) and still losing.'))
+    elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular ({e["pick"]:.1f}% pick in Emerald+) and still winning.'))
+    elif e['pick'] < 1.5: out.append((8, f'Rarely picked ({e["pick"]:.1f}% in Emerald+), mostly by mains. Expect less if you are new to it.'))
     eu = [e[k] for k in ['euwd', 'euwm'] if e.get(k) is not None]
     if eu and high is not None:
         ev = sum(eu) / len(eu)

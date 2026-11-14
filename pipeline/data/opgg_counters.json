@@ -1,0 +1,2522 @@
+{
+"source": "OP.GG tier list, Counter column (three hardest matchups), patch 16.22",
+"e": {
+"adc": {
+"Xayah": [
+"Karthus",
+"Swain",
+"Vel'Koz"
+],
+"Jhin": [
+"Karthus",
+"Vel'Koz",
+"Yasuo"
+],
+"Jinx": [
+"Vel'Koz",
+"Katarina",
+"Veigar"
+],
+"Kai'Sa": [
+"Swain",
+"Karthus",
+"Xayah"
+],
+"Kog'Maw": [
+"Syndra",
+"Aurelion Sol",
+"Vel'Koz"
+],
+"Swain": [
+"Vel'Koz",
+"Karthus",
+"Hwei"
+],
+"Twitch": [
+"Nilah",
+"Katarina",
+"Xerath"
+],
+"Miss Fortune": [
+"Vel'Koz",
+"Swain",
+"Katarina"
+],
+"Smolder": [
+"Xerath",
+"Aurelion Sol",
+"Syndra"
+],
+"Zeri": [
+"Vel'Koz",
+"Hwei",
+"Veigar"
+],
+"Yunara": [
+"Aurelion Sol",
+"Vel'Koz",
+"Katarina"
+],
+"Vel'Koz": [
+"Karthus",
+"Veigar",
+"Ziggs"
+],
+"Sivir": [
+"Twitch",
+"Katarina",
+"Vel'Koz"
+],
+"Yasuo": [
+"Swain",
+"Karthus",
+"Nilah"
+],
+"Aphelios": [
+"Hwei",
+"Syndra",
+"Mel"
+],
+"Corki": [
+"Vel'Koz",
+"Karthus",
+"Kog'Maw"
+],
+"Tristana": [
+"Hwei",
+"Corki",
+"Xerath"
+],
+"Ashe": [
+"Karthus",
+"Aurelion Sol",
+"Swain"
+],
+"Lucian": [
+"Veigar",
+"Syndra",
+"Karthus"
+],
+"Caitlyn": [
+"Xerath",
+"Veigar",
+"Katarina"
+],
+"Aurelion Sol": [
+"Karthus",
+"Draven",
+"Kalista"
+],
+"Hwei": [
+"Katarina",
+"Sivir",
+"Vayne"
+],
+"Draven": [
+"Vel'Koz",
+"Veigar",
+"Karthus"
+],
+"Samira": [
+"Swain",
+"Syndra",
+"Viktor"
+],
+"Nilah": [
+"Hwei",
+"Syndra",
+"Veigar"
+],
+"Viktor": [
+"Swain",
+"Hwei",
+"Kog'Maw"
+],
+"Karthus": [
+"Zeri",
+"Kog'Maw",
+"Kalista"
+],
+"Veigar": [
+"Katarina",
+"Swain",
+"Sivir"
+],
+"Varus": [
+"Nilah",
+"Karthus",
+"Vel'Koz"
+],
+"Katarina": [
+"Kog'Maw",
+"Yasuo",
+"Xayah"
+],
+"Kalista": [
+"Swain",
+"Vel'Koz",
+"Kog'Maw"
+],
+"Ziggs": [
+"Karthus",
+"Yasuo",
+"Swain"
+],
+"Vayne": [
+"Swain",
+"Kog'Maw",
+"Samira"
+],
+"Ezreal": [
+"Yasuo",
+"Viktor",
+"Swain"
+],
+"Syndra": [
+"Aurelion Sol",
+"Hwei",
+"Veigar"
+],
+"Xerath": [
+"Katarina",
+"Zeri",
+"Nilah"
+],
+"Mel": [
+"Aurelion Sol",
+"Xerath",
+"Nilah"
+]
+},
+"jungle": {
+"Wukong": [
+"Maokai",
+"Teemo",
+"Rek'Sai"
+],
+"Lillia": [
+"Ivern",
+"Zaahen",
+"Maokai"
+],
+"Cho'Gath": [
+"Maokai",
+"Sion",
+"Skarner"
+],
+"Shyvana": [
+"Sylas",
+"Trundle",
+"Udyr"
+],
+"Master Yi": [
+"Dr. Mundo",
+"Rek'Sai",
+"Shen"
+],
+"Briar": [
+"Teemo",
+"Zaahen",
+"Dr. Mundo"
+],
+"Viego": [
+"Rek'Sai",
+"Sejuani",
+"Rammus"
+],
+"Sylas": [
+"Volibear",
+"Gwen",
+"Zyra"
+],
+"Jarvan IV": [
+"Gwen",
+"Skarner",
+"Talon"
+],
+"Ekko": [
+"Ivern",
+"Zaahen",
+"Zyra"
+],
+"Lee Sin": [
+"Volibear",
+"Zaahen",
+"Cho'Gath"
+],
+"Kayn": [
+"Quinn",
+"Fizz",
+"Darius"
+],
+"Warwick": [
+"Teemo",
+"Malphite",
+"Lillia"
+],
+"Shaco": [
+"Nidalee",
+"Ambessa",
+"Rek'Sai"
+],
+"Graves": [
+"Rammus",
+"Evelynn",
+"Sion"
+],
+"Talon": [
+"Rek'Sai",
+"Jax",
+"Bel'Veth"
+],
+"Zyra": [
+"Gwen",
+"Zaahen",
+"Udyr"
+],
+"Naafiri": [
+"Hecarim",
+"Maokai",
+"Gragas"
+],
+"Zac": [
+"Fizz",
+"Jax",
+"Dr. Mundo"
+],
+"Kha'Zix": [
+"Rek'Sai",
+"Warwick",
+"Naafiri"
+],
+"Sejuani": [
+"Shen",
+"Nunu & Willump",
+"Gwen"
+],
+"Bel'Veth": [
+"Volibear",
+"Kindred",
+"Udyr"
+],
+"Evelynn": [
+"Volibear",
+"Sion",
+"Udyr"
+],
+"Hecarim": [
+"Darius",
+"Gragas",
+"Sylas"
+],
+"Elise": [
+"Fizz",
+"Evelynn",
+"Shaco"
+],
+"Nunu & Willump": [
+"Xin Zhao",
+"Rammus",
+"Aatrox"
+],
+"Xin Zhao": [
+"Dr. Mundo",
+"Fizz",
+"Rammus"
+],
+"Rek'Sai": [
+"Fiddlesticks",
+"Sion",
+"Dr. Mundo"
+],
+"Taliyah": [
+"Zyra",
+"Skarner",
+"Volibear"
+],
+"Rammus": [
+"Zaahen",
+"Maokai",
+"Teemo"
+],
+"Fiddlesticks": [
+"Sion",
+"Dr. Mundo",
+"Skarner"
+],
+"Nidalee": [
+"Rammus",
+"Sion",
+"Shyvana"
+],
+"Kindred": [
+"Malphite",
+"Skarner",
+"Gwen"
+],
+"Udyr": [
+"Malphite",
+"Quinn",
+"Zac"
+],
+"Vi": [
+"Sion",
+"Shyvana",
+"Wukong"
+],
+"Darius": [
+"Locke",
+"Volibear",
+"Pantheon"
+],
+"Diana": [
+"Gwen",
+"Jax",
+"Kindred"
+],
+"Nocturne": [
+"Sion",
+"Gwen",
+"Dr. Mundo"
+],
+"Amumu": [
+"Fizz",
+"Zaahen",
+"Rek'Sai"
+],
+"Sion": [
+"Zac",
+"Malphite",
+"Trundle"
+],
+"Skarner": [
+"Zaahen",
+"Volibear",
+"Shen"
+],
+"Zaahen": [
+"Aatrox",
+"Trundle",
+"Shaco"
+],
+"Ivern": [
+"Fiddlesticks",
+"Volibear",
+"Sion"
+],
+"Gwen": [
+"Trundle",
+"Rek'Sai",
+"Sion"
+],
+"Rengar": [
+"Rek'Sai",
+"Dr. Mundo",
+"Master Yi"
+],
+"Aatrox": [
+"Ivern",
+"Zyra",
+"Sejuani"
+],
+"Qiyana": [
+"Sion",
+"Skarner",
+"Udyr"
+],
+"Trundle": [
+"Malphite",
+"Maokai",
+"Aatrox"
+],
+"Volibear": [
+"Dr. Mundo",
+"Teemo",
+"Gragas"
+],
+"Maokai": [
+"Taliyah",
+"Gragas",
+"Kindred"
+],
+"Zed": [
+"Quinn",
+"Trundle",
+"Skarner"
+],
+"Gragas": [
+"Darius",
+"Aatrox",
+"Sion"
+],
+"Karthus": [
+"Gragas",
+"Aatrox",
+"Fizz"
+],
+"Quinn": [
+"Maokai",
+"Rammus",
+"Sejuani"
+],
+"Dr. Mundo": [
+"Gragas",
+"Maokai",
+"Sejuani"
+]
+},
+"mid": {
+"Ahri": [
+"Katarina",
+"Nasus",
+"Aurora"
+],
+"Ekko": [
+"Pantheon",
+"Fizz",
+"Vladimir"
+],
+"Katarina": [
+"Kayle",
+"Vladimir",
+"Nasus"
+],
+"LeBlanc": [
+"Naafiri",
+"Vex",
+"Sion"
+],
+"Vladimir": [
+"Sion",
+"Malzahar",
+"Kog'Maw"
+],
+"Fizz": [
+"Sion",
+"Diana",
+"Lissandra"
+],
+"Lissandra": [
+"Kog'Maw",
+"Hwei",
+"Ziggs"
+],
+"Twisted Fate": [
+"Jayce",
+"Annie",
+"Vel'Koz"
+],
+"Vex": [
+"Ziggs",
+"Nasus",
+"Swain"
+],
+"Hwei": [
+"Taliyah",
+"Fizz",
+"Vel'Koz"
+],
+"Yone": [
+"Vex",
+"Pantheon",
+"Annie"
+],
+"Zed": [
+"Nasus",
+"Malphite",
+"Diana"
+],
+"Syndra": [
+"Katarina",
+"Fizz",
+"Ekko"
+],
+"Xerath": [
+"Talon",
+"Sion",
+"Fizz"
+],
+"Diana": [
+"Yasuo",
+"Ekko",
+"Vladimir"
+],
+"Yasuo": [
+"Lissandra",
+"Aurelion Sol",
+"Vladimir"
+],
+"Lux": [
+"Kayle",
+"Vladimir",
+"Twisted Fate"
+],
+"Viktor": [
+"Kayle",
+"Kog'Maw",
+"Vel'Koz"
+],
+"Akali": [
+"Vex",
+"Twisted Fate",
+"Pantheon"
+],
+"Veigar": [
+"Nasus",
+"Katarina",
+"Ekko"
+],
+"Kassadin": [
+"Yone",
+"Zed",
+"Pantheon"
+],
+"Aurora": [
+"Zoe",
+"Katarina",
+"Smolder"
+],
+"Malzahar": [
+"Sion",
+"Kayle",
+"Kog'Maw"
+],
+"Zoe": [
+"Ziggs",
+"Naafiri",
+"Brand"
+],
+"Sylas": [
+"Kog'Maw",
+"Pantheon",
+"Hwei"
+],
+"Annie": [
+"Malphite",
+"Diana",
+"Aurora"
+],
+"Vel'Koz": [
+"Ziggs",
+"Ekko",
+"Katarina"
+],
+"Taliyah": [
+"Katarina",
+"Kassadin",
+"Anivia"
+],
+"Locke": [
+"Katarina",
+"Ziggs",
+"Yasuo"
+],
+"Anivia": [
+"Naafiri",
+"Hwei",
+"Ekko"
+],
+"Pantheon": [
+"Kayle",
+"Swain",
+"Ahri"
+],
+"Galio": [
+"Kayle",
+"Veigar",
+"Hwei"
+],
+"Aurelion Sol": [
+"Fizz",
+"Yone",
+"Malphite"
+],
+"Akshan": [
+"Nasus",
+"Ziggs",
+"Pantheon"
+],
+"Talon": [
+"Kayle",
+"Vel'Koz",
+"Mel"
+],
+"Irelia": [
+"Brand",
+"Vex",
+"Lux"
+],
+"Sion": [
+"Veigar",
+"Annie",
+"Aurelion Sol"
+],
+"Kayle": [
+"Hwei",
+"Kog'Maw",
+"Vladimir"
+],
+"Orianna": [
+"Swain",
+"Ekko",
+"Nasus"
+],
+"Qiyana": [
+"Malphite",
+"Vel'Koz",
+"Vex"
+],
+"Swain": [
+"Kog'Maw",
+"Vel'Koz",
+"Katarina"
+],
+"Malphite": [
+"Vel'Koz",
+"Xerath",
+"Fizz"
+],
+"Kog'Maw": [
+"Naafiri",
+"Fizz",
+"Pantheon"
+],
+"Ziggs": [
+"Jayce",
+"Irelia",
+"Taliyah"
+],
+"Naafiri": [
+"Swain",
+"Vex",
+"Ekko"
+],
+"Brand": [
+"Annie",
+"Anivia",
+"Taliyah"
+],
+"Nasus": [
+"Aurelion Sol",
+"Swain",
+"Vel'Koz"
+],
+"Cassiopeia": [
+"Sion",
+"Vel'Koz",
+"Naafiri"
+],
+"Azir": [
+"Sion",
+"Kayle",
+"Vex"
+],
+"Mel": [
+"Nasus",
+"Kayle",
+"Aurelion Sol"
+],
+"Ryze": [
+"Vel'Koz",
+"Annie",
+"Hwei"
+],
+"Jayce": [
+"Sion",
+"Annie",
+"Malphite"
+],
+"Tristana": [
+"Malphite",
+"Taliyah",
+"Ziggs"
+],
+"Smolder": [
+"Jayce",
+"Akshan",
+"Vladimir"
+]
+},
+"support": {
+"Thresh": [
+"Taric",
+"Neeko",
+"Vel'Koz"
+],
+"Leona": [
+"Elise",
+"Zilean",
+"Senna"
+],
+"Blitzcrank": [
+"Braum",
+"Rakan",
+"Alistar"
+],
+"Nami": [
+"Maokai",
+"Blitzcrank",
+"Senna"
+],
+"Lulu": [
+"Leona",
+"Blitzcrank",
+"Vel'Koz"
+],
+"Alistar": [
+"Janna",
+"Sona",
+"Senna"
+],
+"Senna": [
+"Amumu",
+"Zyra",
+"Blitzcrank"
+],
+"Braum": [
+"Zilean",
+"Morgana",
+"Senna"
+],
+"Seraphine": [
+"Poppy",
+"Zilean",
+"Zoe"
+],
+"Rell": [
+"Renata Glasc",
+"Sona",
+"Janna"
+],
+"Nautilus": [
+"Taric",
+"Rell",
+"Braum"
+],
+"Rakan": [
+"Senna",
+"Maokai",
+"Taric"
+],
+"Janna": [
+"Brand",
+"Thresh",
+"Zyra"
+],
+"Zilean": [
+"Elise",
+"Maokai",
+"Thresh"
+],
+"Soraka": [
+"Zilean",
+"Seraphine",
+"Amumu"
+],
+"Milio": [
+"Taric",
+"Blitzcrank",
+"Braum"
+],
+"Sona": [
+"Amumu",
+"Blitzcrank",
+"Elise"
+],
+"Vel'Koz": [
+"Maokai",
+"Pyke",
+"Rell"
+],
+"Pyke": [
+"LeBlanc",
+"Shaco",
+"Amumu"
+],
+"Karma": [
+"Taric",
+"Sona",
+"Galio"
+],
+"Zyra": [
+"Amumu",
+"Taric",
+"Sylas"
+],
+"Morgana": [
+"Elise",
+"Galio",
+"Zilean"
+],
+"Maokai": [
+"Hwei",
+"Galio",
+"Braum"
+],
+"Lux": [
+"Blitzcrank",
+"LeBlanc",
+"Vel'Koz"
+],
+"Taric": [
+"LeBlanc",
+"Elise",
+"Zilean"
+],
+"Poppy": [
+"Hwei",
+"Taric",
+"Soraka"
+],
+"Bard": [
+"Taric",
+"Janna",
+"Amumu"
+],
+"Renata Glasc": [
+"Braum",
+"Janna",
+"Zyra"
+],
+"Yuumi": [
+"Galio",
+"Amumu",
+"Taric"
+],
+"Tahm Kench": [
+"Taric",
+"Rakan",
+"Senna"
+],
+"Xerath": [
+"Amumu",
+"Rell",
+"Shaco"
+],
+"Amumu": [
+"Hwei",
+"Galio",
+"Maokai"
+],
+"Swain": [
+"Hwei",
+"Poppy",
+"Galio"
+],
+"Brand": [
+"Hwei",
+"Taric",
+"Amumu"
+],
+"Galio": [
+"Senna",
+"Braum",
+"Renata Glasc"
+],
+"Pantheon": [
+"Hwei",
+"Milio",
+"Alistar"
+],
+"Elise": [
+"Galio",
+"LeBlanc",
+"Shen"
+],
+"Neeko": [
+"Elise",
+"Hwei",
+"Tahm Kench"
+],
+"Shaco": [
+"Ashe",
+"Poppy",
+"Camille"
+],
+"LeBlanc": [
+"Galio",
+"Poppy",
+"Mel"
+],
+"Hwei": [
+"LeBlanc",
+"Galio",
+"Bard"
+],
+"Sylas": [
+"Elise",
+"Braum",
+"Renata Glasc"
+],
+"Shen": [
+"Taric",
+"Maokai",
+"Senna"
+],
+"Zoe": [
+"Alistar",
+"Tahm Kench",
+"Taric"
+],
+"Camille": [
+"Amumu",
+"Galio",
+"Zilean"
+],
+"Ashe": [
+"Galio",
+"Tahm Kench",
+"Amumu"
+],
+"Mel": [
+"Tahm Kench",
+"Taric",
+"Sylas"
+]
+},
+"top": {
+"Malphite": [
+"Sion",
+"Swain",
+"Dr. Mundo"
+],
+"Darius": [
+"Aurora",
+"Lissandra",
+"Quinn"
+],
+"Garen": [
+"Ryze",
+"Udyr",
+"Kayle"
+],
+"Gangplank": [
+"Varus",
+"Anivia",
+"Sion"
+],
+"Sett": [
+"Riven",
+"Kennen",
+"Malphite"
+],
+"Ornn": [
+"Singed",
+"Kayle",
+"Fiora"
+],
+"Kayle": [
+"Varus",
+"Malphite",
+"Ryze"
+],
+"Shen": [
+"Kayle",
+"Lissandra",
+"Singed"
+],
+"Camille": [
+"Anivia",
+"Quinn",
+"Teemo"
+],
+"Mordekaiser": [
+"Malzahar",
+"Swain",
+"Lissandra"
+],
+"Fiora": [
+"Heimerdinger",
+"Quinn",
+"Malphite"
+],
+"Aatrox": [
+"Quinn",
+"Malzahar",
+"Heimerdinger"
+],
+"Irelia": [
+"Warwick",
+"Wukong",
+"Udyr"
+],
+"Sion": [
+"Anivia",
+"Dr. Mundo",
+"Singed"
+],
+"Teemo": [
+"Ornn",
+"Irelia",
+"Sion"
+],
+"Singed": [
+"Lissandra",
+"Swain",
+"Gangplank"
+],
+"Jax": [
+"Lissandra",
+"Poppy",
+"Garen"
+],
+"Yone": [
+"Quinn",
+"Tryndamere",
+"Riven"
+],
+"Renekton": [
+"Illaoi",
+"Poppy",
+"Teemo"
+],
+"Zaahen": [
+"Lissandra",
+"Malzahar",
+"Singed"
+],
+"Pantheon": [
+"Lissandra",
+"Singed",
+"Aurora"
+],
+"Nasus": [
+"Kled",
+"Sylas",
+"Shen"
+],
+"Cho'Gath": [
+"Udyr",
+"Aurora",
+"Poppy"
+],
+"Dr. Mundo": [
+"Warwick",
+"Gwen",
+"Fiora"
+],
+"Gwen": [
+"Warwick",
+"Singed",
+"Akali"
+],
+"Illaoi": [
+"Kennen",
+"Kayle",
+"Mordekaiser"
+],
+"Olaf": [
+"Lissandra",
+"Kled",
+"Kayle"
+],
+"Akali": [
+"Kled",
+"Urgot",
+"Ryze"
+],
+"Kled": [
+"Vayne",
+"Swain",
+"Fiora"
+],
+"Urgot": [
+"Lissandra",
+"Malzahar",
+"Wukong"
+],
+"Tryndamere": [
+"Malphite",
+"Udyr",
+"Warwick"
+],
+"Volibear": [
+"Poppy",
+"Shen",
+"Kayle"
+],
+"Warwick": [
+"Lissandra",
+"Olaf",
+"Zaahen"
+],
+"Jayce": [
+"Malphite",
+"Wukong",
+"Kled"
+],
+"Gnar": [
+"Poppy",
+"Heimerdinger",
+"Nasus"
+],
+"Poppy": [
+"Swain",
+"Warwick",
+"Vladimir"
+],
+"Quinn": [
+"Maokai",
+"Illaoi",
+"Udyr"
+],
+"Riven": [
+"Ryze",
+"Lissandra",
+"Zaahen"
+],
+"Kennen": [
+"Aurora",
+"Malzahar",
+"Anivia"
+],
+"Gragas": [
+"Singed",
+"Poppy",
+"Ornn"
+],
+"Yasuo": [
+"Lissandra",
+"Darius",
+"Singed"
+],
+"Ambessa": [
+"Warwick",
+"Poppy",
+"Quinn"
+],
+"Wukong": [
+"Quinn",
+"Vladimir",
+"Anivia"
+],
+"Tahm Kench": [
+"Swain",
+"Lissandra",
+"Anivia"
+],
+"Anivia": [
+"Swain",
+"Quinn",
+"Aatrox"
+],
+"Yorick": [
+"Warwick",
+"Kayle",
+"Shen"
+],
+"Lissandra": [
+"Sion",
+"Kled",
+"Kayle"
+],
+"Heimerdinger": [
+"Quinn",
+"Maokai",
+"Lissandra"
+],
+"Swain": [
+"Gwen",
+"Jayce",
+"Irelia"
+],
+"Sylas": [
+"Maokai",
+"Riven",
+"Urgot"
+],
+"Trundle": [
+"Lissandra",
+"Quinn",
+"Anivia"
+],
+"Vladimir": [
+"Master Yi",
+"Anivia",
+"Nasus"
+],
+"K'Sante": [
+"Udyr",
+"Kayle",
+"Lissandra"
+],
+"Vayne": [
+"Malphite",
+"Teemo",
+"Ryze"
+],
+"Aurora": [
+"Anivia",
+"Yasuo",
+"Warwick"
+]
+}
+},
+"d": {
+"adc": {
+"Xayah": [
+"Karthus",
+"Swain",
+"Ziggs"
+],
+"Jhin": [
+"Karthus",
+"Yasuo",
+"Vel'Koz"
+],
+"Kai'Sa": [
+"Swain",
+"Karthus",
+"Kog'Maw"
+],
+"Jinx": [
+"Lux",
+"Vel'Koz",
+"Syndra"
+],
+"Kog'Maw": [
+"Syndra",
+"Aurelion Sol",
+"Veigar"
+],
+"Swain": [
+"Aurelion Sol",
+"Karthus",
+"Vel'Koz"
+],
+"Vel'Koz": [
+"Hwei",
+"Veigar",
+"Yasuo"
+],
+"Zeri": [
+"Vel'Koz",
+"Swain",
+"Hwei"
+],
+"Yunara": [
+"Aurelion Sol",
+"Katarina",
+"Lux"
+],
+"Twitch": [
+"Seraphine",
+"Swain",
+"Nilah"
+],
+"Corki": [
+"Vel'Koz",
+"Karthus",
+"Ziggs"
+],
+"Hwei": [
+"Veigar",
+"Sivir",
+"Katarina"
+],
+"Draven": [
+"Vel'Koz",
+"Hwei",
+"Swain"
+],
+"Sivir": [
+"Katarina",
+"Twitch",
+"Aurelion Sol"
+],
+"Yasuo": [
+"Karthus",
+"Xayah",
+"Swain"
+],
+"Aphelios": [
+"Mel",
+"Hwei",
+"Lux"
+],
+"Tristana": [
+"Xerath",
+"Corki",
+"Hwei"
+],
+"Miss Fortune": [
+"Vel'Koz",
+"Nilah",
+"Aurelion Sol"
+],
+"Lucian": [
+"Veigar",
+"Syndra",
+"Kog'Maw"
+],
+"Ashe": [
+"Mel",
+"Swain",
+"Katarina"
+],
+"Smolder": [
+"Xerath",
+"Swain",
+"Hwei"
+],
+"Viktor": [
+"Swain",
+"Nilah",
+"Hwei"
+],
+"Karthus": [
+"Zeri",
+"Smolder",
+"Tristana"
+],
+"Aurelion Sol": [
+"Draven",
+"Vayne",
+"Ziggs"
+],
+"Katarina": [
+"Karthus",
+"Vel'Koz",
+"Lux"
+],
+"Caitlyn": [
+"Xerath",
+"Lux",
+"Hwei"
+],
+"Nilah": [
+"Hwei",
+"Vayne",
+"Syndra"
+],
+"Veigar": [
+"Lux",
+"Tristana",
+"Sivir"
+],
+"Lux": [
+"Viktor",
+"Xayah",
+"Swain"
+],
+"Kalista": [
+"Lux",
+"Vel'Koz",
+"Swain"
+],
+"Samira": [
+"Swain",
+"Seraphine",
+"Hwei"
+],
+"Syndra": [
+"Katarina",
+"Karthus",
+"Aurelion Sol"
+],
+"Varus": [
+"Seraphine",
+"Aurelion Sol",
+"Nilah"
+],
+"Ezreal": [
+"Viktor",
+"Vel'Koz",
+"Katarina"
+],
+"Ziggs": [
+"Swain",
+"Sivir",
+"Yasuo"
+],
+"Vayne": [
+"Swain",
+"Corki",
+"Seraphine"
+],
+"Mel": [
+"Xerath",
+"Swain",
+"Ziggs"
+],
+"Xerath": [
+"Xayah",
+"Yasuo",
+"Sivir"
+],
+"Seraphine": [
+"Hwei",
+"Viktor",
+"Zeri"
+]
+},
+"jungle": {
+"Lillia": [
+"Zaahen",
+"Volibear",
+"Maokai"
+],
+"Wukong": [
+"Nunu & Willump",
+"Rammus",
+"Gragas"
+],
+"Rek'Sai": [
+"Warwick",
+"Shen",
+"Karthus"
+],
+"Talon": [
+"Rek'Sai",
+"Rengar",
+"Aatrox"
+],
+"Shaco": [
+"Sion",
+"Nidalee",
+"Talon"
+],
+"Taliyah": [
+"Volibear",
+"Skarner",
+"Dr. Mundo"
+],
+"Sylas": [
+"Volibear",
+"Warwick",
+"Gragas"
+],
+"Master Yi": [
+"Rek'Sai",
+"Dr. Mundo",
+"Wukong"
+],
+"Zyra": [
+"Udyr",
+"Gwen",
+"Fizz"
+],
+"Lee Sin": [
+"Quinn",
+"Briar",
+"Shaco"
+],
+"Cho'Gath": [
+"Skarner",
+"Ivern",
+"Maokai"
+],
+"Nidalee": [
+"Shyvana",
+"Udyr",
+"Aatrox"
+],
+"Graves": [
+"Sion",
+"Evelynn",
+"Amumu"
+],
+"Jarvan IV": [
+"Trundle",
+"Evelynn",
+"Jax"
+],
+"Ekko": [
+"Ivern",
+"Vi",
+"Fiddlesticks"
+],
+"Kha'Zix": [
+"Rek'Sai",
+"Skarner",
+"Sion"
+],
+"Hecarim": [
+"Darius",
+"Ivern",
+"Udyr"
+],
+"Nunu & Willump": [
+"Xin Zhao",
+"Quinn",
+"Fizz"
+],
+"Shyvana": [
+"Fizz",
+"Sylas",
+"Trundle"
+],
+"Elise": [
+"Fizz",
+"Malphite",
+"Sion"
+],
+"Naafiri": [
+"Rek'Sai",
+"Malphite",
+"Ivern"
+],
+"Zac": [
+"Fizz",
+"Gwen",
+"Shen"
+],
+"Viego": [
+"Rek'Sai",
+"Zaahen",
+"Nidalee"
+],
+"Evelynn": [
+"Udyr",
+"Shen",
+"Lillia"
+],
+"Kayn": [
+"Jax",
+"Darius",
+"Nunu & Willump"
+],
+"Kindred": [
+"Trundle",
+"Sion",
+"Malphite"
+],
+"Bel'Veth": [
+"Volibear",
+"Kindred",
+"Naafiri"
+],
+"Briar": [
+"Volibear",
+"Dr. Mundo",
+"Zyra"
+],
+"Xin Zhao": [
+"Dr. Mundo",
+"Gragas",
+"Rammus"
+],
+"Fiddlesticks": [
+"Skarner",
+"Shen",
+"Cho'Gath"
+],
+"Udyr": [
+"Gragas",
+"Sejuani",
+"Quinn"
+],
+"Sejuani": [
+"Diana",
+"Rek'Sai",
+"Shyvana"
+],
+"Skarner": [
+"Aatrox",
+"Zaahen",
+"Zac"
+],
+"Rengar": [
+"Dr. Mundo",
+"Sion",
+"Rek'Sai"
+],
+"Diana": [
+"Volibear",
+"Zaahen",
+"Kindred"
+],
+"Darius": [
+"Pantheon",
+"Gwen",
+"Elise"
+],
+"Vi": [
+"Sion",
+"Fizz",
+"Gragas"
+],
+"Ivern": [
+"Fiddlesticks",
+"Gragas",
+"Warwick"
+],
+"Warwick": [
+"Dr. Mundo",
+"Udyr",
+"Shyvana"
+],
+"Qiyana": [
+"Sion",
+"Skarner",
+"Zac"
+],
+"Rammus": [
+"Fiddlesticks",
+"Ivern",
+"Trundle"
+],
+"Zaahen": [
+"Evelynn",
+"Kha'Zix",
+"Udyr"
+],
+"Gwen": [
+"Sion",
+"Amumu",
+"Bel'Veth"
+],
+"Nocturne": [
+"Fizz",
+"Sion",
+"Malphite"
+],
+"Sion": [
+"Briar",
+"Ekko",
+"Xin Zhao"
+],
+"Karthus": [
+"Zaahen",
+"Warwick",
+"Quinn"
+],
+"Aatrox": [
+"Udyr",
+"Bel'Veth",
+"Taliyah"
+],
+"Maokai": [
+"Ivern",
+"Sejuani",
+"Karthus"
+],
+"Trundle": [
+"Fiddlesticks",
+"Elise",
+"Lillia"
+],
+"Quinn": [
+"Rammus",
+"Sejuani",
+"Elise"
+],
+"Amumu": [
+"Rek'Sai",
+"Darius",
+"Nunu & Willump"
+],
+"Gragas": [
+"Rek'Sai",
+"Sejuani",
+"Nunu & Willump"
+],
+"Zed": [
+"Gwen",
+"Quinn",
+"Evelynn"
+],
+"Volibear": [
+"Zac",
+"Amumu",
+"Nidalee"
+],
+"Fizz": [
+"Hecarim",
+"Shaco",
+"Graves"
+]
+},
+"mid": {
+"Ahri": [
+"Zoe",
+"Qiyana",
+"Akshan"
+],
+"Katarina": [
+"Nasus",
+"Corki",
+"Vladimir"
+],
+"Ekko": [
+"Riven",
+"Pantheon",
+"Talon"
+],
+"LeBlanc": [
+"Pantheon",
+"Sion",
+"Naafiri"
+],
+"Twisted Fate": [
+"Gwen",
+"Riven",
+"Jayce"
+],
+"Lissandra": [
+"Corki",
+"Vel'Koz",
+"Kog'Maw"
+],
+"Vladimir": [
+"Kog'Maw",
+"Sion",
+"Malzahar"
+],
+"Zoe": [
+"Ziggs",
+"Naafiri",
+"Fizz"
+],
+"Syndra": [
+"Gwen",
+"Pantheon",
+"Katarina"
+],
+"Zed": [
+"Zoe",
+"Sion",
+"Diana"
+],
+"Yone": [
+"Gwen",
+"Pantheon",
+"Vex"
+],
+"Vex": [
+"Gwen",
+"Ziggs",
+"Swain"
+],
+"Hwei": [
+"Gwen",
+"Pantheon",
+"Fizz"
+],
+"Aurora": [
+"Kog'Maw",
+"Gwen",
+"Zoe"
+],
+"Taliyah": [
+"Katarina",
+"Anivia",
+"Vel'Koz"
+],
+"Yasuo": [
+"Sion",
+"Annie",
+"Kayle"
+],
+"Fizz": [
+"Sion",
+"Vex",
+"Riven"
+],
+"Diana": [
+"Anivia",
+"Riven",
+"Vladimir"
+],
+"Akali": [
+"Sion",
+"Twisted Fate",
+"Vex"
+],
+"Viktor": [
+"Kayle",
+"Talon",
+"Pantheon"
+],
+"Akshan": [
+"Riven",
+"Swain",
+"Ziggs"
+],
+"Kassadin": [
+"Riven",
+"Kayle",
+"Vex"
+],
+"Xerath": [
+"Riven",
+"Nasus",
+"Vel'Koz"
+],
+"Lux": [
+"Gwen",
+"Naafiri",
+"Kayle"
+],
+"Sylas": [
+"Riven",
+"Pantheon",
+"Swain"
+],
+"Galio": [
+"Kayle",
+"Ziggs",
+"Veigar"
+],
+"Locke": [
+"Akshan",
+"Katarina",
+"Kayle"
+],
+"Annie": [
+"Kog'Maw",
+"Nasus",
+"Aurora"
+],
+"Veigar": [
+"Riven",
+"Vel'Koz",
+"Nasus"
+],
+"Talon": [
+"Gwen",
+"Vel'Koz",
+"Mel"
+],
+"Qiyana": [
+"Vel'Koz",
+"Vex",
+"Kog'Maw"
+],
+"Gwen": [
+"Azir",
+"Zoe",
+"Akshan"
+],
+"Riven": [
+"Vex",
+"Lissandra",
+"Anivia"
+],
+"Vel'Koz": [
+"Kayle",
+"Aurelion Sol",
+"Ziggs"
+],
+"Pantheon": [
+"Irelia",
+"Diana",
+"Ahri"
+],
+"Aurelion Sol": [
+"Fizz",
+"Akshan",
+"Vex"
+],
+"Anivia": [
+"Gwen",
+"Naafiri",
+"Corki"
+],
+"Malzahar": [
+"Pantheon",
+"Sion",
+"Corki"
+],
+"Orianna": [
+"Ekko",
+"Naafiri",
+"Zoe"
+],
+"Irelia": [
+"Riven",
+"Kayle",
+"Sion"
+],
+"Sion": [
+"Veigar",
+"Annie",
+"Taliyah"
+],
+"Kayle": [
+"LeBlanc",
+"Hwei",
+"Orianna"
+],
+"Swain": [
+"Diana",
+"Katarina",
+"Malzahar"
+],
+"Cassiopeia": [
+"Sion",
+"Vel'Koz",
+"Riven"
+],
+"Kog'Maw": [
+"Aurelion Sol",
+"Diana",
+"Fizz"
+],
+"Naafiri": [
+"Vex",
+"Ekko",
+"Lissandra"
+],
+"Ziggs": [
+"Katarina",
+"Anivia",
+"Annie"
+],
+"Malphite": [
+"Fizz",
+"Talon",
+"Lissandra"
+],
+"Jayce": [
+"Annie",
+"Aurora",
+"Lux"
+],
+"Azir": [
+"Swain",
+"Vex",
+"Qiyana"
+],
+"Mel": [
+"Tristana",
+"Fizz",
+"Veigar"
+],
+"Ryze": [
+"Jayce",
+"Annie",
+"Vel'Koz"
+],
+"Nasus": [
+"Aurora",
+"Cassiopeia",
+"Hwei"
+],
+"Tristana": [
+"Taliyah",
+"Malphite",
+"Diana"
+],
+"Corki": [
+"Vladimir",
+"Qiyana",
+"Syndra"
+]
+},
+"support": {
+"Thresh": [
+"Vel'Koz",
+"Maokai",
+"Alistar"
+],
+"Leona": [
+"Zilean",
+"Soraka",
+"Galio"
+],
+"Alistar": [
+"Brand",
+"Janna",
+"Vel'Koz"
+],
+"Rell": [
+"Neeko",
+"Shen",
+"Soraka"
+],
+"Blitzcrank": [
+"Elise",
+"Rakan",
+"Alistar"
+],
+"Lulu": [
+"Vel'Koz",
+"Senna",
+"Blitzcrank"
+],
+"Braum": [
+"Fiddlesticks",
+"Morgana",
+"Zilean"
+],
+"Nami": [
+"Sylas",
+"Fiddlesticks",
+"Senna"
+],
+"Senna": [
+"Hwei",
+"Neeko",
+"Amumu"
+],
+"Rakan": [
+"Taric",
+"Maokai",
+"Senna"
+],
+"Janna": [
+"Zyra",
+"Zoe",
+"Elise"
+],
+"Seraphine": [
+"Amumu",
+"Rell",
+"Sona"
+],
+"Nautilus": [
+"Rell",
+"Taric",
+"Rakan"
+],
+"Soraka": [
+"Xerath",
+"LeBlanc",
+"Zilean"
+],
+"Sona": [
+"LeBlanc",
+"Amumu",
+"Blitzcrank"
+],
+"Zilean": [
+"Shaco",
+"Elise",
+"Thresh"
+],
+"Milio": [
+"Tahm Kench",
+"Rell",
+"Fiddlesticks"
+],
+"Pyke": [
+"LeBlanc",
+"Amumu",
+"Shaco"
+],
+"Poppy": [
+"Elise",
+"Milio",
+"Taric"
+],
+"Taric": [
+"Sylas",
+"Rell",
+"Leona"
+],
+"Vel'Koz": [
+"Poppy",
+"Maokai",
+"Taric"
+],
+"Maokai": [
+"Camille",
+"Fiddlesticks",
+"Braum"
+],
+"Karma": [
+"Galio",
+"Taric",
+"Senna"
+],
+"Bard": [
+"Fiddlesticks",
+"Taric",
+"Vel'Koz"
+],
+"Renata Glasc": [
+"Mel",
+"Milio",
+"Vel'Koz"
+],
+"Morgana": [
+"Fiddlesticks",
+"Zyra",
+"Poppy"
+],
+"Elise": [
+"Tahm Kench",
+"Galio",
+"Lux"
+],
+"Zyra": [
+"Amumu",
+"Zilean",
+"Galio"
+],
+"Lux": [
+"Galio",
+"LeBlanc",
+"Zoe"
+],
+"Galio": [
+"Pyke",
+"Braum",
+"Vel'Koz"
+],
+"Tahm Kench": [
+"Taric",
+"Shaco",
+"Senna"
+],
+"Yuumi": [
+"Shen",
+"Braum",
+"Rell"
+],
+"Amumu": [
+"Vel'Koz",
+"Maokai",
+"Thresh"
+],
+"Neeko": [
+"LeBlanc",
+"Taric",
+"Shaco"
+],
+"Fiddlesticks": [
+"Renata Glasc",
+"Pantheon",
+"Soraka"
+],
+"Pantheon": [
+"Hwei",
+"Taric",
+"Poppy"
+],
+"Swain": [
+"Galio",
+"Fiddlesticks",
+"Poppy"
+],
+"Brand": [
+"Taric",
+"Maokai",
+"Poppy"
+],
+"Xerath": [
+"Taric",
+"Galio",
+"Mel"
+],
+"Shaco": [
+"Poppy",
+"Camille",
+"Elise"
+],
+"Sylas": [
+"Elise",
+"Poppy",
+"Rell"
+],
+"LeBlanc": [
+"Maokai",
+"Poppy",
+"Rakan"
+],
+"Hwei": [
+"Bard",
+"Renata Glasc",
+"Rell"
+],
+"Zoe": [
+"Taric",
+"Tahm Kench",
+"Alistar"
+],
+"Camille": [
+"Galio",
+"Vel'Koz",
+"Zilean"
+],
+"Shen": [
+"Tahm Kench",
+"Milio",
+"Pyke"
+],
+"Mel": [
+"Soraka",
+"Rell",
+"Karma"
+]
+},
+"top": {
+"Darius": [
+"Aurora",
+"Quinn",
+"Gangplank"
+],
+"Malphite": [
+"Lissandra",
+"Sion",
+"Cho'Gath"
+],
+"Gangplank": [
+"Varus",
+"Zac",
+"Lissandra"
+],
+"Fiora": [
+"Udyr",
+"Lissandra",
+"Quinn"
+],
+"Camille": [
+"Zac",
+"Wukong",
+"Heimerdinger"
+],
+"Kayle": [
+"Wukong",
+"Malphite",
+"Ryze"
+],
+"Shen": [
+"Singed",
+"Kayle",
+"Olaf"
+],
+"Ornn": [
+"Zed",
+"Fiora",
+"Singed"
+],
+"Aatrox": [
+"Ryze",
+"Kayle",
+"Maokai"
+],
+"Singed": [
+"Swain",
+"Akali",
+"Riven"
+],
+"Jax": [
+"Lissandra",
+"Poppy",
+"Garen"
+],
+"Irelia": [
+"Wukong",
+"Warwick",
+"Volibear"
+],
+"Garen": [
+"Udyr",
+"Maokai",
+"Ryze"
+],
+"Sion": [
+"Anivia",
+"Udyr",
+"Trundle"
+],
+"Yone": [
+"Wukong",
+"Ryze",
+"Tryndamere"
+],
+"Pantheon": [
+"Lissandra",
+"Zac",
+"Cho'Gath"
+],
+"Zed": [
+"Zaahen",
+"Tryndamere",
+"Vladimir"
+],
+"Zaahen": [
+"Lissandra",
+"Urgot",
+"Singed"
+],
+"Sett": [
+"Cassiopeia",
+"Riven",
+"Wukong"
+],
+"Cho'Gath": [
+"Udyr",
+"Poppy",
+"Tahm Kench"
+],
+"Renekton": [
+"Poppy",
+"Illaoi",
+"Vayne"
+],
+"Gwen": [
+"Trundle",
+"Akali",
+"Fiora"
+],
+"Teemo": [
+"Zed",
+"Riven",
+"Ryze"
+],
+"Kled": [
+"Zac",
+"Wukong",
+"Anivia"
+],
+"Olaf": [
+"Kled",
+"Lissandra",
+"Swain"
+],
+"Urgot": [
+"Maokai",
+"Zac",
+"Quinn"
+],
+"Akali": [
+"Poppy",
+"Kled",
+"Pantheon"
+],
+"Mordekaiser": [
+"Zed",
+"Swain",
+"Anivia"
+],
+"Quinn": [
+"Rumble",
+"Singed",
+"Riven"
+],
+"Nasus": [
+"Swain",
+"Warwick",
+"Cassiopeia"
+],
+"Riven": [
+"Lissandra",
+"Vayne",
+"Anivia"
+],
+"Dr. Mundo": [
+"Zed",
+"Fiora",
+"Gwen"
+],
+"Poppy": [
+"Warwick",
+"Teemo",
+"Kayle"
+],
+"Kennen": [
+"Anivia",
+"Aurora",
+"Lissandra"
+],
+"Tryndamere": [
+"Udyr",
+"Poppy",
+"Ryze"
+],
+"Jayce": [
+"Kled",
+"Zed",
+"Sion"
+],
+"Gragas": [
+"Udyr",
+"Ornn",
+"Aurora"
+],
+"Anivia": [
+"Singed",
+"Aatrox",
+"Tryndamere"
+],
+"Warwick": [
+"Kennen",
+"Zaahen",
+"Riven"
+],
+"Gnar": [
+"Poppy",
+"Riven",
+"Kennen"
+],
+"Yasuo": [
+"Zac",
+"Kled",
+"Sett"
+],
+"Illaoi": [
+"Poppy",
+"Vayne",
+"Kayle"
+],
+"Ambessa": [
+"Warwick",
+"Quinn",
+"Lissandra"
+],
+"Volibear": [
+"Swain",
+"Poppy",
+"Zed"
+],
+"Lissandra": [
+"Kayle",
+"Sion",
+"Nasus"
+],
+"Sylas": [
+"Urgot",
+"Yorick",
+"Tryndamere"
+],
+"Wukong": [
+"Vladimir",
+"Singed",
+"Gnar"
+],
+"Tahm Kench": [
+"Kennen",
+"Anivia",
+"Vayne"
+],
+"Vayne": [
+"Teemo",
+"Malphite",
+"Sion"
+],
+"K'Sante": [
+"Udyr",
+"Zed",
+"Riven"
+],
+"Udyr": [
+"Ornn",
+"Urgot",
+"Pantheon"
+],
+"Swain": [
+"Gwen",
+"Darius",
+"Camille"
+],
+"Vladimir": [
+"Anivia",
+"Cassiopeia",
+"Yorick"
+],
+"Heimerdinger": [
+"Vladimir",
+"Aurora",
+"Akali"
+],
+"Yorick": [
+"Aurora",
+"Zac",
+"Anivia"
+]
+}
+}
+}
