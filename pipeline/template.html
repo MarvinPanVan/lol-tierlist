@@ -256,7 +256,7 @@ section,main,.board{scroll-margin-top:calc(var(--barh,98px) + 12px)}
 .gb i{position:absolute;top:0;bottom:0;border-radius:999px;animation:grow .5s var(--ease) both}
 .gb em{position:absolute;top:0;bottom:0;display:flex;align-items:center;font-style:normal;font-size:11.5px;font-weight:600;padding:0 8px;font-variant-numeric:tabular-nums}
 .gb .z{position:absolute;top:0;bottom:0;width:1.5px;background:var(--faint)}
-.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
 .cols ul{padding-left:18px;margin:6px 0 0}
 .cols li{margin:7px 0;color:var(--ink)}
 .cols li::marker{color:var(--faint)}
@@ -466,9 +466,9 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .irow .pic{width:34px;height:34px;border-radius:10px}
 .irow .in b{display:block;font:650 14px/1.25 Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .irow .in small{display:block;font:500 12px/1.35 Inter,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pw{display:block;width:34px;height:34px;border-radius:10px;background:var(--surf2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 19 15 9m-2-4 6 0 0 6M4 20l3-1-2-2z' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+.pw{display:block;width:34px;height:34px;border-radius:10px;background:var(--surf2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 4l-1.5 4.5-9 9-3-3 9-9zM5 13l6 6M7.5 16.5 4 20' fill='none' stroke='%23999' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
 .pw .pic{display:block}
-.stack{display:flex;width:34px;height:34px;align-items:center}.stack .pic{width:22px;height:22px;border-radius:50%;margin-right:-10px;box-shadow:0 0 0 2px var(--card)}
+.pstack{display:flex;width:34px;height:34px;align-items:center}.pstack .pic{width:22px;height:22px;border-radius:50%;margin-right:-10px;box-shadow:0 0 0 2px var(--card)}
 .pill{font:700 12.5px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill.pos{background:color-mix(in srgb,var(--pos) 14%,transparent);color:var(--pos)}
 .pill.neg{background:color-mix(in srgb,var(--neg) 14%,transparent);color:var(--neg)}
@@ -533,7 +533,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .xcol{display:grid;gap:16px}
 .mvs.mvc{margin:0;padding:2px 6px 6px;flex-wrap:wrap;overflow:visible}
 @media(max-width:980px){.xr{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.xs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:2px 4px 4px}.xchip{min-width:0;padding-right:8px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xcol{gap:12px}.mvs.mvc{flex-wrap:wrap}.xr{margin-top:18px;gap:12px}.xs:not(.all)>.xchip:nth-child(n+9){display:none}}
+@media(max-width:640px){.xs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:2px 4px 4px}.xchip{min-width:0;padding-right:8px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xcol{gap:12px}.xcol>section+section{display:none}#xb li:nth-child(n+5){display:none}.mvs.mvc{flex-wrap:wrap}.xr{margin-top:18px;gap:12px}.xs:not(.all)>.xchip:nth-child(n+9){display:none}}
 /* rank x region views */
 .pin{position:relative}
 .pin>.acts{position:absolute;top:12px;right:-8px;margin:0;z-index:2;gap:6px;flex-wrap:nowrap}
@@ -575,6 +575,14 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .hm td.on{box-shadow:inset 0 0 0 2px var(--acc)}
 .tv th.cur button{color:var(--ink)}.tv td.cur{background:color-mix(in srgb,var(--acc) 5%,transparent)}
 @media(max-width:640px){.bar.open .more>#ranks button,.bar.open .more>#regs button{flex:1 1 0;padding:0 6px}.gopt.reg{grid-column:auto}.guide{grid-template-columns:minmax(0,1fr)}}
+/* phones: more room for names in the two-column tier rows; a flag drops under the name instead of cutting it off */
+@media(max-width:640px){.row{grid-template-columns:38px minmax(0,1fr)}.lab{font-size:27px;padding:6px 2px}.lab small{font-size:8.5px}
+.chips{padding:6px;gap:5px}.chips.smalls{gap:5px}
+.chip:not(.big){padding:5px 7px 5px 5px;column-gap:7px}.chip:not(.big) .pic{width:26px;height:26px}
+.chip .nm{font-size:13.5px;display:flex;flex-wrap:wrap;align-items:center;gap:1px 5px;min-width:0}
+.chip .nmt{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip:not(.big) .nm .flag{font-size:9.5px;padding:1px 4px;margin:0}}
+@media(max-width:380px){.chip:not(.big) .nm{font-size:12.5px;letter-spacing:-.015em}.chip:not(.big) .sc{font-size:11px}.chip:not(.big){column-gap:6px;padding-right:6px}.chip:not(.big) .pic{width:24px;height:24px}.row{grid-template-columns:34px minmax(0,1fr)}.lab{font-size:25px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -791,7 +799,7 @@ const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
-const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt">${d.c}</span>${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],cnt={};
   for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
@@ -913,14 +921,15 @@ function renderSide(){if(!DATA[role])return;
   const none='<li class="none">None in this view.</li>';
   $('traps').innerHTML=list.filter(d=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a)-vv(b)).slice(0,6).map(d=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
   $('bans').innerHTML=list.filter(d=>vv(d)!=null&&vv(d)>0&&(sx(d).pick||0)>=1.5).map(d=>[d,vv(d)*sx(d).pick/(100-(sx(d).ban||0))]).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([d])=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${sx(d).ban==null?'?':sx(d).ban.toFixed(0)}% ban`,fmt(vv(d)),'pos')).join('')||none;
-  $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
+  const RL=ROLES.find(r=>r[0]===role)[1];   // per-role cards name their role, so they don't read like the all-role cards on the homepage
+  $('bansh').innerHTML=`Best bans <span class="vn">${RL} · ${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${RL} · ${VN}</span>`;
   const mv=list.filter(d=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b.tr-a.tr);
   $('movers').innerHTML=[...mv.filter(d=>d.tr>0).slice(0,3),...mv.filter(d=>d.tr<0).slice(-3)].map(d=>row(d,`now ${d.t} in Emerald+ · ${fmt(d.score)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
-  $('movh').textContent=`Moved most since ${META.prev_patch}`;
+  $('movh').innerHTML=`Moved most since ${META.prev_patch} <span class="vn">${RL}</span>`;
   $('movc').hidden=!!ARCH;
   const inRole=n=>list.find(d=>d.c===n);
   $('next').innerHTML=NEXT[role].map(([c,t,kd])=>{const names=c.split(',').map(x=>x.trim()),one=inRole(names[0])&&names.length===1;
-    const icon=names.length>1?`<span class="stack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
+    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
     return `<li>${one?`<button type="button" class="irow" data-c="${names[0]}">${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
@@ -988,7 +997,7 @@ function render(){
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
   renderControls();renderBoard();renderPanel();renderSide();drawMap();renderXR();
-  $('nexth').textContent='Changing next patch';
+  $('nexth').innerHTML=`Changing next patch <span class="vn">${ROLES.find(r=>r[0]===role)[1]}</span>`;
   $('nextc').hidden=!!ARCH||!NEXT[role].length;
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
 }

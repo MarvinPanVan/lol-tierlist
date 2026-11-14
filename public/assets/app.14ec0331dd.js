@@ -98,7 +98,7 @@ const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
-const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}${d.c}${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/tile/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}>${pic(d.c)}<span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt">${d.c}</span>${tag?`<span class="tg sm" style="background:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}${(()=>{const tf=isTrap(d)?'<span class="flag trap" title="Picked a lot, still losing">trap</span>':'',nf=d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:'';return size==='sm'?(tf||nf):nf+tf;})()}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
 function poolHTML(mine){
   const best=mine[0],cnt={};
   for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
@@ -220,14 +220,15 @@ function renderSide(){if(!DATA[role])return;
   const none='<li class="none">None in this view.</li>';
   $('traps').innerHTML=list.filter(d=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a)-vv(b)).slice(0,6).map(d=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
   $('bans').innerHTML=list.filter(d=>vv(d)!=null&&vv(d)>0&&(sx(d).pick||0)>=1.5).map(d=>[d,vv(d)*sx(d).pick/(100-(sx(d).ban||0))]).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([d])=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${sx(d).ban==null?'?':sx(d).ban.toFixed(0)}% ban`,fmt(vv(d)),'pos')).join('')||none;
-  $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
+  const RL=ROLES.find(r=>r[0]===role)[1];   // per-role cards name their role, so they don't read like the all-role cards on the homepage
+  $('bansh').innerHTML=`Best bans <span class="vn">${RL} · ${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${RL} · ${VN}</span>`;
   const mv=list.filter(d=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b.tr-a.tr);
   $('movers').innerHTML=[...mv.filter(d=>d.tr>0).slice(0,3),...mv.filter(d=>d.tr<0).slice(-3)].map(d=>row(d,`now ${d.t} in Emerald+ · ${fmt(d.score)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
-  $('movh').textContent=`Moved most since ${META.prev_patch}`;
+  $('movh').innerHTML=`Moved most since ${META.prev_patch} <span class="vn">${RL}</span>`;
   $('movc').hidden=!!ARCH;
   const inRole=n=>list.find(d=>d.c===n);
   $('next').innerHTML=NEXT[role].map(([c,t,kd])=>{const names=c.split(',').map(x=>x.trim()),one=inRole(names[0])&&names.length===1;
-    const icon=names.length>1?`<span class="stack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
+    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
     return `<li>${one?`<button type="button" class="irow" data-c="${names[0]}">${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
@@ -295,7 +296,7 @@ function render(){
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
   renderControls();renderBoard();renderPanel();renderSide();drawMap();renderXR();
-  $('nexth').textContent='Changing next patch';
+  $('nexth').innerHTML=`Changing next patch <span class="vn">${ROLES.find(r=>r[0]===role)[1]}</span>`;
   $('nextc').hidden=!!ARCH||!NEXT[role].length;
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
 }
