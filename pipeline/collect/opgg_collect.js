@@ -134,6 +134,6 @@ async function run(patch, parts) {
   a.href = URL.createObjectURL(new Blob([txt], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click();
   S.part = 'saved'; return {file: name, length: txt.length, sum, errors: S.errors.length};
 }
-window.TLC = {run, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, get};
+window.TLC = {run, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, packBuild, packVs, get};
 })();
 'TLC ready';

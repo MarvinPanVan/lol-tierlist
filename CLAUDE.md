@@ -94,7 +94,15 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    Write the patch into `patch.json` `notes` with every number (status live), and the next patch from Riot Phroxzon's
    preview (status preview, numbers as far as the preview has them; strafe.com lists them as text). The old preview
    entry is replaced by the official notes once the patch is live.
-2. Collect data for the new patch, ranked solo/duo. Save raw files in the same formats as now:
+2. Collect data for the new patch, ranked solo/duo. Save raw files in the same formats as now.
+   ALL OP.GG parts run from one saved script: open any op.gg page in the built-in browser, paste
+   `pipeline/collect/opgg_collect.js` into javascript_tool, then `await TLC.run('16.xx', ['stats'])`, then
+   `['matchups','builds']`, then `['vs','runes','length']` (vs needs matchups in the same run, so in practice:
+   `['matchups','builds','vs','runes','length']` in one long run, ~1.5 h, or stats + the rest). Each run saves one file
+   (Marvin clicks save once, into Downloads/lol-tierlist-data/); stage it and run
+   `python3 pipeline/collect/import_bundle.py <file> <length> <sum>` with the numbers run() returned. The importer checks
+   the file, computes the matchup ranking and writes every data file below. Tested on 15 Nov 2026 against the data in the
+   repo (identical). The notes below describe what it does, for when OP.GG changes its pages:
    - OP.GG champion stats, Emerald+: Global, EUW, KR, NA; plus Global Master+ and Global Diamond+.
      Always add `&patch=16.xx` (OP.GG's internal number, 16.22 = 26.22) or it serves an old patch.
      CSV: `champion,win,pick,ban` per role -> `data/opgg_{global,euw,kr,na}_e_{role}.csv`, `opgg_global_{m,d}_{role}.csv`.
@@ -142,8 +150,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      rows plus `"data":{"rune_pages":[...]}`; RSC references (`$L9a`) are resolved by finding the chunk `9a:` and parsing it.
      IMPORTANT: OP.GG splits page data across `<script>self.__next_f.push([1,"...` tags, so first remove every
      `"])</script><script>self.__next_f.push([1,"` from the HTML, or chunks break mid-record. -> `data/opgg_build_stats.json`
-     {"role|champ": [spells, rune pages, core builds, boots, starters]} (OP.GG's overview shows 2, 2, 3, 2, 2 of them;
-     pick and win x10). Skill order: the row with `"metaType":"skill"` (max order in extraData, 15 level letters from the
+     {"role|champ": [spells, rune pages, core builds, boots, starters]} (OP.GG's build page has 2 spell sets, 2 rune pages,
+     5 core builds, 2 boots, 2 starts; pick and win x10). Skill order: the row with `"metaType":"skill"` (max order in extraData, 15 level letters from the
      `translate:"no"` strong tags, pick, win, games) -> `data/opgg_skills.json`. update.py turns both into `bd` per champion.
      Build win rates are inflated (finishing items means you are ahead), so the card compares options with each other.
    - OP.GG matchup builds ("more vs" lines on the build card): for every champion and its 6 most played opponents fetch
