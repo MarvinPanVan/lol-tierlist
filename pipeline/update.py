@@ -133,7 +133,7 @@ def switches(role, c, kind, key, base):
         elif d < 3: rest.append(opp)
     if not up: return None
     up.sort(key=lambda x: -x[3]); typ = None
-    if rest:
+    if rest and len(up) >= 2:   # a type needs at least two opponents behind it
         best = 0
         for t in TYPE_NAME:
             if all(t in ctypes(o) for o, *_ in up):

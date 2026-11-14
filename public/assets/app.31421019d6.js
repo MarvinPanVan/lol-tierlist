@@ -225,7 +225,7 @@ const bimg=(kind,id,cl='')=>{const L=LK(),nm=kind==='item'?L.i[id]:kind==='sum'?
 function glHTML(d){const g=d.gl;if(!g||ARCH)return '';const LB={0:'Under 25',25:'25-30',30:'30-35',35:'35-40',40:'40+'};
   const col=([ln,r,n,cl])=>{const dv=r-g.w,h=Math.min(22,Math.abs(dv)*3.6);return `<div class="glc" title="${LB[ln]} min: ${r.toFixed(1)}% win in about ${kfmt(n)} games${cl?'':', too few to be sure it differs'}"><span class="glv${cl?'':' lowdemo'}">${r.toFixed(1)}</span><span class="glb"><i class="${dv>=0?'up':'dn'}" style="height:${h.toFixed(1)}px"></i></span><span class="gll">${LB[ln]}</span></div>`;};
   const v=g.v==='late'?`Wins more the longer the game goes: ${g.d.toFixed(1)} points better over 35 minutes than under 25.`:g.v==='early'?`Wins more in short games: ${Math.abs(g.d).toFixed(1)} points better under 25 minutes than over 35.`:'About the same at every game length.';
-  return `<div class="caph"><p class="cap">Game length <span class="mu">OP.GG Emerald+, win % by minutes, line = ${d.c}'s usual ${g.w.toFixed(1)}%</span></p></div><div class="gl">${g.b.map(col).join('')}</div><p class="glt">${v}</p>`;}
+  return `<div class="caph"><p class="cap">Win rate by game length <span class="mu">OP.GG Emerald+</span></p></div><div class="gl">${g.b.map(col).join('')}</div><p class="glt">${v} <span class="mu">Dashed line = ${g.w.toFixed(1)}%, ${d.c}'s usual.</span></p>`;}
 // build card: one short row per part (spells, runes, skills, start, core, boots) with OP.GG's most common pick and its share
 // of games. Tapping a row opens the other options: share, win rate (dotted when within sampling noise of the usual pick),
 // and the matchups where players switch to that option (OP.GG matchup builds, d.bd.vs). Nothing here says what to do;
