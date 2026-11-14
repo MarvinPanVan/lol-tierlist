@@ -213,7 +213,8 @@ const CHW={buff:'Buffed',nerf:'Nerfed'};
 const BDG={buff:'<path d="M5 1.5 9 8H1z"/>',nerf:'<path d="M1 2h8L5 8.5z"/>',trap:'<path d="M4 1h2l-.3 5.2H4.3zM4.1 7.3h1.8V9H4.1z"/>'};
 const badge=(k,t,lab)=>`<span class="bdg ${k}" title="${t}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[k]}</svg><span class="sr">${lab}</span></span>`;
 // next-patch change and "trap" sit as small marks on the portrait corner, so names stay on one line
-const badges=d=>(d.nx&&META.next?badge(d.nx,`${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}`,`${d.nx} soon`):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
+const nxTag=(d,cl='')=>`<span class="nxp ${d.nx}${cl}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[d.nx]}</svg>${META.next.patch}<span class="sr"> ${d.nx} coming</span></span>`;
+const badges=d=>(d.nx&&META.next?nxTag(d):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
 const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
 // links to the patch notes page when it has the champion or item
 const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/${item?'i-':''}${slug(c)}/">All numbers</a>`:'';   // the change's own page: its address is the link to share
@@ -521,7 +522,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="bdg buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg></span><span class="bdg nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg></span> = buff or nerf in ${META.next.patch}, ${META.next.date}.</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
+$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = score clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="nxp buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> <span class="nxp nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg>${META.next.patch}</span> = buff or nerf coming in ${META.next.patch} (${META.next.date}).</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.

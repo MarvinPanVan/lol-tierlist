@@ -770,10 +770,14 @@ details.brow{display:block}
 .bdg{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;color:#0b0c0f;vertical-align:-3px}
 .bdg svg{width:9px;height:9px;fill:currentColor}
 .bdg.buff{background:var(--pos)}.bdg.nerf{background:var(--neg)}.bdg.trap{background:var(--card);color:var(--neg);box-shadow:inset 0 0 0 1.5px var(--neg)}
-.chip .bdg{position:absolute;right:-5px;bottom:-5px;box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
+.chip .bdg{position:absolute;right:-5px;top:-5px;box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
 .chip .bdg.trap{box-shadow:inset 0 0 0 1.5px var(--neg),0 0 0 2px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
-.chip .bdg+.bdg{right:auto;left:-5px}
-.chip.big .bdg{width:19px;height:19px;right:-6px;bottom:-6px}.chip.big .bdg svg{width:11px;height:11px}.chip.big .bdg+.bdg{left:-6px}
+.chip.big .bdg{width:19px;height:19px;right:-6px;top:-6px}.chip.big .bdg svg{width:11px;height:11px}
+.nxp{display:inline-flex;align-items:center;gap:1px;padding:2px 3px 1px 2px;border-radius:4px;font:700 10px/1 'Barlow Condensed',sans-serif;letter-spacing:.03em;white-space:nowrap;color:light-dark(#fff,#0b0c0f);vertical-align:1px}
+.nxp svg{width:7px;height:7px;fill:currentColor;flex:none}
+.nxp.buff{background:var(--pos)}.nxp.nerf{background:var(--neg)}
+.chip .nxp{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
+.chip.big .nxp{font-size:11.5px;padding:2px 4px 2px 3px;bottom:-7px}.chip.big .nxp svg{width:8px;height:8px}
 .lowsc{color:var(--faint);font-weight:600}
 .legend .bdg.demo+.bdg.demo{margin-left:3px}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
@@ -813,6 +817,7 @@ details.brow{display:block}
 :root[data-theme=light] .chip.big .sc{background:rgba(255,255,255,.92);color:var(--ink);padding:6px 10px;border-radius:10px;text-shadow:none;box-shadow:0 2px 8px rgba(16,24,40,.22)}
 :root[data-theme=light] .chip.big .cm{color:var(--mut)}
 :root[data-theme=light] .chip .bdg{box-shadow:0 0 0 2px #f3f4f6}
+:root[data-theme=light] .chip .nxp{box-shadow:0 0 0 1.5px #f3f4f6}
 :root[data-theme=light] .chip .bdg.trap{box-shadow:inset 0 0 0 1.5px var(--neg),0 0 0 2px #f3f4f6}
 @media(max-width:640px){.row.t-S .chip.big{min-height:62px}.row.t-S .chip.big .pic{width:42px;height:42px}.row.t-S .chip.big .sc{font-size:17px}}
 @media(max-width:380px){.row{grid-template-columns:32px minmax(0,1fr)}.lab{font-size:24px}
@@ -1148,7 +1153,8 @@ const CHW={buff:'Buffed',nerf:'Nerfed'};
 const BDG={buff:'<path d="M5 1.5 9 8H1z"/>',nerf:'<path d="M1 2h8L5 8.5z"/>',trap:'<path d="M4 1h2l-.3 5.2H4.3zM4.1 7.3h1.8V9H4.1z"/>'};
 const badge=(k,t,lab)=>`<span class="bdg ${k}" title="${t}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[k]}</svg><span class="sr">${lab}</span></span>`;
 // next-patch change and "trap" sit as small marks on the portrait corner, so names stay on one line
-const badges=d=>(d.nx&&META.next?badge(d.nx,`${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}`,`${d.nx} soon`):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
+const nxTag=(d,cl='')=>`<span class="nxp ${d.nx}${cl}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[d.nx]}</svg>${META.next.patch}<span class="sr"> ${d.nx} coming</span></span>`;
+const badges=d=>(d.nx&&META.next?nxTag(d):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
 const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
 // links to the patch notes page when it has the champion or item
 const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/${item?'i-':''}${slug(c)}/">All numbers</a>`:'';   // the change's own page: its address is the link to share
@@ -1456,7 +1462,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="bdg buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg></span><span class="bdg nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg></span> = buff or nerf in ${META.next.patch}, ${META.next.date}.</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
+$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = score clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="nxp buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> <span class="nxp nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg>${META.next.patch}</span> = buff or nerf coming in ${META.next.patch} (${META.next.date}).</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.
