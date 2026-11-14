@@ -5,7 +5,7 @@ on:
     paths: ['pipeline/riot/icons.txt']
 permissions:
   contents: write
-concurrency: repo-writes
+concurrency: icons
 jobs:
   icons:
     runs-on: ubuntu-latest
