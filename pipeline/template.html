@@ -71,6 +71,9 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 .ticks i{display:block;width:7px;height:16px;position:relative}
 .ticks i::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
 .ticks b{position:absolute;left:0;right:0;border-radius:1px}
+.tri{font-size:9px;margin-right:3px;vertical-align:1px}.tri.up{color:var(--pos)}.tri.dn{color:var(--neg)}
+.kv strong small{font:500 12px Inter,sans-serif;color:var(--mut);margin-left:2px}
+.trend{font-size:14px;margin:0 0 10px;color:var(--mut)}
 .flag{font:600 11px/1 Inter,sans-serif;padding:2px 5px;border-radius:4px;margin-left:4px;vertical-align:2px}
 .flag.buff{background:color-mix(in srgb,var(--pos) 18%,transparent);color:var(--pos)}
 .flag.nerf{background:color-mix(in srgb,var(--neg) 18%,transparent);color:var(--neg)}
@@ -91,7 +94,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 .kv strong{font:700 22px/1.1 'Barlow Condensed',sans-serif;white-space:nowrap}
 .cap{font-size:13px;color:var(--mut);margin:0 0 6px}
 .rows{display:grid;gap:5px;margin-bottom:14px}
-.r{display:grid;grid-template-columns:72px minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:14px}
+.r{display:grid;grid-template-columns:104px minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:14px}
 .trk{position:relative;height:14px;background:var(--surf);border-radius:3px}
 .trk::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--mut)}
 .fill{position:absolute;top:2px;bottom:2px;border-radius:2px}
@@ -215,6 +218,8 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 <option value="na">NA, Emerald+</option>
 <option value="dia">Diamond+ (5 sites)</option>
 <option value="m">Master+ (2 sites)</option>
+<option value="euwd">EUW Diamond+</option>
+<option value="euwm">EUW Master+</option>
 </select>
 <div class="search"><input id="q" type="search" placeholder="Find a champion" autocomplete="off" aria-label="Find a champion"><div class="res" id="res"></div></div>
 <div class="hintline"><span id="hint"></span><span class="legend" id="legend"></span></div>
@@ -237,10 +242,13 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 <div class="fig" id="fig"><svg id="sv" role="img" aria-label="Pick rate against score"></svg></div>
 </div>
 <div>
+<h3>Best bans</h3>
+<p class="cap">Strong and often picked, adjusted for how often it is already banned.</p>
+<ul class="list" id="bans"></ul>
 <h3>Popular, but losing</h3>
 <p class="cap">5%+ pick rate, below average after correction.</p>
 <ul class="list" id="traps"></ul>
-<h3>Changing on 18 Nov (26.23 preview)</h3>
+<h3 id="nexth">Changing next patch</h3>
 <ul class="list" id="next"></ul>
 </div>
 </div>
@@ -261,12 +269,14 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 <div>
 <h2>How the score works</h2>
 <ul>
-<li>Per dataset: win rate minus that dataset's average for the role.</li>
-<li>Shrunk toward zero for small samples. Game counts come from U.GG where available.</li>
-<li>Small penalty under 2% pick rate, because mostly mains play those champions.</li>
-<li>Consensus: Global 30%, EUW 20%, KR 20%, Master+ 20%, NA 10% (OP.GG, Emerald+), then judged by hand. S must be above average in every region.</li>
-<li>High elo: Diamond+ from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs at half weight (50%), Master+ from OP.GG and U.GG (35%), EUW Emerald+ (15%). Tiers by cutoff, no hand edits.</li>
-<li>Z tier: +1.8 or better overall, at least +1.5 in every dataset, and a 2%+ pick rate.</li>
+<li>Per dataset: win rate minus that dataset's average for the role, in percentage points.</li>
+<li>Sample size: each number is pulled toward zero by how noisy it is. Game counts come from OP.GG's sample totals and U.GG. How hard to pull is fitted from the data for every dataset and role, not guessed.</li>
+<li>One-tricks: a small penalty under 2% pick rate, because mostly mains play those champions and their win rate flatters the champion.</li>
+<li>Consensus: Global 30%, EUW 20%, KR 20%, Master+ 20%, NA 10% (Emerald+ unless stated).</li>
+<li>High elo: Diamond+ from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs at half weight (40%), Master+ from OP.GG and U.GG (35%), EUW Diamond+ and Master+ (25%).</li>
+<li>Tiers follow fixed cutoffs, no hand edits: S from +1.15 and above average in every region, A from +0.6, B from +0.15, C from −0.45. Z needs +1.8 overall, +1.5 or better in every dataset and a 2%+ pick rate. Under 1.5% pick and strong goes to P.</li>
+<li>The ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch.</li>
+<li id="btline"></li>
 </ul>
 </div>
 <div>
@@ -276,7 +286,8 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 <li>Matchups and draft. Mage bots and Kog'Maw need the right support.</li>
 <li>Chinese servers. Tencent's data lives in its apps and is not public.</li>
 <li>Anything after 26.23. Master Yi, LeBlanc and Syndra get nerfed on 18 Nov.</li>
-<li>Exact game counts for EUW, NA and OP.GG Master+. Those are estimates.</li>
+<li>Game counts for Blitz and League of Graphs. They don't show them, so OP.GG Diamond+ counts stand in.</li>
+<li>How good the players are on the champion. That would need per-player data from the Riot API.</li>
 </ul>
 </div>
 </div>
@@ -302,16 +313,13 @@ const DATA=__DATA__;
 const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['support','Support']];
 const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only']];
 const DS=[['g','Global'],['euw','EUW'],['kr','KR'],['na','NA'],['dia','Diamond+'],['m','Master+']];
-const DSN={g:'Global, Emerald+',euw:'EUW, Emerald+',kr:'KR, Emerald+',na:'NA, Emerald+',dia:'Diamond+, 5 sites',m:'Master+, 2 sites'};
-const NEXT={
-top:[["Gnar","Q ratios up","buff"],["K'Sante","W cheaper and stronger","buff"],["Voltaic Cyclosword","Current-health damage down","nerf"]],
-jungle:[["Master Yi","Q AD ratio 70% to 60%","nerf"],["Vi","E damage up","buff"],["Voltaic Cyclosword","Hits lethality assassins","nerf"]],
-mid:[["LeBlanc","Q AP ratio 40% to 35%","nerf"],["Syndra","E costs more, longer early cooldown","nerf"],["Mel, Azir, Galio, Annie","Buffs","buff"],["Voltaic Cyclosword","Current-health damage down","nerf"]],
-adc:[["Ezreal","W and R damage up","buff"],["Vel'Koz","R rank 3 damage up","buff"],["Mel","Q and W up, also played bot","buff"]],
-support:[["Bard","Q damage and AP ratio up","buff"],["Galio","W shield up","buff"],["Vel'Koz","R rank 3 damage up","buff"]]};
-const GRADE=[["U.GG",.79,.13,.98],["Blitz",.89,-.12,.99],["dpm.lol",.60,.44,.97],["League of Graphs",.48,.19,.88],["Mobalytics experts",.18,.72,null],["METAsrc",-.14,.95,.67]];
+const DSP=[...DS,['euwd','EUW Diamond+'],['euwm','EUW Master+']];
+const DSN={g:'Global, Emerald+',euw:'EUW, Emerald+',kr:'KR, Emerald+',na:'NA, Emerald+',dia:'Diamond+, 5 sites',m:'Master+, 2 sites',euwd:'EUW Diamond+',euwm:'EUW Master+'};
+const META=DATA._meta;
+const NEXT=META.next.roles;
+const GRADE=META.grade;
 const SITES=[
-["OP.GG","https://op.gg/lol/champions","Korea","Global, EUW, KR, NA (Emerald+), Diamond+, Master+","Clean numbers, the base of the consensus"],
+["OP.GG","https://op.gg/lol/champions","Korea","Global, EUW, KR, NA (Emerald+), Diamond+, Master+, EUW Diamond+ and Master+, last patch","Clean numbers and sample totals, the base of the consensus"],
 ["U.GG","https://u.gg/lol/tier-list","NA","Diamond+ and Master+, all roles","Matches OP.GG; letters follow win rate"],
 ["Blitz","https://blitz.gg/lol/tierlist","NA","Diamond+, all roles","Matches OP.GG; letters follow win rate"],
 ["dpm.lol","https://dpm.lol/tierlist","EU","Diamond+, all roles","Numbers match; letters lean on popularity"],
@@ -329,7 +337,7 @@ const narrow=()=>matchMedia('(max-width:980px)').matches;
 let role='top',lens='score',pick=null,q='';
 try{const s=localStorage.getItem('tl-lens');if(s)lens=s;}catch(e){}
 const keyOf=()=>lens;
-function hiTier(d){const v=d.hi;if(v==null)return null;const pk=d.pick_d??d.pick;if(v>=1.8&&pk>=2&&(d.dia??-9)>=1.5&&(d.m??-9)>=1.5)return 'Z';if(pk<1.5&&v>=.6)return 'P';return v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D';}
+function hiTier(d){return d.ht||null;}
 function tierOf(d){
   if(lens==='score')return d.t;
   if(lens==='hi')return hiTier(d);
@@ -338,44 +346,46 @@ function tierOf(d){
   if(v>=2.5&&d.pick>=2)return 'Z';
   return v>=1.5?'S':v>=.8?'A':v>=.2?'B':v>=-.5?'C':'D';
 }
+function tri(d){if(d.tr==null||Math.abs(d.tr)<.6)return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'▲':'▼'}</span>`;}
 function ticks(d){return DS.map(([k])=>{const v=d[k];if(v==null)return '<i></i>';const h=Math.min(Math.abs(v),3)/3*7+1;return `<i><b style="${v>=0?`bottom:7px`:`top:7px`};height:${h}px;background:var(${v>=0?'--pos':'--neg'})"></b></i>`;}).join('');}
 function renderControls(){
   $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}">${n}</button>`).join('');
   $('views').innerHTML=[['score','Consensus'],['hi','High elo']].map(([k,n])=>`<button type="button" data-l="${k}" aria-pressed="${k===lens}">${n}</button>`).join('');
-  $('ds').value=DS.some(([k])=>k===lens)?lens:'';
+  $('ds').value=DSP.some(([k])=>k===lens)?lens:'';
   const list=DATA[role],miss=list.filter(d=>tierOf(d)==null).length;
-  $('hint').textContent=(lens==='score'?'Consensus of Global, EUW, KR, NA and Master+, Emerald+ base, judged by hand.':lens==='hi'?'High elo: Diamond+ from five sites, Master+ from two, EUW for your server.':'Raw tiers from '+DSN[lens]+' only.')+(miss?` ${miss} champions not listed in this view.`:'');
+  $('hint').textContent=(lens==='score'?'Consensus of Global, EUW, KR, NA and Master+, Emerald+ base. Fixed cutoffs, no hand edits.':lens==='hi'?'High elo: Diamond+ from five sites (40%), Master+ from two (35%), EUW Diamond+ and Master+ (25%).':'Raw tiers from '+DSN[lens]+' only.')+(miss?` ${miss} champions not listed in this view.`:'');
 }
 function renderBoard(){
   const list=DATA[role],k=keyOf();
   $('board').innerHTML=TIERS.map(([t,cap])=>{
     const cs=list.filter(d=>tierOf(d)===t).sort((a,b)=>(b[k]??-99)-(a[k]??-99));
-    const body=cs.length?cs.map(d=>`<button type="button" class="chip${q&&!d.c.toLowerCase().includes(q)?' dim':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"><span class="nm">${d.c}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}</span><span class="sc">${fmt(d[k])}</span><span class="ticks" aria-hidden="true">${ticks(d)}</span></button>`).join(''):`<span class="empty">${t==='Z'?'Nothing is that far ahead here.':'None'}</span>`;
+    const body=cs.length?cs.map(d=>`<button type="button" class="chip${q&&!d.c.toLowerCase().includes(q)?' dim':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"><span class="nm">${d.c}${d.nx?`<span class="flag ${d.nx}">${d.nx}</span>`:''}</span><span class="sc">${tri(d)}${fmt(d[k])}</span><span class="ticks" aria-hidden="true">${ticks(d)}</span></button>`).join(''):`<span class="empty">${t==='Z'?'Nothing is that far ahead here.':'None'}</span>`;
     return `<div class="row" style="--T:var(${colT(t)})"><div class="lab">${t}${cap?`<small>${cap}</small>`:''}</div><div class="chips">${body}</div></div>`;
   }).join('');
 }
 function renderPanel(){
   const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';return;}
   const rn=ROLES.find(r=>r[0]===role)[1],ht=hiTier(d);
-  const rows=DS.map(([k,n])=>{const v=d[k];if(v==null)return `<div class="r"><span>${n}</span><div class="trk"></div><span class="val">n/a</span></div>`;const c=Math.max(-4,Math.min(4,v)),w=Math.abs(c)/4*50;return `<div class="r"><span>${n}</span><div class="trk"><div class="fill" style="left:${c<0?50-w:50}%;width:${w}%;background:var(${v<0?'--neg':'--pos'})"></div></div><span class="val">${fmt(v)}</span></div>`;}).join('');
+  const rows=DSP.map(([k,n])=>{const v=d[k];if(v==null)return `<div class="r"><span>${n}</span><div class="trk"></div><span class="val">n/a</span></div>`;const c=Math.max(-4,Math.min(4,v)),w=Math.abs(c)/4*50;return `<div class="r"><span>${n}</span><div class="trk"><div class="fill" style="left:${c<0?50-w:50}%;width:${w}%;background:var(${v<0?'--neg':'--pos'})"></div></div><span class="val">${fmt(v)}</span></div>`;}).join('');
   const sites=Object.entries(d.sites||{}).map(([k,v])=>`<span class="site">${k}<b style="background:var(${colT(v)})">${v||'n/a'}</b></span>`).join('');
-  const nx=NEXT[role].find(x=>x[0]===d.c);
+  const tr=d.tr==null?'':`<p class="trend">Since ${META.prev_patch} (Global): <b style="color:var(${d.tr>=0?'--pos':'--neg'})">${d.tr>=0?'▲':'▼'} ${fmt(d.tr)}</b></p>`;
   $('panel').innerHTML=`<div class="ph"><div><h3>${d.c}</h3><p class="rolesub">${rn}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
   <div class="badges"><span class="badge" style="background:var(${colT(d.t)})">Consensus ${d.t==='P'?'pocket':d.t}</span>${ht?`<span class="badge" style="background:var(${colT(ht)})">High elo ${ht==='P'?'pocket':ht}</span>`:''}</div>
-  <div class="kv"><div><span>Score</span><strong>${fmt(d.score)}</strong></div><div><span>High elo</span><strong>${fmt(d.hi)}</strong></div><div><span>Pick</span><strong>${d.pick.toFixed(1)}%</strong></div><div><span>Ban</span><strong>${d.ban==null?'n/a':d.ban.toFixed(0)+'%'}</strong></div></div>
+  <div class="kv"><div><span>Score</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong></div><div><span>High elo</span><strong>${fmt(d.hi)}</strong></div><div><span>Pick</span><strong>${d.pick.toFixed(1)}%</strong></div><div><span>Ban</span><strong>${d.ban==null?'n/a':d.ban.toFixed(0)+'%'}</strong></div></div>
   <p class="cap">Win rate vs role average, points</p><div class="rows">${rows}</div>
   ${d.note?`<p class="note">${d.note}</p>`:''}
-  ${nx?`<p class="nx ${nx[2]}">26.23: ${nx[1]}.</p>`:''}
+  ${tr}${d.nx?`<p class="nx ${d.nx}">${META.next.patch}: ${d.nxt}.</p>`:''}
   <p class="cap">How each site grades it at Diamond+</p><div class="sites">${sites}<span class="site">Lolalytics, Emerald+<b style="background:var(${colT(d.ll)})">${d.ll||'n/a'}</b></span></div>`;
 }
 function renderSide(){
   const list=DATA[role];
   $('traps').innerHTML=list.filter(d=>d.pick>=5&&d.score<=-.3).sort((a,b)=>a.score-b.score).map(d=>`<li><button type="button" data-c="${d.c}">${d.c}</button><span>${d.pick.toFixed(1)}% pick, ${fmt(d.score)}</span></li>`).join('')||'<li><span>None this patch</span><span></span></li>';
+  $('bans').innerHTML=list.filter(d=>d.score>0&&d.pick>=1.5).map(d=>[d,d.score*d.pick/(100-d.ban)]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([d])=>`<li><button type="button" data-c="${d.c}">${d.c}</button><span>${fmt(d.score)}, ${d.pick.toFixed(1)}% pick, ${d.ban.toFixed(0)}% ban</span></li>`).join('');
   $('next').innerHTML=NEXT[role].map(([c,t,k])=>`<li><span>${c}</span><span style="color:var(${k==='buff'?'--pos':'--neg'})">${t}</span></li>`).join('');
 }
 function drawMap(){
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
-  const k=lens==='score'||DS.some(([x])=>x===lens)?(lens==='score'?'score':lens):'hi';
+  const k=lens==='score'||DSP.some(([x])=>x===lens)?(lens==='score'?'score':lens):'hi';
   const list=DATA[role].filter(d=>d[k]!=null&&d.pick>0);
   const m={l:58,r:16,t:18,b:40},small=W<520;
   const x=p=>m.l+(Math.log(Math.max(.4,Math.min(26,p)))-Math.log(.4))/(Math.log(26)-Math.log(.4))*(W-m.l-m.r);
@@ -388,7 +398,7 @@ function drawMap(){
   g+=`<text class="ax" x="${W-m.r}" y="${H-6}" text-anchor="end">Pick rate (log scale)</text>`;
   g+=`<text class="ax" transform="translate(14 ${(m.t+H-m.b)/2}) rotate(-90)" text-anchor="middle">Score vs role average</text>`;
   g+=`<text class="q" x="${W-m.r-8}" y="${y(ymax)+18}" text-anchor="end">Strong and popular</text>`;
-  g+=`<text class="q" x="${W-m.r-8}" y="${y(ymin)-10}" text-anchor="end">Popular, losing</text>`;
+  g+=`<text class="q" x="${W-m.r-8}" y="${y(0)+20}" text-anchor="end">Popular, losing</text>`;
   g+=`<text class="q" x="${m.l+8}" y="${y(ymax)+18}">Strong, rarely picked</text>`;
   const boxes=[],lab=[];
   const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||Math.abs(b[k])*Math.sqrt(b.pick)-Math.abs(a[k])*Math.sqrt(a.pick));
@@ -409,6 +419,7 @@ function render(){
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
   renderControls();renderBoard();renderPanel();renderSide();drawMap();
+  $('nexth').textContent=`Changing on ${META.next.date} (${META.next.patch} preview)`;
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
 }
 function select(c,open){pick=c;document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===pick));renderPanel();drawMap();if(open)openPanel(true);}
@@ -416,7 +427,7 @@ function setLens(l){lens=l;try{localStorage.setItem('tl-lens',l);}catch(e){}rend
 function search(){
   q=$('q').value.trim().toLowerCase();
   const out=[];if(q)for(const [r,n] of ROLES)for(const d of DATA[r])if(d.c.toLowerCase().includes(q))out.push([r,n,d]);
-  out.sort((a,b)=>(a[2].c.toLowerCase().startsWith(q)?0:1)-(b[2].c.toLowerCase().startsWith(q)?0:1)||a[2].pick<b[2].pick);
+  out.sort((a,b)=>(a[2].c.toLowerCase().startsWith(q)?0:1)-(b[2].c.toLowerCase().startsWith(q)?0:1)||b[2].pick-a[2].pick);
   $('res').innerHTML=out.slice(0,8).map(([r,n,d])=>{const t=tierOf(d)||d.t;return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span>${d.c} <span style="color:var(--mut)">${n}</span></span><span class="tg" style="background:var(${colT(t)})">${t}</span></button>`;}).join('')||(q?'<button type="button" disabled>No match</button>':'');
   $('res').style.display=q?'block':'none';
   renderBoard();
@@ -445,6 +456,7 @@ function renderBest(){
   $('best').innerHTML='<h2>Best pick per role</h2>'+ROLES.map(([r,n])=>{const d=DATA[r].filter(x=>x.t!=='P').sort((a,b)=>(tr[a.t]-tr[b.t])||(b.score-a.score))[0];return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="br">${n}</span><span class="bn">${d.c}</span><span class="bs">${fmt(d.score)}</span><span class="tg" style="background:var(${colT(d.t)})">${d.t}</span></button>`;}).join('');
 }
 renderBest();
+{const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). Pulling toward zero made last patch a better guess (error ${b.mse_shrunk} vs ${b.mse_raw}).`;}
 renderGrade();
 if(!['score','hi','g','euw','kr','na','dia','m'].includes(lens))lens='score';
 fromHash();

@@ -12,10 +12,13 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `pipeline/assets/mark.svg` : the logo (tier-row icon), used for favicon, brand mark and og.png.
 - `pipeline/build.py` : `python3 pipeline/build.py` writes `public/index.html` from template + tiers.json.
 - `pipeline/data`, `pipeline/data2` : raw numbers read from the stat sites for the current patch.
-- `pipeline/scripts` : the scoring scripts used for 26.22. Run order: model, tiers, final, merge2, highelo3.
-  They are only partly reproducible: the League of Graphs and METAsrc merge, the Diamond+/Master+ site counts
-  (`ndia`, `nm`) and some note texts were done ad hoc. On the next update, consolidate everything into one
-  `pipeline/update.py` that goes from raw files to tiers.json in one run, and check it reproduces the numbers.
+- `pipeline/update.py` : the whole method, raw files to tiers.json in one run (`python3 pipeline/update.py`).
+  Prints a backtest (last patch vs this patch for unchanged champions), fitted spreads and the tiers.
+- `pipeline/patch.json` : patch numbers, previous patch code for the trend files, next patch preview per role
+  (shown on the site and used for buff/nerf flags), champions changed this patch (excluded from the backtest).
+- `pipeline/data/samples.json` : OP.GG "Total analyzed samples" per dataset. It counts 10 per match, so
+  games for a champion = pick% / 100 x samples / 10 (checked against U.GG game counts, they match).
+- `pipeline/data/prev/` : last patch's OP.GG Global Emerald+ files, for the trend arrows and the backtest.
 
 ## Update procedure (each patch, every two weeks)
 
@@ -33,17 +36,19 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Lolalytics Emerald+ (runs about +1.6 points high on win rate, use only for shape) and lol.ps KR as cross-checks.
    - Reject optional cookies on every site. If a fetch gets blocked, use the browser, never work around a block.
    - Ask Marvin to be at his PC with the browser open if the cloud fetch cannot read a site.
-3. Score (same method as 26.22, keep it unless Marvin asks to change it):
+3. Score: run `python3 pipeline/update.py`. Method (keep unless Marvin asks to change it):
    - Per dataset: win rate minus the pick-weighted role average.
-   - Shrinkage n/(n+K), K = 0.25/0.012^2 (about 1736 games). Game counts from U.GG where available.
-   - Specialist penalty 0.4*ln(2/pick) when pick < 2%.
-   - Consensus = Global .30, EUW .20, KR .20, Master+ .20, NA .10 (OP.GG Emerald+), then judged by hand.
-     S must be positive in every region. Pick < 1.5% goes to P ("Mains only").
-   - High elo = Diamond+ (OP.GG, U.GG, Blitz, dpm.lol at 1, League of Graphs at 0.5) 50%, Master+ (OP.GG, U.GG) 35%,
-     EUW Emerald+ 15%. Cutoffs: Z hi>=1.8 and pick_d>=2 and dia>=1.5 and m>=1.5; P pick_d<1.5 and hi>=.6;
-     S>=1.15, A>=.6, B>=.15, C>=-.45, else D.
-   - Z tier in the consensus: only if clearly ahead everywhere. Empty Z is fine.
-   - `nx` = 'buff' / 'nerf' for champions changed in the NEXT patch preview, else null.
+   - Shrinkage: empirical Bayes per dataset and role. tau^2 = mean(delta^2) - mean(2500/n) over champions with
+     n >= 300 (floor 0.35^2); shrunk = delta * tau^2 / (tau^2 + 2500/n).
+   - One-trick penalty 0.4*ln(2/pick) when pick < 2%.
+   - Consensus = Global .30, EUW .20, KR .20, Master+ .20 (OP.GG and U.GG), NA .10. ± = 1.64 x combined sd.
+   - High elo = Diamond+ (OP.GG, U.GG, Blitz, dpm.lol at 1, League of Graphs at 0.5) 40%, Master+ (OP.GG, U.GG) 35%,
+     EUW Diamond+ and Master+ 25%.
+   - Tiers, same rules for both views, no hand edits: Z score>=1.8, every dataset >=1.5, pick>=2; P pick<1.5 and
+     >=.6; S>=1.15 and above average in every region; A>=.6; B>=.15; C>=-.45; else D.
+   - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
+   - Also collect OP.GG EUW Diamond+ and Master+ (`opgg_euw_{d,m}_{role}.csv`), the previous patch Global Emerald+
+     (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
 4. Update the texts in `pipeline/template.html`: title and meta tags, top bar pill "Patch xx.xx", hero pills
    ("Updated ...", "Next patch ..."), headline, lede counts, the NEXT list ("Changing on ..."), method and limits
    bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.

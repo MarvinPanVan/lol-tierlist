@@ -1,0 +1,133 @@
+{
+ "patch": "26.22",
+ "date": "18 Nov",
+ "changed_this_patch": [
+  "Aurelion Sol",
+  "Corki",
+  "Kayle",
+  "Locke",
+  "Maokai",
+  "Mel",
+  "Naafiri",
+  "Rumble",
+  "Shen",
+  "Smolder",
+  "Thresh",
+  "Viktor",
+  "Yasuo",
+  "Zaahen",
+  "Hecarim",
+  "Aatrox",
+  "Amumu",
+  "Evelynn",
+  "Ezreal",
+  "Fiddlesticks",
+  "Gangplank",
+  "Janna",
+  "Mordekaiser",
+  "Nami",
+  "Olaf",
+  "Rammus",
+  "Volibear",
+  "Swain",
+  "Elise"
+ ],
+ "prev_patch": "26.21",
+ "prev_patch_code": "2621",
+ "next": {
+  "patch": "26.23",
+  "date": "18 Nov",
+  "roles": {
+   "top": [
+    [
+     "Gnar",
+     "Q ratios up",
+     "buff"
+    ],
+    [
+     "K'Sante",
+     "W cheaper and stronger",
+     "buff"
+    ],
+    [
+     "Voltaic Cyclosword",
+     "Current-health damage down",
+     "nerf"
+    ]
+   ],
+   "jungle": [
+    [
+     "Master Yi",
+     "Q AD ratio 70% to 60%",
+     "nerf"
+    ],
+    [
+     "Vi",
+     "E damage up",
+     "buff"
+    ],
+    [
+     "Voltaic Cyclosword",
+     "Hits lethality assassins",
+     "nerf"
+    ]
+   ],
+   "mid": [
+    [
+     "LeBlanc",
+     "Q AP ratio 40% to 35%",
+     "nerf"
+    ],
+    [
+     "Syndra",
+     "E costs more, longer early cooldown",
+     "nerf"
+    ],
+    [
+     "Mel, Azir, Galio, Annie",
+     "Buffs",
+     "buff"
+    ],
+    [
+     "Voltaic Cyclosword",
+     "Current-health damage down",
+     "nerf"
+    ]
+   ],
+   "adc": [
+    [
+     "Ezreal",
+     "W and R damage up",
+     "buff"
+    ],
+    [
+     "Vel'Koz",
+     "R rank 3 damage up",
+     "buff"
+    ],
+    [
+     "Mel",
+     "Q and W up, also played bot",
+     "buff"
+    ]
+   ],
+   "support": [
+    [
+     "Bard",
+     "Q damage and AP ratio up",
+     "buff"
+    ],
+    [
+     "Galio",
+     "W shield up",
+     "buff"
+    ],
+    [
+     "Vel'Koz",
+     "R rank 3 damage up",
+     "buff"
+    ]
+   ]
+  }
+ }
+}
