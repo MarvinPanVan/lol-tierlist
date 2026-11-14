@@ -1,0 +1,373 @@
+{
+"version": "16.22.1",
+"summoners": {
+"21": {
+"name": "Barrier",
+"desc": "Gain a brief Shield."
+},
+"1": {
+"name": "Cleanse",
+"desc": "Removes all disables (excluding suppression and airborne) and summoner spell debuffs affecting your champion and gives Tenacity."
+},
+"14": {
+"name": "Ignite",
+"desc": "Deals true damage over time to target enemy champion and reduces healing effects on them for the duration."
+},
+"3": {
+"name": "Exhaust",
+"desc": "Slows target enemy champion and reduces their damage dealt."
+},
+"4": {
+"name": "Flash",
+"desc": "Teleports you a short distance toward your cursor."
+},
+"6": {
+"name": "Ghost",
+"desc": "Gain Move Speed and ignore unit collision for the duration."
+},
+"7": {
+"name": "Heal",
+"desc": "Restores Health and grants Move Speed to you and target allied champion."
+},
+"11": {
+"name": "Smite",
+"desc": "Deals true damage to a monster or minion."
+},
+"12": {
+"name": "Teleport",
+"desc": "After a brief channel, become untargetable and travel to an allied unit. Upgrades into Unleashed Teleport, which significantly increases travel speed."
+}
+},
+"runes": {
+"8100": {
+"name": "Domination",
+"tree": true
+},
+"8112": {
+"name": "Electrocute",
+"desc": "Hitting a champion with 3 separate attacks or abilities in 3s deals bonus adaptive damage.",
+"style": 8100
+},
+"8128": {
+"name": "Dark Harvest",
+"desc": "Damaging a low health champion inflicts adaptive damage and harvests a soul from the victim.",
+"style": 8100
+},
+"9923": {
+"name": "Hail of Blades",
+"desc": "Gain a large amount of Attack Speed and bonus true damage for the first 3 attacks made against enemy champions.",
+"style": 8100
+},
+"8126": {
+"name": "Cheap Shot",
+"desc": "Deal bonus true damage to enemy champions with impaired movement or actions.",
+"style": 8100
+},
+"8139": {
+"name": "Taste of Blood",
+"desc": "Heal when you damage an enemy champion.",
+"style": 8100
+},
+"8143": {
+"name": "Sudden Impact",
+"desc": "Damaging basic attacks and abilities deal bonus true damage to enemy champions after using a dash, leap, blink, teleport, or when leaving stealth.",
+"style": 8100
+},
+"8137": {
+"name": "Sixth Sense",
+"desc": "On a long Cooldown, automatically sense a nearby untracked and unseen ward, tracking it for the team. Level 11: Also reveal the ward for 10s.",
+"style": 8100
+},
+"8140": {
+"name": "Grisly Mementos",
+"desc": "Collect 1 memento on champion takedowns , up to 18 total. Gain 6 Trinket Haste for each collected.",
+"style": 8100
+},
+"8141": {
+"name": "Deep Ward",
+"desc": "Your wards in the enemy jungle are Deep , gaining Health and Duration. Level 9: Wards in the river are also Deep.",
+"style": 8100
+},
+"8135": {
+"name": "Treasure Hunter",
+"desc": "Unique takedowns grant additional gold the first time they are collected.",
+"style": 8100
+},
+"8105": {
+"name": "Relentless Hunter",
+"desc": "Unique takedowns grant permanent out of combat MS.",
+"style": 8100
+},
+"8106": {
+"name": "Ultimate Hunter",
+"desc": "Unique takedowns grant permanent cooldown reduction on your Ultimate.",
+"style": 8100
+},
+"8300": {
+"name": "Inspiration",
+"tree": true
+},
+"8351": {
+"name": "Glacial Augment",
+"desc": "Immobilizing an enemy champion will cause 3 glacial rays that slow nearby enemies and reduce their damage to your allies.",
+"style": 8300
+},
+"8360": {
+"name": "Unsealed Spellbook",
+"desc": "Swap Summoner Spells while out of combat. Swapping to unique Summoner Spells will increase the rate at which you can make future swaps.",
+"style": 8300
+},
+"8369": {
+"name": "First Strike",
+"desc": "When you initiate champion combat, deal 7% extra damage for 3 seconds and gain gold based on damage dealt.",
+"style": 8300
+},
+"8306": {
+"name": "Hextech Flashtraption",
+"desc": "While Flash is on cooldown it is replaced by Hexflash. Hexflash : Channel, then blink to a new location.",
+"style": 8300
+},
+"8304": {
+"name": "Magical Footwear",
+"desc": "You get free boots at 12 min but you cannot buy boots before then. Each takedown you get makes your boots come 45s sooner.",
+"style": 8300
+},
+"8321": {
+"name": "Cash Back",
+"desc": "Get some gold back when you purchase Legendary Items.",
+"style": 8300
+},
+"8313": {
+"name": "Triple Tonic",
+"desc": "Upon reaching level 3, gain an Elixir of Avarice. Upon reaching level 6, gain an Elixir of Force. Upon reaching level 9, gain an Elixir of Skill.",
+"style": 8300
+},
+"8352": {
+"name": "Time Warp Tonic",
+"desc": "Potions grant some restoration immediately.",
+"style": 8300
+},
+"8345": {
+"name": "Biscuit Delivery",
+"desc": "Gain a free Biscuit every 2 min, until 6 min. Consuming or selling a Biscuit permanently increases your max health and restores health.",
+"style": 8300
+},
+"8347": {
+"name": "Cosmic Insight",
+"desc": "+ 18 Summoner Spell Haste + 10 Item Haste",
+"style": 8300
+},
+"8410": {
+"name": "Approach Velocity",
+"desc": "Bonus MS towards nearby enemy champions that are movement impaired , increased for enemy champions that you impair.",
+"style": 8300
+},
+"8316": {
+"name": "Jack Of All Trades",
+"desc": "For each different stat gained from items, gain one Jack stack. Each stack grants you 1 Ability Haste. Gain bonus Adaptive Force at 5 and 10 stacks.",
+"style": 8300
+},
+"8000": {
+"name": "Precision",
+"tree": true
+},
+"8005": {
+"name": "Press the Attack",
+"desc": "Hitting an enemy champion 3 consecutive times deals bonus damage and amplifies your damage until you leave combat with champions.",
+"style": 8000
+},
+"8008": {
+"name": "Lethal Tempo",
+"desc": "Attacking an enemy champion grants you Attack Speed, up to 6 stacks. At max stacks, deal bonus adaptive damage On-Attack.",
+"style": 8000
+},
+"8021": {
+"name": "Fleet Footwork",
+"desc": "Attacking and moving builds Energy stacks. At 100 stacks, your next attack heals you and grants increased MS.",
+"style": 8000
+},
+"8010": {
+"name": "Conqueror",
+"desc": "Gain stacks of adaptive force when attacking enemy champions. After reaching 12 stacks, heal for a portion of damage you deal to champions.",
+"style": 8000
+},
+"9101": {
+"name": "Absorb Life",
+"desc": "Killing a target heals you.",
+"style": 8000
+},
+"9111": {
+"name": "Triumph",
+"desc": "Takedowns restore 5% of your missing health and grant an additional 20 gold.",
+"style": 8000
+},
+"8009": {
+"name": "Presence of Mind",
+"desc": "Restore a small amount of mana or energy when damaging an enemy champion. Takedowns restore mana or energy.",
+"style": 8000
+},
+"9104": {
+"name": "Legend: Alacrity",
+"desc": "Takedowns on enemies grant permanent Attack Speed.",
+"style": 8000
+},
+"9105": {
+"name": "Legend: Haste",
+"desc": "Takedowns on enemies grant permanent Basic Ability Haste.",
+"style": 8000
+},
+"9103": {
+"name": "Legend: Bloodline",
+"desc": "Takedowns on enemies grant permanent Life Steal , up to a cap. Once the cap is reached, increase your max health. Weaker earlier but stronger later game than other Legend Runes.",
+"style": 8000
+},
+"8014": {
+"name": "Coup de Grace",
+"desc": "Deal more damage to low health enemy champions.",
+"style": 8000
+},
+"8017": {
+"name": "Cut Down",
+"desc": "Deal more damage to high health enemy champions.",
+"style": 8000
+},
+"8299": {
+"name": "Last Stand",
+"desc": "Deal more damage to champions while you are low on health.",
+"style": 8000
+},
+"8400": {
+"name": "Resolve",
+"tree": true
+},
+"8437": {
+"name": "Grasp of the Undying",
+"desc": "Every 4s your next attack on a champion deals bonus magic damage, heals you, and permanently increases your health.",
+"style": 8400
+},
+"8439": {
+"name": "Aftershock",
+"desc": "After immobilizing an enemy champion gain defenses and later deal a burst of magic damage around you.",
+"style": 8400
+},
+"8465": {
+"name": "Guardian",
+"desc": "Guard allies you cast spells on and those that are very nearby. If you or a guarded ally would take damage based on level, you're both granted a shield.",
+"style": 8400
+},
+"8446": {
+"name": "Demolish",
+"desc": "Your third attack against turrets deals bonus damage.",
+"style": 8400
+},
+"8463": {
+"name": "Font of Life",
+"desc": "Impairing the movement of an enemy champion heals nearby allied champions.",
+"style": 8400
+},
+"8401": {
+"name": "Shield Bash",
+"desc": "Whenever you gain a shield, your next basic attack against a champion deals bonus adaptive damage.",
+"style": 8400
+},
+"8429": {
+"name": "Conditioning",
+"desc": "After 12 min gain +8 Armor and +8 Magic Resist and increase your Armor and Magic Resist by 3%.",
+"style": 8400
+},
+"8444": {
+"name": "Second Wind",
+"desc": "After taking damage from an enemy champion heal back some missing health over time.",
+"style": 8400
+},
+"8473": {
+"name": "Bone Plating",
+"desc": "After taking damage from an enemy champion, the next 3 spells or attacks you receive from them deal 30-60 (based on level) less damage. Duration: 1.5s Cooldown: 55s",
+"style": 8400
+},
+"8451": {
+"name": "Overgrowth",
+"desc": "Gain permanent max health when minions or monsters die near you.",
+"style": 8400
+},
+"8453": {
+"name": "Revitalize",
+"desc": "Gain 5% Heal and Shield Power. Heals and shields you cast or receive are 10% stronger on targets below 40% health.",
+"style": 8400
+},
+"8242": {
+"name": "Unflinching",
+"desc": "Gain Armor and Magic Resist when receiving crowd control.",
+"style": 8400
+},
+"8200": {
+"name": "Sorcery",
+"tree": true
+},
+"8214": {
+"name": "Summon Aery",
+"desc": "Your attacks and abilities send Aery to a target, damaging enemies or shielding allies.",
+"style": 8200
+},
+"8229": {
+"name": "Arcane Comet",
+"desc": "Damaging a champion with an ability hurls a damaging comet at their location.",
+"style": 8200
+},
+"8230": {
+"name": "Stormraider's Surge",
+"desc": "Dealing 25% of a champion's maximum health grants a burst of MS and Slow Resist.",
+"style": 8200
+},
+"8992": {
+"name": "Deathfire Touch",
+"desc": "Damaging a champion with an ability burns them over time.",
+"style": 8200
+},
+"8224": {
+"name": "Axiom Arcanist",
+"desc": "Your Ultimate has increased damage, healing, and shielding. Scoring a takedown on an enemy champion reduces your Ultimate's current cooldown.",
+"style": 8200
+},
+"8226": {
+"name": "Manaflow Band",
+"desc": "Hitting an enemy champion with an ability permanently increases your maximum mana by 25, up to 250 mana. After reaching 250 bonus mana, restore 1% of your missing mana every 5 seconds.",
+"style": 8200
+},
+"8275": {
+"name": "Nimbus Cloak",
+"desc": "After casting a Summoner Spell, gain a short Move Speed increase that allows you to pass through units.",
+"style": 8200
+},
+"8210": {
+"name": "Transcendence",
+"desc": "Gain bonuses upon reaching the following levels: Level 5: +5 Ability Haste Level 8: +5 Ability Haste Level 11: On Champion takedown, reduce the remaining cooldown of basic abilities by 20%.",
+"style": 8200
+},
+"8234": {
+"name": "Celerity",
+"desc": "All Move Speed bonuses are 7% more effective on you and gain 1% Move Speed.",
+"style": 8200
+},
+"8233": {
+"name": "Absolute Focus",
+"desc": "While above 70% health, gain extra adaptive damage.",
+"style": 8200
+},
+"8237": {
+"name": "Scorch",
+"desc": "Your first damaging ability hit every 10s burns champions.",
+"style": 8200
+},
+"8232": {
+"name": "Waterwalking",
+"desc": "Gain MS and AP or AD, adaptive in the river.",
+"style": 8200
+},
+"8236": {
+"name": "Gathering Storm",
+"desc": "Gain increasing amounts of AD or AP, adaptive over the course of the game.",
+"style": 8200
+}
+}
+}
