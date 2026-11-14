@@ -462,6 +462,7 @@ body{background:var(--bg)}
 .ich{padding:0 6px}.ich h3{margin:0 0 3px;font-size:15.5px;display:flex;align-items:center}.ich .cap{margin:0 0 10px}
 .ilist{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .ilist .none{color:var(--mut);font-size:13.5px;padding:8px 6px}
+#next:not(.all)>.xtra{display:none}
 .irow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:11px;align-items:center;width:100%;padding:7px 6px;border-radius:11px;border:0;background:none;color:var(--ink);text-align:left;font:inherit}
 button.irow{cursor:pointer;transition:background .15s}button.irow:hover{background:var(--surf)}
 .irow .pic{width:34px;height:34px;border-radius:10px}
@@ -517,8 +518,8 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 
 .home h1{max-width:17ch}
 /* strongest picks (homepage, under the list) */
-.xs{display:flex;flex-wrap:wrap;gap:6px;padding:2px 6px 0}
-@media(max-width:1180px){.xs:not(.all)>.xchip:nth-child(n+13){display:none}}
+.xsl{display:flex;flex-wrap:wrap;gap:6px;padding:2px 6px 0}
+@media(max-width:1180px){.xsl:not(.all)>.xchip:nth-child(n+13){display:none}}
 .xchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);border-radius:999px;padding:3px 10px 3px 3px;font:600 13px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:border-color .15s}
 .xchip:hover{border-color:var(--faint)}
 .xchip .ri{width:22px;height:22px;border-radius:50%;border:0;display:inline-grid;place-items:center;color:light-dark(color-mix(in srgb,var(--R) 65%,#000),var(--R));background:color-mix(in srgb,var(--R) 18%,transparent)}.xchip .ri svg{width:12px;height:12px}
@@ -530,7 +531,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .ins4.all{grid-template-columns:repeat(3,minmax(0,1fr))}.ins4.all>.xsc{grid-column:span 2}
 @media(max-width:1180px){.ins4.all{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.ins4.all{grid-template-columns:minmax(0,1fr)}.ins4.all>.xsc{grid-column:auto}
-.xs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.xchip{min-width:0;padding-right:7px;gap:5px;font-size:12.5px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xs:not(.all)>.xchip:nth-child(n+9){display:none}
+.xsl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.xchip{min-width:0;padding-right:7px;gap:5px;font-size:12.5px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xsl:not(.all)>.xchip:nth-child(n+9){display:none}
 .home .leads{display:grid;gap:8px;margin-top:18px}.home .lead{padding:8px;border-radius:12px;max-height:none}.home .lead .lr{font-size:10.5px;padding:3px 7px 3px 3px}.home .lead .lb b{font-size:15px}.home .lead .lb>span{font-size:10.5px;flex-wrap:wrap;gap:3px 5px}}
 /* chart layout + the four cards under the list */
 .chart-card{padding:0;overflow:hidden}
@@ -636,11 +637,11 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 <div class="wrap">
 <div class="sh"><h2 id="maph">This patch</h2></div>
 <div class="ins-row ins4" id="insg">
-<div class="card ic xsc" id="xsc" hidden><div class="ich"><h3 id="xsh">Strongest picks</h3><p class="cap">Every Z and S pick, all roles.</p></div><div class="xs" id="xs"></div><button type="button" class="xmore" id="xmore" aria-expanded="false" hidden></button></div>
+<div class="card ic xsc" id="xsc" hidden><div class="ich"><h3 id="xsh">Strongest picks</h3><p class="cap">Every Z and S pick, all roles.</p></div><div class="xsl" id="xs"></div><button type="button" class="xmore" id="xmore" aria-expanded="false" hidden></button></div>
 <div class="card ic"><div class="ich"><h3 id="bansh">Best bans</h3><p class="cap">Strong and often picked, adjusted for how often it is already banned.</p></div><ul class="ilist" id="bans"></ul></div>
 <div class="card ic"><div class="ich"><h3 id="trapsh">Popular, but losing</h3><p class="cap">Picked in 5%+ of games, still below average.</p></div><ul class="ilist" id="traps"></ul></div>
 <div class="card ic" id="movc"><div class="ich"><h3 id="movh">Moved most since last patch</h3><p class="cap">Change in score, Global Emerald+.</p></div><ul class="ilist" id="movers"></ul></div>
-<div class="card ic" id="nextc"><div class="ich"><h3 id="nexth">Changing next patch</h3><p class="cap" id="nextcap">From the patch preview.</p></div><ul class="ilist" id="next"></ul></div>
+<div class="card ic" id="nextc"><div class="ich"><h3 id="nexth">Changing next patch</h3><p class="cap" id="nextcap">From the patch preview.</p></div><ul class="ilist" id="next"></ul><button type="button" class="xmore" id="nxmore" aria-expanded="false" aria-controls="next" hidden></button></div>
 </div>
 </div>
 </section>
@@ -959,10 +960,11 @@ function renderSide(){if(!DATA[role])return;
   // all roles: skip entries whose champions are already listed (the same change shows up in several roles), show the first six
   const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
   const NXL=ALL?6:99;
-  $('next').innerHTML=nx.slice(0,NXL).map(([r,c,t,kd])=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
+  $('next').innerHTML=nx.map(([r,c,t,kd],i)=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
     const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${ALL&&one?RNm[r]+': ':''}${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
-    return `<li>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('')+(nx.length>NXL?`<li class="none">And ${nx.length-NXL} more on the role pages.</li>`:'');
+    return `<li${i>=NXL?' class="xtra"':''}>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
+  const nb=$('nxmore');nb.dataset.n=nx.length;nb.hidden=nx.length<=NXL;nb.textContent=$('next').classList.contains('all')?'Show fewer':`Show all ${nx.length}`;
   $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
   $('nextc').hidden=!!ARCH||!nx.length;
 }
@@ -1035,6 +1037,7 @@ document.addEventListener('click',e=>{
   if(r){navRole(r.dataset.r);return;}
   if(t.closest('[data-go]')){e.preventDefault();$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
+  if(t.closest('#nxmore')){const x=$('next'),all=!x.classList.contains('all'),b=$('nxmore');x.classList.toggle('all',all);b.setAttribute('aria-expanded',all);b.textContent=all?'Show fewer':`Show all ${b.dataset.n}`;return;}
   if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');

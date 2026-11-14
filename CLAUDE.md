@@ -31,7 +31,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   bar everything follows the visitor's rank and region: the list (Top by default), then "All roles this patch" with
   Strongest picks (every Z and S, P left out), Best bans across roles (per champion: score x pick summed over its roles
   with a positive score, divided by 100 - ban of its most-picked role), Popular but losing, Moved most and Changing next
-  patch (first six, deduplicated). Role pages show the same cards for their role only (`renderSide` does both).
+  patch (deduplicated, first six with a "Show all" button). Role pages show the same cards for their role only (`renderSide` does both).
   Layouts: Tiers, Table and Chart (pick rate vs score; the nav link "Pick vs win" opens it). On desktop champion page
   headers hide the note and share button, because the card next to the list shows them.
   `/` always opens like a first visit (the logo leads there); `/#adc` opens ADC, `/#xayah` finds Xayah's role. Champion pages: `/mid/ahri/` for every listed champion (static header with art,
