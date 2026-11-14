@@ -38,7 +38,10 @@ for cid, c in champs.items():
             sp = os.path.join(PUB, 'img', 'splash', slug(c['name']) + '.webp')
             if os.path.exists(sp):
                 a = Image.open(sp); w, h = a.size; a.crop(((w - h) // 2, 0, (w - h) // 2 + h, h)).resize(size, Image.LANCZOS).save(out, 'WEBP', quality=q, method=6)
-json.dump({'version': ver, 'by_key': by_key}, open(os.path.join(PIPE, 'data', 'ddragon_champions.json'), 'w'), ensure_ascii=False, indent=0)
+# Riot's own champion traits, for describing matchups by type (build card): class tags, attack range, and Riot's 1-10
+# ratings for physical (attack) and magic damage
+traits = {c['name']: [c['tags'], c['stats']['attackrange'], c['info']['attack'], c['info']['magic']] for c in champs.values()}
+json.dump({'version': ver, 'by_key': by_key, 'traits': traits}, open(os.path.join(PIPE, 'data', 'ddragon_champions.json'), 'w'), ensure_ascii=False, indent=0)
 # item icons for the patch notes pages: every Summoner's Rift item, 64x64 webp in public/img/item/<id>.webp (only missing files)
 items = json.loads(get(f'https://ddragon.leagueoflegends.com/cdn/{ver}/data/en_US/item.json'))['data']
 os.makedirs(os.path.join(PUB, 'img', 'item'), exist_ok=True)
