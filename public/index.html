@@ -6,11 +6,18 @@
 <title>LoL 26.22 Tier List</title>
 <meta name="description" content="League of Legends tier list for patch 26.22, every role, built from nine stat sites (OP.GG, U.GG, Blitz, dpm.lol, League of Graphs and more) and corrected for sample size and one-trick inflation.">
 <meta name="theme-color" content="#121316">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff4fbf'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='42' text-anchor='middle' fill='%23121316'%3EZ%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:title" content="LoL 26.22 Tier List: Ekko, Xayah and Kog'Maw lead">
 <meta property="og:description" content="League of Legends tier list for patch 26.22, every role, built from nine stat sites (OP.GG, U.GG, Blitz, dpm.lol, League of Graphs and more) and corrected for sample size and one-trick inflation.">
-<meta name="twitter:card" content="summary">
+<meta property="og:url" content="https://lol-tierlist.pages.dev/">
+<meta property="og:image" content="https://lol-tierlist.pages.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lol-tierlist.pages.dev/og.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/barlow-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/inter-latin-500-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/inter-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/inter-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-latin-800-normal.woff2) format('woff2')}</style>
@@ -29,8 +36,8 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
 .band{padding:clamp(22px,3.5vw,48px) max(4vw,16px)}
-.wrap{max-width:1240px;margin:0 auto}
-h1{font:800 clamp(34px,4.8vw,52px)/1.04 'Barlow Condensed',sans-serif;letter-spacing:-.015em;margin:0 0 12px;max-width:30ch;text-wrap:balance}
+.wrap{max-width:1480px;margin:0 auto}
+h1{font:800 clamp(34px,3.7vw,56px)/1.02 'Barlow Condensed',sans-serif;letter-spacing:-.015em;margin:0 0 14px;max-width:30ch;text-wrap:balance}
 h2{font:800 clamp(28px,3.2vw,36px)/1.05 'Barlow Condensed',sans-serif;margin:0 0 8px;text-wrap:balance}
 h3{font:700 22px/1.1 'Barlow Condensed',sans-serif;margin:0 0 8px}
 p{margin:0 0 12px}
@@ -50,8 +57,8 @@ select{padding-right:28px}
 .res button:hover,.res button:focus-visible{background:var(--surf)}
 .res .tg{font:700 14px 'Barlow Condensed',sans-serif;padding:1px 8px;border-radius:4px;color:#121316}
 button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #6aa0ff;outline-offset:2px}
-.hintline{width:100%;font-size:13px;color:var(--mut)}
-.main{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:22px;align-items:start}
+.hintline{width:100%;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:13px;color:var(--mut)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;align-items:start}
 .board{display:grid;gap:5px}
 .row{display:grid;grid-template-columns:76px minmax(0,1fr);border-radius:10px;overflow:hidden;background:color-mix(in srgb,var(--T) 11%,var(--surf));min-height:64px}
 .lab{background:var(--T);color:#121316;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 40px/1 'Barlow Condensed',sans-serif;padding:8px 4px;text-align:center}
@@ -60,8 +67,8 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 .chip{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:10px;row-gap:3px;min-height:48px;padding:7px 10px 6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-align:left;transition:opacity .15s}
 .chip .nm{font:700 17px/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;white-space:nowrap}
 .chip .sc{font:600 13px/1 Inter,sans-serif;font-variant-numeric:tabular-nums;color:var(--mut);justify-self:end;white-space:nowrap}
-.ticks{grid-column:1/-1;display:flex;gap:3px;height:14px;align-items:center}
-.ticks i{display:block;width:6px;height:14px;position:relative}
+.ticks{grid-column:1/-1;display:flex;gap:3px;height:16px;align-items:center}
+.ticks i{display:block;width:7px;height:16px;position:relative}
 .ticks i::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
 .ticks b{position:absolute;left:0;right:0;border-radius:1px}
 .flag{font:600 11px/1 Inter,sans-serif;padding:2px 5px;border-radius:4px;margin-left:4px;vertical-align:2px}
@@ -70,7 +77,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 .chip[aria-pressed=true]{border-color:var(--sel);box-shadow:inset 0 0 0 1px var(--sel)}
 .chip.dim{opacity:.28}
 .chip:hover{border-color:var(--mut)}
-.empty{color:var(--mut);font-size:14px;align-self:center;padding:6px 4px}
+.empty{color:var(--mut);font-size:14px;align-self:center;padding:6px 4px;grid-column:1/-1}
 .panel{position:sticky;top:76px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;max-height:calc(100svh - 92px);overflow:auto}
 .ph{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .ph h3{font-size:32px;margin:0}
@@ -96,9 +103,37 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 .nx{font-size:14px;margin:0 0 10px;padding:8px 10px;border-radius:8px}
 .nx.buff{background:color-mix(in srgb,var(--pos) 12%,transparent)}
 .nx.nerf{background:color-mix(in srgb,var(--neg) 12%,transparent)}
+.top{border-bottom:1px solid var(--line);padding:0 max(4vw,16px)}
+.top .wrap{display:flex;align-items:center;gap:20px;min-height:56px}
+.brand{display:flex;align-items:center;gap:10px;font:800 21px/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;text-decoration:none;color:var(--ink);white-space:nowrap}
+.brand svg{width:28px;height:28px;flex:none}
+.pill{font:600 12px/1 Inter,sans-serif;padding:5px 8px;border-radius:999px;background:var(--surf);color:var(--mut);white-space:nowrap}
+.links{display:flex;gap:4px;margin-left:auto}
+.links a{text-decoration:none;color:var(--mut);font:500 14px Inter,sans-serif;padding:8px 10px;border-radius:8px;white-space:nowrap}
+.links a:hover{color:var(--ink);background:var(--surf)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:clamp(24px,4vw,64px);align-items:center}
+.hero-band{padding-top:clamp(22px,3vw,44px);padding-bottom:clamp(22px,2.4vw,34px)}
+.eyebrow{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.best{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 8px}
+.best h2{font-size:22px;margin:0 2px 8px}
+.best button{display:grid;grid-template-columns:62px minmax(0,1fr) auto auto;gap:10px;align-items:center;width:100%;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);padding:9px 2px;cursor:pointer;text-align:left;font:500 14px Inter,sans-serif}
+.best button:first-of-type{border-top:0}
+.best button:hover .bn{text-decoration:underline}
+.best .br{color:var(--mut);font-size:13px}
+.best .bn{font:700 20px/1 'Barlow Condensed',sans-serif}
+.best .bs{font-variant-numeric:tabular-nums;color:var(--mut);font-size:13px}
+.best .tg{font:700 14px/1 'Barlow Condensed',sans-serif;padding:4px 8px;border-radius:5px;color:#121316;min-width:26px;text-align:center}
+.legend{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-left:auto}
+.legend .ticks{width:auto;grid-column:auto}
+.legend .lk{display:flex;gap:3px}
+.legend .lk span{width:7px;text-align:center;font-size:9px;line-height:1}
+section,main{scroll-margin-top:76px}
+.site-foot{border-top:1px solid var(--line);padding:22px max(4vw,16px) 34px;font-size:13px;color:var(--mut)}
+.site-foot .wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 28px;align-items:start}
+.site-foot p{margin:0}
 .alt{background:var(--surf)}
 .split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:28px;align-items:start}
-.fig{position:relative;height:440px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fig{position:relative;height:clamp(420px,34vw,520px);background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .fig svg{position:absolute;inset:0;width:100%;height:100%}
 .fig text{font:500 12px Inter,sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--card);stroke-width:4px}
 .fig .q{font:700 15px 'Barlow Condensed',sans-serif;fill:var(--mut)}
@@ -109,7 +144,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 .list li span:last-child{font-variant-numeric:tabular-nums;color:var(--mut);white-space:nowrap}
 .list button{border:0;background:none;color:var(--ink);font:600 15px Inter,sans-serif;padding:0;cursor:pointer;text-align:left}
 .grade{display:grid;gap:10px;margin:14px 0 8px}
-.gr{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1fr) 64px;gap:12px;align-items:center;font-size:14px}
+.gr{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1fr) 120px;gap:12px;align-items:center;font-size:14px}
 .gr.h{font-size:13px;color:var(--mut)}
 .gb{position:relative;height:22px;background:var(--surf);border-radius:4px;overflow:hidden}
 .gb em.in{color:#fff}
@@ -124,17 +159,27 @@ table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-weight:600;color:var(--mut)}
 a{color:inherit}
-.src{columns:2;gap:28px;padding-left:18px;font-size:14px}
-.src li{margin:4px 0;break-inside:avoid}
+.src{display:flex;flex-wrap:wrap;gap:6px 28px;padding-left:18px;font-size:14px}
+.src li{margin:4px 0;margin-right:10px}
 .foot{font-size:13px;color:var(--mut);margin-top:18px}
 .scrim{display:none}
+@media(min-width:981px){.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));align-content:start}
+.chip{grid-template-columns:minmax(0,1fr) auto}.chip .nm{overflow:hidden;text-overflow:ellipsis}}
+@media(min-width:1700px){.main{grid-template-columns:minmax(0,1fr) 420px}}
+@media(max-width:1180px){.hero{grid-template-columns:minmax(0,1fr)}.links a.opt{display:none}
+.best{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0;overflow:hidden}
+.best h2{display:none}
+.best button,.best button:first-of-type{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"r t" "n s";gap:4px 8px;border-top:0;border-left:1px solid var(--line);padding:10px 12px}
+.best button:first-of-type{border-left:0}
+.best .br{grid-area:r}.best .tg{grid-area:t}.best .bn{grid-area:n;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.best .bs{grid-area:s;align-self:end}}
+@media(max-width:1100px){.search{flex:1 1 240px;width:auto;margin-left:0}}
 @media(max-width:980px){.main{grid-template-columns:minmax(0,1fr)}
 .panel{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:76svh;border-radius:16px 16px 0 0;transform:translateY(105%);transition:transform .22s ease;z-index:50;box-shadow:0 -10px 30px rgba(0,0,0,.25);padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
 .panel.open{transform:none}
 .x{display:block}
 .scrim.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40}
 .split{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.bar{position:static}h1{max-width:none}.search{margin-left:0;width:100%}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
+@media(max-width:640px){.best{grid-template-columns:repeat(5,136px);overflow-x:auto;scrollbar-width:none}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
 .row{grid-template-columns:52px minmax(0,1fr)}.lab{font-size:32px}.lab small{font-size:10px}
 .chip{min-height:44px;padding:6px 8px 5px;column-gap:8px}.chip .nm{font-size:16px}
 .fig{height:380px}.gr{grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:8px}.gr .cv{display:none}
@@ -144,10 +189,16 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 </style>
 </head>
 <body>
-<header class="band">
-<div class="wrap">
+<div class="top" id="top"><div class="wrap"><a class="brand" href="#top"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
+<nav class="links" aria-label="Sections"><a href="#board-sec">Tier list</a><a href="#map-sec">Pick vs win</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav></div></div>
+<header class="band hero-band">
+<div class="wrap hero">
+<div>
+<div class="eyebrow"><span class="pill">Ranked Solo/Duo, Emerald+ to Master+</span><span class="pill">Updated 14 Nov 2026</span><span class="pill">Next patch 26.23 on 18 Nov</span></div>
 <h1>Ekko, Xayah and Kog'Maw lead patch 26.22. More than half of the most-picked champions lose.</h1>
-<p class="lede">Ranked Solo/Duo, built on <b>nine stat sites</b> from Korea, Europe and North America, Emerald+ up to Master+, read on 14 Nov 2026. Of the 65 champions picked in 5% or more of their role's games, <b>36 win less than half</b>. Scores are percentage points above the role average after correcting for sample size and one-trick inflation. Patch 26.23 lands on 18 Nov.</p>
+<p class="lede">Built on <b>nine stat sites</b> from Korea, Europe and North America. Of the 65 champions picked in 5% or more of their role's games, <b>36 win less than half</b>. Scores are win rate points above the role average, corrected for sample size and one-trick inflation.</p>
+</div>
+<div class="best" id="best" aria-label="Best pick per role"></div>
 </div>
 </header>
 
@@ -166,11 +217,11 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 <option value="m">Master+ (2 sites)</option>
 </select>
 <div class="search"><input id="q" type="search" placeholder="Find a champion" autocomplete="off" aria-label="Find a champion"><div class="res" id="res"></div></div>
-<div class="hintline" id="hint"></div>
+<div class="hintline"><span id="hint"></span><span class="legend" id="legend"></span></div>
 </div>
 </nav>
 
-<main class="band" style="padding-top:18px">
+<main class="band" id="board-sec" style="padding-top:18px">
 <div class="wrap main">
 <div class="board" id="board" aria-live="polite"></div>
 <aside class="panel" id="panel" aria-label="Champion detail"></aside>
@@ -178,7 +229,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 </main>
 <div class="scrim" id="scrim"></div>
 
-<section class="band alt">
+<section class="band alt" id="map-sec">
 <div class="wrap split">
 <div>
 <h2 id="maph">Picked a lot is not the same as winning</h2>
@@ -195,17 +246,17 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 </div>
 </section>
 
-<section class="band">
+<section class="band" id="grades-sec">
 <div class="wrap">
 <h2>Same numbers everywhere, very different grades</h2>
 <p class="lede">At the same rank every site reads the same Riot match data, so their win rates nearly match. Their letter grades do not. Below is how closely each site's tiers follow winning versus popularity, as rank correlations across about 200 champion-role pairs at Diamond+.</p>
 <div class="grade" id="grade"></div>
-<p class="cap">Last column: how closely the site's win rates match OP.GG at the same rank (1 = identical).</p>
+<p class="cap">Last column: how closely the site's win rates match OP.GG at the same rank (1 = identical). Mobalytics' expert list has no win rates.</p>
 <p style="max-width:75ch;margin-top:14px">U.GG and Blitz are the sites whose letters you can take at face value. dpm.lol, Mobalytics' expert list and METAsrc mostly tell you what people pick. That is why Kai'Sa, Lee Sin, Lulu and Nautilus sit in their top tiers while winning less than the average pick in their role.</p>
 </div>
 </section>
 
-<section class="band alt">
+<section class="band alt" id="method-sec">
 <div class="wrap cols">
 <div>
 <h2>How the score works</h2>
@@ -231,28 +282,19 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:8p
 </div>
 </section>
 
-<section class="band">
+<section class="band" id="sites-sec">
 <div class="wrap">
 <h2>Sites checked</h2>
 <div class="scroll"><table class="stack"><thead><tr><th>Site</th><th>Home</th><th>What I read</th><th>Verdict</th></tr></thead><tbody id="sites"></tbody></table></div>
-<h3 style="margin-top:26px">Sources</h3>
+<h3 style="margin-top:26px">Patch info</h3>
 <ul class="src">
-<li><a href="https://op.gg/lol/champions">OP.GG champion stats</a></li>
-<li><a href="https://u.gg/lol/tier-list">U.GG tier list</a></li>
-<li><a href="https://blitz.gg/lol/tierlist">Blitz tier list</a></li>
-<li><a href="https://dpm.lol/tierlist">dpm.lol tier list</a></li>
-<li><a href="https://www.leagueofgraphs.com/champions/tier-list/diamond">League of Graphs, Diamond+</a></li>
-<li><a href="https://www.metasrc.com/lol/tier-list">METAsrc tier list</a></li>
-<li><a href="https://mobalytics.gg/lol/tier-list/high-elo">Mobalytics high-elo list</a></li>
-<li><a href="https://lol.ps/statistics">lol.ps statistics (KR)</a></li>
-<li><a href="https://lolalytics.com/lol/tierlist/">Lolalytics tier list</a></li>
-<li><a href="https://ggez.gg/patch-notes/26.22">ggez.gg patch 26.22 impact</a></li>
 <li><a href="https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/">Riot: patch 26.22 notes</a></li>
+<li><a href="https://ggez.gg/patch-notes/26.22">ggez.gg: patch 26.22 impact</a></li>
 <li><a href="https://gameriv.com/league-of-legends-patch-26-23-preview/">GameRiv: patch 26.23 preview</a></li>
 </ul>
-<p class="foot">Built from data read on 14 Nov 2026. LoL 26.22 Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p>
 </div>
 </section>
+<footer class="site-foot"><div class="wrap"><a class="brand" href="#top"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch.</p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
 
 <script>
 {
@@ -269,17 +311,17 @@ adc:[["Ezreal","W and R damage up","buff"],["Vel'Koz","R rank 3 damage up","buff
 support:[["Bard","Q damage and AP ratio up","buff"],["Galio","W shield up","buff"],["Vel'Koz","R rank 3 damage up","buff"]]};
 const GRADE=[["U.GG",.79,.13,.98],["Blitz",.89,-.12,.99],["dpm.lol",.60,.44,.97],["League of Graphs",.48,.19,.88],["Mobalytics experts",.18,.72,null],["METAsrc",-.14,.95,.67]];
 const SITES=[
-["OP.GG","Korea","Global, EUW, KR, NA (Emerald+), Diamond+, Master+","Clean numbers, the base of the consensus"],
-["U.GG","NA","Diamond+ and Master+, all roles","Matches OP.GG; letters follow win rate"],
-["Blitz","NA","Diamond+, all roles","Matches OP.GG; letters follow win rate"],
-["dpm.lol","EU","Diamond+, all roles","Numbers match; letters lean on popularity"],
-["League of Graphs","EU (France)","Diamond+, all roles","Numbers drift; odd letters; half weight"],
-["METAsrc","Global","Diamond+, all roles","Letters are a popularity ranking; not scored"],
-["Mobalytics","NA/EU","Expert high-elo list; stats only for all ranks","Expert list follows popularity"],
-["lol.ps","Korea","KR Emerald+ top lane","Matched OP.GG KR within 0.13 points"],
-["Lolalytics","NA/EU","Top 20 per role, Emerald+","About 1.6 points high; tiers reward popularity"],
-["Deeplol","Korea","KR Emerald+ top lane","Matched OP.GG KR; not added"],
-["WeGame, 101.qq.com","China","Not public","No Chinese data"]];
+["OP.GG","https://op.gg/lol/champions","Korea","Global, EUW, KR, NA (Emerald+), Diamond+, Master+","Clean numbers, the base of the consensus"],
+["U.GG","https://u.gg/lol/tier-list","NA","Diamond+ and Master+, all roles","Matches OP.GG; letters follow win rate"],
+["Blitz","https://blitz.gg/lol/tierlist","NA","Diamond+, all roles","Matches OP.GG; letters follow win rate"],
+["dpm.lol","https://dpm.lol/tierlist","EU","Diamond+, all roles","Numbers match; letters lean on popularity"],
+["League of Graphs","https://www.leagueofgraphs.com/champions/tier-list/diamond","EU (France)","Diamond+, all roles","Numbers drift; odd letters; half weight"],
+["METAsrc","https://www.metasrc.com/lol/tier-list","Global","Diamond+, all roles","Letters are a popularity ranking; not scored"],
+["Mobalytics","https://mobalytics.gg/lol/tier-list/high-elo","NA/EU","Expert high-elo list; stats only for all ranks","Expert list follows popularity"],
+["lol.ps","https://lol.ps/statistics","Korea","KR Emerald+ top lane","Matched OP.GG KR within 0.13 points"],
+["Lolalytics","https://lolalytics.com/lol/tierlist/","NA/EU","Top 20 per role, Emerald+","About 1.6 points high; tiers reward popularity"],
+["Deeplol","https://www.deeplol.gg/","Korea","KR Emerald+ top lane","Matched OP.GG KR; not added"],
+["WeGame, 101.qq.com",null,"China","Not public","No Chinese data"]];
 const $=id=>document.getElementById(id);
 const fmt=v=>{if(v==null)return 'n/a';const r=Math.round(v*10)/10;return (r>0?'+':r<0?'−':'')+Math.abs(r).toFixed(1);};
 const colT=t=>{t=(t||'').replace('+','');return {Z:'--Z',S:'--S',A:'--A',B:'--B',C:'--C',D:'--D',P:'--P'}[t]||'--E';};
@@ -335,7 +377,7 @@ function drawMap(){
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const k=lens==='score'||DS.some(([x])=>x===lens)?(lens==='score'?'score':lens):'hi';
   const list=DATA[role].filter(d=>d[k]!=null&&d.pick>0);
-  const m={l:46,r:16,t:18,b:40},small=W<520;
+  const m={l:58,r:16,t:18,b:40},small=W<520;
   const x=p=>m.l+(Math.log(Math.max(.4,Math.min(26,p)))-Math.log(.4))/(Math.log(26)-Math.log(.4))*(W-m.l-m.r);
   const ymin=-4,ymax=3.5,y=v=>m.t+(ymax-Math.max(ymin,Math.min(ymax,v)))/(ymax-ymin)*(H-m.t-m.b);
   let g='';
@@ -344,6 +386,7 @@ function drawMap(){
   [-4,-2,0,2].forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" ${v===0?'stroke-width="1.5" stroke="var(--mut)"':''}/><text class="ax" x="${m.l-8}" y="${y(v)+4}" text-anchor="end">${v>0?'+':''}${v}</text>`;});
   (small?[1,5,20]:[.5,1,2,5,10,20]).forEach(p=>{g+=`<line x1="${x(p)}" x2="${x(p)}" y1="${m.t}" y2="${H-m.b}" stroke="var(--line)" ${p===5?'stroke-dasharray="4 4" stroke="var(--mut)"':''}/><text class="ax" x="${x(p)}" y="${H-m.b+18}" text-anchor="middle">${p}%</text>`;});
   g+=`<text class="ax" x="${W-m.r}" y="${H-6}" text-anchor="end">Pick rate (log scale)</text>`;
+  g+=`<text class="ax" transform="translate(14 ${(m.t+H-m.b)/2}) rotate(-90)" text-anchor="middle">Score vs role average</text>`;
   g+=`<text class="q" x="${W-m.r-8}" y="${y(ymax)+18}" text-anchor="end">Strong and popular</text>`;
   g+=`<text class="q" x="${W-m.r-8}" y="${y(ymin)-10}" text-anchor="end">Popular, losing</text>`;
   g+=`<text class="q" x="${m.l+8}" y="${y(ymax)+18}">Strong, rarely picked</text>`;
@@ -359,14 +402,14 @@ function drawMap(){
 }
 function renderGrade(){
   const sx=v=>(Math.max(-.2,Math.min(1,v))+.2)/1.2*100;
-  $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Numbers</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));return e>78?`<em class="in" style="right:${100-e}%">${v.toFixed(2)}</em>`:`<em style="left:${e}%">${v.toFixed(2)}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--A')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
+  $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Win rates vs OP.GG</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));return e>78?`<em class="in" style="right:${100-e}%">${v.toFixed(2)}</em>`:`<em style="left:${e}%">${v.toFixed(2)}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--A')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
 }
 function openPanel(o){$('panel').classList.toggle('open',o&&narrow());$('scrim').classList.toggle('open',o&&narrow());}
 function render(){
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
   renderControls();renderBoard();renderPanel();renderSide();drawMap();
-  $('maph').textContent='Picked a lot is not the same as winning: '+ROLES.find(r=>r[0]===role)[1].toLowerCase();
+  $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
 }
 function select(c,open){pick=c;document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===pick));renderPanel();drawMap();if(open)openPanel(true);}
 function setLens(l){lens=l;try{localStorage.setItem('tl-lens',l);}catch(e){}render();}
@@ -395,7 +438,13 @@ $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('res').query
 function fromHash(){const h=location.hash.slice(1);if(ROLES.some(([k])=>k===h)&&h!==role){role=h;pick=null;}render();}
 addEventListener('hashchange',fromHash);
 new ResizeObserver(()=>drawMap()).observe($('fig'));
-$('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[0]}</b></td><td data-l="Home">${s[1]}</td><td data-l="Read">${s[2]}</td><td data-l="Verdict">${s[3]}</td></tr>`).join('');
+$('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
+$('legend').innerHTML=`<span class="ticks" aria-hidden="true">${ticks({g:1.6,euw:2.2,kr:1.2,na:-.8,dia:1.4,m:2.4})}</span>Bars under each name: Global, EUW, KR, NA, Diamond+, Master+. Up is above the role average.`;
+function renderBest(){
+  const tr={Z:0,S:1,A:2,B:3,C:4,D:5,P:6};
+  $('best').innerHTML='<h2>Best pick per role</h2>'+ROLES.map(([r,n])=>{const d=DATA[r].filter(x=>x.t!=='P').sort((a,b)=>(tr[a.t]-tr[b.t])||(b.score-a.score))[0];return `<button type="button" data-jr="${r}" data-jc="${d.c}"><span class="br">${n}</span><span class="bn">${d.c}</span><span class="bs">${fmt(d.score)}</span><span class="tg" style="background:var(${colT(d.t)})">${d.t}</span></button>`;}).join('');
+}
+renderBest();
 renderGrade();
 if(!['score','hi','g','euw','kr','na','dia','m'].includes(lens))lens='score';
 fromHash();

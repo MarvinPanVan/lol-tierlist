@@ -9,6 +9,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/index.html` + `public/fonts/` : the live site. Never hand-edit index.html, it is generated.
 - `pipeline/template.html` : the page (HTML, CSS, JS, all texts). Data goes in at `__DATA__`.
 - `pipeline/tiers.json` : the data for the current patch. Source of truth for what the site shows.
+- `pipeline/assets/mark.svg` : the logo (tier-row icon), used for favicon, brand mark and og.png.
 - `pipeline/build.py` : `python3 pipeline/build.py` writes `public/index.html` from template + tiers.json.
 - `pipeline/data`, `pipeline/data2` : raw numbers read from the stat sites for the current patch.
 - `pipeline/scripts` : the scoring scripts used for 26.22. Run order: model, tiers, final, merge2, highelo3.
@@ -43,10 +44,13 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      S>=1.15, A>=.6, B>=.15, C>=-.45, else D.
    - Z tier in the consensus: only if clearly ahead everywhere. Empty Z is fine.
    - `nx` = 'buff' / 'nerf' for champions changed in the NEXT patch preview, else null.
-4. Update the texts in `pipeline/template.html`: headline, lede (patch, date read, counts), the "Changing on ..."
-   list, notes per champion live in tiers.json. Rewrite notes that no longer match the numbers.
+4. Update the texts in `pipeline/template.html`: title and meta tags, top bar pill "Patch xx.xx", hero pills
+   ("Updated ...", "Next patch ..."), headline, lede counts, the NEXT list ("Changing on ..."), method and limits
+   bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.
+   Rewrite notes that no longer match the numbers.
    Writing rules from Marvin: blunt, no em dashes, must not sound AI-written, explain jargon.
-5. `python3 pipeline/build.py`, then check with playwright (pipeline/scripts/shot3.py, ovf.py): no JS errors,
+5. `python3 pipeline/build.py`, then `python3 pipeline/scripts/assets.py` (favicon, apple-touch-icon and the
+   og.png link preview with the best pick per role; it reads the patch and date from the template pills). Then check with playwright (pipeline/scripts/shot3.py, ovf.py): no JS errors,
    no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.
 
