@@ -837,7 +837,7 @@ details.brow{display:block}
 <li>Last patch is the starting point for champions the new patch did not touch, so early-patch numbers don't jump around. That only works for Global Emerald+, the one dataset kept from last patch. How far a champion can move between patches is fitted from the data (about 0.2 points).</li>
 <li>The ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch. For champions the patch did not touch that change is damped on purpose, because last patch is their starting point.</li>
 <li>A move only gets a reason when there is a fact for it: the change in the patch notes (Summoner's Rift only, not the Classic mode or ARAM), a changed item in its most common OP.GG builds (core items and boots, not starter items), a big shift in pick rate, or a note that the move is too small to be sure. No guessed explanations.</li>
-<li>Matchups come from OP.GG's three hardest matchups per champion. Only matchups with 150 or more games are shown; below that a win rate can be off by 10 points by chance.</li>
+<li>Matchups come from OP.GG's full matchup lists (Emerald+, and Diamond+ for the Diamond+ and Master+ lists). Each one is compared with the champion's own win rate and pulled toward it by sample size, the same way as the scores, so a lucky 150-game matchup can't top the list. Dotted means the gap could still be luck. Only about a quarter of matchups with 150+ games differ clearly.</li><li>The build card shows what OP.GG players actually take and how often. Tapping a row shows the other options and the matchups where players switch to them (OP.GG's builds per matchup). Item win rates run high because whoever finishes items is usually ahead, so options are only compared with each other.</li><li>Win rate by game length is OP.GG's, per 5-minute bucket. OP.GG gives no game counts per bucket, so they are estimated from the game lengths in our own Riot match sample, and the card only says a champion wins more in short or long games when the gap is 2+ points and bigger than that noise.</li>
 <li id="btline"></li>
 </ul>
 </div>
@@ -845,7 +845,7 @@ details.brow{display:block}
 <h2>What it cannot tell you</h2>
 <ul>
 <li>Your champion pool. A one-trick on a B-tier pick beats a first-timer on a Z.</li>
-<li>Matchups and draft, past a quick look. The panel lists OP.GG's three hardest matchups per champion and nothing more. Mage bots and Kog'Maw need the right support.</li>
+<li>Draft. Matchups and builds show what happens on average, not what your team needs. Mage bots and Kog'Maw need the right support.</li>
 <li>Chinese servers. Tencent's data lives in its apps and is not public.</li>
 <li>Anything after 26.23. Master Yi, LeBlanc and Syndra get nerfed on 18 Nov.</li>
 <li>Game counts for Blitz and League of Graphs. They don't show them, so OP.GG Diamond+ counts stand in.</li>
@@ -961,10 +961,18 @@ function renderTable(){if(!DATA[role])return;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
     case 'ctr':{const {cs}=ctrs(d);return `<td><span class="ctrs">${cs.length?cs.map(([x,wr,n])=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}: ${wr.toFixed(0)}% in ${n.toLocaleString('en-US')} games" width="22" height="22" loading="lazy">`).join(''):'<span class="mu">–</span>'}</span></td>`;}
     case 'games':{const w=val(d,c);return `<td class="n${w!=null&&w<LOWN?' mu':''}">${w==null?NA:Math.round(w).toLocaleString('en-US')}</td>`;}}};
-  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>c==='ctr'?`<th><span class="thn">${n}</span></th>`:`<th${c==='r_'+R()&&!lim?' class="cur"':''}><button type="button" data-sort="${c}" aria-sort="${sk===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sk===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
+  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>c==='ctr'?`<th data-k="${c}"><span class="thn">${n}</span></th>`:`<th data-k="${c}"${c==='r_'+R()&&!lim?' class="cur"':''}><button type="button" data-sort="${c}" aria-sort="${sk===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sk===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
   fitTable();
 }
-function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classList.remove('fit');if(!narrow()&&t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
+// the table never hides columns behind a sideways scroll on wide screens: next to the panel it drops, in this order,
+// Counters (the panel shows matchups), Games and Ban % (the panel shows both) until it fits. Phones scroll instead.
+function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classList.remove('fit');const tb=t.querySelector('table');if(!tb)return;
+  tb.querySelectorAll('[data-drop]').forEach(c=>{c.hidden=false;c.removeAttribute('data-drop');});
+  if(narrow())return;
+  const hs=[...tb.querySelectorAll('thead th')];
+  for(const k of ['ctr','games','ban']){if(t.scrollWidth<=t.clientWidth+1)break;const i=hs.findIndex(h=>h.dataset.k===k);if(i<0)continue;
+    tb.querySelectorAll(`tr>:nth-child(${i+1})`).forEach(c=>{c.hidden=true;c.dataset.drop='1';});}
+  if(t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
 const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P:'Strong but rarely picked (under 1.5%). Mostly played by mains, so expect less if you are new to it.'};
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
@@ -1182,7 +1190,7 @@ function renderSide(){if(!DATA[role])return;
   const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
   const NXL=ALL?6:99;
   $('next').innerHTML=nx.map(([r,c,t,kd],i)=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
-    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${(META.nitems||[]).includes(names[0])?'':pic(names[0])}</span>`;
+    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${names[0] in (META.nitems||{})?(META.nitems[names[0]]?`<img class="pic" src="${SITE}img/item/${META.nitems[names[0]]}.webp" alt="" width="64" height="64" loading="lazy" onerror="this.remove()">`:''):pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${ALL&&one?RNm[r]+': ':''}${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
     return `<li${i>=NXL?' class="xtra"':''}>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   const nb=$('nxmore');nb.dataset.n=nx.length;nb.hidden=nx.length<=NXL;nb.textContent=$('next').classList.contains('all')?'Show fewer':`Show all ${nx.length}`;

@@ -43,7 +43,16 @@ META_SLIM['best'] = {r: best(r) for r, _, _ in ROLES}
 _arch = {f for f in os.listdir(os.path.join(PUB, 'data')) if re.fullmatch(r'\d+\.\d+\.json', f)} if os.path.isdir(os.path.join(PUB, 'data')) else set()
 META_SLIM['hist'] = len(_arch | {f'{PATCH}.json'})   # patches with data; the panel shows a history chart from 3 on
 NOTES = P.get('notes', {})
-META_SLIM['nitems'] = sorted({x['c'] for n in NOTES.values() for x in n.get('items', [])})   # item names: no portrait to load
+def _item_ids():   # item name -> Data Dragon id (OP.GG's build ids win), for item icons on the panel and the next-patch card
+    di, bp = os.path.join(HERE, 'data', 'ddragon_items.json'), os.path.join(HERE, 'data', 'opgg_builds.json')
+    ids = dict(json.load(open(di, encoding='utf-8')).get('by_name', {})) if os.path.exists(di) else {}
+    for r in (json.load(open(bp, encoding='utf-8')) if os.path.exists(bp) else {}).values():
+        for b in r.values():
+            for k in ['c0', 'c1', 'b0', 's0']:
+                for iid, nm_ in b.get(k, []): ids[nm_] = str(iid)
+    return ids
+_IIDS = _item_ids()
+META_SLIM['nitems'] = {x['c']: _IIDS.get(x['c']) for n in NOTES.values() for x in n.get('items', [])}   # items: icon, not a portrait
 META_SLIM['notes'] = {p: [x['c'] for x in n['champs'] + n.get('items', [])] for p, n in NOTES.items()}   # the panel links to /patch/<p>/#<champion>
 # names and Riot's own short descriptions for the build card, only for the ids the builds use: items {id: name},
 # summoner spells {id: [name, description]}, runes {id: [name, description]}; from Data Dragon (saved by the icons workflow)
@@ -151,12 +160,12 @@ def cdesc(e, name, tiers):   # champion page description: tiers, then whole note
         if sn and len(d) + 1 + len(sn) <= 160: d += ' ' + sn
         else: break
     return d
-base_desc = f'LoL tier list for patch {PATCH}, every role. Nine stat sites combined, corrected for small samples and one-tricks. No ads.'
+base_desc = f'LoL tier list for patch {PATCH}, every role. Five stat sites combined, four more as checks, corrected for small samples and one-tricks. No ads.'
 z = [c for r, _, _ in ROLES for c in D['_meta']['facts']['z'][r]]
 page('index.html', 'B', '', 'home', 'top', f'LoL Tier List: patch {PATCH}, every role', f'LoL Tier List {PATCH}' + (f": {', '.join(z[:-1])} and {z[-1]} lead" if len(z) > 1 else ''), base_desc, SITE, SITE + 'og.png', head=head_home(''))
 for r, name, plural in ROLES:
     page(f'{r}/index.html', 'B', '../', 'board', r, f'{name} tier list, patch {PATCH} | LoL Tier List', f'{name} tier list for patch {PATCH}',
-         f'Best {plural} in patch {PATCH}: {top_line(r)}. Nine stat sites combined, no ads.'[:160],
+         f'Best {plural} in patch {PATCH}: {top_line(r)}. Five stat sites combined, no ads.'[:160],
          SITE + r + '/', SITE + f'og-{r}.png', head=head_role(r))
     for e in D[r]:   # one page per champion and role
         sl = slug(e['c']); tiers = ', '.join(f"{n} {e['v'][k][2]}" for k, n in RKN if k in e['v'])
@@ -164,7 +173,7 @@ for r, name, plural in ROLES:
              f"{e['c']} {name}, patch {PATCH}: {tiers}", cdesc(e, name, tiers),
              SITE + f'{r}/{sl}/', SITE + f'img/splash/{sl}.webp', champ=e['c'], head=head_champ(r, e, '../../'))
 page('method/index.html', 'M', '../', 'method', 'top', 'How the tier list is made | LoL Tier List', 'How the LoL tier list is made',
-     'Where the numbers come from, how nine stat sites are combined into one score and tier, how far each site can be trusted, and what a tier list cannot tell you.',
+     'Where the numbers come from, how five stat sites are combined into one score and tier, how far each site can be trusted, and what a tier list cannot tell you.',
      SITE + 'method/', SITE + 'og.png')
 
 # ---------- patch notes: /patch/<patch>/ for every patch in patch.json "notes", /patch/ = the newest live one ----------

@@ -88,10 +88,18 @@ function renderTable(){if(!DATA[role])return;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
     case 'ctr':{const {cs}=ctrs(d);return `<td><span class="ctrs">${cs.length?cs.map(([x,wr,n])=>`<img src="${IMGBASE}${slug(x)}.webp" alt="${x}" title="${x}: ${wr.toFixed(0)}% in ${n.toLocaleString('en-US')} games" width="22" height="22" loading="lazy">`).join(''):'<span class="mu">–</span>'}</span></td>`;}
     case 'games':{const w=val(d,c);return `<td class="n${w!=null&&w<LOWN?' mu':''}">${w==null?NA:Math.round(w).toLocaleString('en-US')}</td>`;}}};
-  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>c==='ctr'?`<th><span class="thn">${n}</span></th>`:`<th${c==='r_'+R()&&!lim?' class="cur"':''}><button type="button" data-sort="${c}" aria-sort="${sk===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sk===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
+  $('board').innerHTML=`<div class="scroll tbl"><table class="tv"><thead><tr><th>#</th>${cols.map(([c,n])=>c==='ctr'?`<th data-k="${c}"><span class="thn">${n}</span></th>`:`<th data-k="${c}"${c==='r_'+R()&&!lim?' class="cur"':''}><button type="button" data-sort="${c}" aria-sort="${sk===c?(sortD<0?'descending':'ascending'):'none'}">${n}${sk===c?(sortD<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead><tbody>${rows.map((d,i)=>`<tr data-c="${d.c}" class="${pick===d.c?'on':''}${hit(d.c)?'':' dim'}"><td class="n mu">${i+1}</td>${cols.map(([c])=>cell(d,c)).join('')}</tr>`).join('')}</tbody></table></div>`;
   fitTable();
 }
-function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classList.remove('fit');if(!narrow()&&t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
+// the table never hides columns behind a sideways scroll on wide screens: next to the panel it drops, in this order,
+// Counters (the panel shows matchups), Games and Ban % (the panel shows both) until it fits. Phones scroll instead.
+function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classList.remove('fit');const tb=t.querySelector('table');if(!tb)return;
+  tb.querySelectorAll('[data-drop]').forEach(c=>{c.hidden=false;c.removeAttribute('data-drop');});
+  if(narrow())return;
+  const hs=[...tb.querySelectorAll('thead th')];
+  for(const k of ['ctr','games','ban']){if(t.scrollWidth<=t.clientWidth+1)break;const i=hs.findIndex(h=>h.dataset.k===k);if(i<0)continue;
+    tb.querySelectorAll(`tr>:nth-child(${i+1})`).forEach(c=>{c.hidden=true;c.dataset.drop='1';});}
+  if(t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
 const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P:'Strong but rarely picked (under 1.5%). Mostly played by mains, so expect less if you are new to it.'};
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
@@ -309,7 +317,7 @@ function renderSide(){if(!DATA[role])return;
   const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
   const NXL=ALL?6:99;
   $('next').innerHTML=nx.map(([r,c,t,kd],i)=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
-    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${(META.nitems||[]).includes(names[0])?'':pic(names[0])}</span>`;
+    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${names[0] in (META.nitems||{})?(META.nitems[names[0]]?`<img class="pic" src="${SITE}img/item/${META.nitems[names[0]]}.webp" alt="" width="64" height="64" loading="lazy" onerror="this.remove()">`:''):pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${ALL&&one?RNm[r]+': ':''}${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
     return `<li${i>=NXL?' class="xtra"':''}>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   const nb=$('nxmore');nb.dataset.n=nx.length;nb.hidden=nx.length<=NXL;nb.textContent=$('next').classList.contains('all')?'Show fewer':`Show all ${nx.length}`;

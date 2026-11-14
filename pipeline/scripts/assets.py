@@ -39,7 +39,7 @@ p{{font-size:24px;line-height:1.4;color:#959cab;margin:0}} .u{{margin-top:26px;f
 .c img{{width:54px;height:54px;border-radius:13px}} .c b{{font:700 26px Inter;letter-spacing:-.02em;flex:1}} .c span.s{{color:#959cab;font-size:19px;font-weight:600}}"""
 og=f'''<html><head><style>{CSS}
 body{{display:grid;grid-template-columns:1fr 480px;gap:52px}}</style></head><body><div><div class="b">{mark}LoL Tier List</div><h1>Patch {patch}<br>tier list</h1>
-<p>Every role, built from nine stat sites. Win rate above the role average, corrected for sample size and one-tricks.</p><div class="u">Updated {upd} &middot; lol-tierlist.pages.dev</div></div>
+<p>Every role, five stat sites combined. Win rate above the role average, corrected for sample size and one-tricks.</p><div class="u">Updated {upd} &middot; lol-tierlist.pages.dev</div></div>
 <div class="card" style="align-self:center"><div style="font:700 17px Inter;color:#959cab;margin-bottom:4px">Best pick per role</div>{rows}</div></body></html>'''
 open('/tmp/og.html','w',encoding='utf-8').write(og)
 ROLEPAGES={}
