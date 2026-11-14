@@ -1010,7 +1010,17 @@ function navRole(r,champ){try{localStorage.setItem('tl-role',r);}catch(e){}
   role=r;pick=champ||null;
   if(PAGE==='home'){try{history.replaceState(null,'',SITE+location.search+'#'+(champ?slug(champ):r));}catch(e){}render();return;}
   const url=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');try{history.pushState(null,'',url);}catch(e){try{history.replaceState(null,'','#'+(champ?slug(champ):r));}catch(e2){}}render();}
-function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])fromURL();});return;}pick=champFromHash()||(PAGE==='champ'&&INIT_CHAMP?INIT_CHAMP:pick);if(PAGE!=='home')try{localStorage.setItem('tl-role',role);}catch(e){}render();}
+function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])fromURL();});return;}
+  let c=champFromHash();
+  // homepage: a #champion link can belong to another role than the one remembered; look it up once every role is loaded
+  if(!c&&PAGE==='home'&&h&&!isRole(h)){
+    if(CUR._meta.part&&!ARCH){ensureFull().then(()=>{if(!CUR._meta.part)fromURL();else render();});return;}
+    const want=decodeURIComponent(h).toLowerCase(),r=ROLES.map(([k])=>k).find(k=>(DATA[k]||[]).some(x=>slug(x.c)===want));if(r){role=r;c=champFromHash();}}
+  pick=c||(PAGE==='champ'&&INIT_CHAMP?INIT_CHAMP:pick);
+  if(PAGE!=='home')try{localStorage.setItem('tl-role',role);}catch(e){}
+  // homepage opens on the role used last; put it in the address so the URL always matches the list you see
+  if(PAGE==='home'&&!h&&role!==INIT_ROLE)try{history.replaceState(null,'',location.pathname+location.search+'#'+role);}catch(e){}
+  render();}
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
