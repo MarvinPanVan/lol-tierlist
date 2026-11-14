@@ -1,7 +1,7 @@
 """Check a file saved by pipeline/collect/opgg_collect.js and split it into pipeline/data/.
    python3 pipeline/collect/import_bundle.py <file> [<length> <number sum>]
 The length and number sum come from TLC.run() in the browser; if they don't match, nothing is written (the file is damaged
-or from another run). Parts it understands: stats (+ samples), counters, builds, skills, vs, rune_pages, game_length.
+or from another run). Parts it understands: stats (+ samples), counters, builds, skills, vs, rune_pages, game_length, synergy.
 For a NEW patch, first copy the current data/opgg_global_e_<role>.csv files to data/prev/ (trend arrows and backtest)."""
 import os, re, sys, json, math
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); DATA = os.path.join(HERE, 'data')
@@ -25,7 +25,7 @@ if B.get('stats'):   # tier list pages -> CSV per dataset and role, plus OP.GG's
         cur.update(B['samples']); json.dump(cur, open(sp, 'w'), indent=1); wrote.append('samples.json')
 
 if B.get('counters'):   # matchups: rank by the gap to the champion's own win rate, shrunk by sample size (see CLAUDE.md)
-    out = {}
+    out, full = {}, {}
     for rk, M in B['counters'].items():
         pre, roles = {}, {}
         for k, Lm in M.items():
@@ -42,10 +42,12 @@ if B.get('counters'):   # matchups: rank by the gap to the champion's own win ra
             h = sorted([x for x in E if x[3] < 0], key=lambda x: x[3])[:5]; g = sorted([x for x in E if x[3] > 0], key=lambda x: -x[3])[:5]
             m[k] = {'o': [N, W], 'h': [[ix(op), n, w, c] for op, n, w, _, c in h], 'g': [[ix(op), n, w, c] for op, n, w, _, c in g]}
         out[rk] = {'names': names, 'm': m}
+        # every opponent with 150+ games, for the counter-pick finder ("best picks into X" = X's own list, turned around)
+        full[rk] = {k: [[op, n, w] for op, n, w, d, v in Lm if n >= 150] for k, (N, W, Lm) in pre.items()}
         clear = sum(x[4] for k in pre for x in [(0, 0, 0, 0, 1 if abs(d) / math.sqrt(v) >= 1.64 else 0) for _, n, _, d, v in pre[k][2] if n >= 150])
         total = sum(1 for k in pre for x in pre[k][2] if x[1] >= 150)
         print(f'matchups {rk}: {len(m)} champions, {clear / max(total, 1):.0%} of 150+ game matchups clear, tau by role', {r: round(v, 1) for r, v in tau.items()})
-    dump('opgg_matchups.json', out)
+    dump('opgg_matchups.json', out); dump('opgg_matchups_full.json', full)
 
 if B.get('builds'):
     dump('opgg_build_stats.json', B['builds'])
@@ -59,6 +61,8 @@ if B.get('builds'):
         ob.setdefault(r, {})[c] = {'c0': [[i, nm(i)] for i in co[0][0]] if co else [], 'c1': [[i, nm(i)] for i in co[1][0]] if len(co) > 1 else [],
                                    'b0': [[bo[0][0], nm(bo[0][0])]] if bo else [], 's0': [[i, nm(i)] for i in st[0][0]] if st else []}
     dump('opgg_builds.json', ob)
+if B.get('synergy'):   # OP.GG synergies page: the 10 most played partners per other position, [position, partner, games, wins]
+    dump('opgg_synergy.json', B['synergy'])
 for part, name in [('skills', 'opgg_skills.json'), ('vs', 'opgg_vs_builds.json'), ('rune_pages', 'opgg_rune_pages.json'), ('game_length', 'opgg_game_length.json')]:
     if B.get(part):
         if part == 'game_length':

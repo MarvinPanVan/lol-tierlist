@@ -1344,6 +1344,9 @@ if(PAGE==='patch'){
 // patch notes page: mark the champions you starred on the tier list
 const mine=[...document.querySelectorAll('.pn-ix[data-pc]')].filter(a=>MINE.some(m=>m===a.dataset.pc||m.endsWith('|'+a.dataset.pc)));
 mine.forEach(a=>a.classList.add('mine'));
+// the address bar always holds a link that previews right in chats: index entries open the change's own page, and
+// in-page jumps (#champions, #items) scroll without adding #something to the address
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.ctrlKey||e.metaKey)return;const el=document.getElementById(a.getAttribute('href').slice(1));if(!el)return;e.preventDefault();el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
 // a change's own page (/patch/<p>/<champion>/) opens at its card
 if(INIT_CHAMP&&!location.hash){const el=document.getElementById(INIT_CHAMP);if(el){el.classList.add('pn-focus');requestAnimationFrame(()=>el.scrollIntoView({block:'start'}));}}
 // "Copy link" on each card: the change's own page, so chats show that change. Phones get the share sheet.

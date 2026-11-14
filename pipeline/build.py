@@ -85,6 +85,13 @@ def _lookup():
     if miss: print('build card: no Data Dragon name for', miss[:10])
     return lk
 META_SLIM['lk'] = _lookup()
+# counter-pick finder data (update.py writes counters.json); the site loads it only when the finder opens
+_CPF = os.path.join(HERE, 'counters.json')
+if os.path.exists(_CPF):
+    import shutil; os.makedirs(os.path.join(PUB, 'data'), exist_ok=True)
+    for f in os.listdir(os.path.join(PUB, 'data')):
+        if f.endswith('-counters.json'): os.remove(os.path.join(PUB, 'data', f))
+    META_SLIM['cpf'] = f'{PATCH}-counters.json'; shutil.copy(_CPF, os.path.join(PUB, 'data', META_SLIM['cpf']))
 if PATCH in NOTES:   # the short lines on the panels (changes, item_changes) and the full notes must list the same things
     assert {x['c']: [x['kind'], x['short']] for x in NOTES[PATCH]['champs']} == P.get('changes'), 'patch.json: "changes" and "notes" disagree'
     assert {x['c']: [x['kind'], x['short'], x['slot']] for x in NOTES[PATCH].get('items', [])} == P.get('item_changes', {}), 'patch.json: "item_changes" and "notes" disagree'
@@ -404,10 +411,10 @@ def notes_body(p, root):
     groups = [(k, lab, sorted(xs, key=lambda x: x['c'])) for k, lab, xs in groups if xs]
     # index: every change on the page, jump links (sticky on desktop)
     def ix(x, item=False):
-        if item: return f'<li><a class="pn-ix" href="#i-{slug(x["c"])}">{_ipic(x, root)}<span class="pn-ixn">{E(x["c"])}</span></a></li>'
+        if item: return f'<li><a class="pn-ix" href="{root}patch/{p}/i-{slug(x["c"])}/">{_ipic(x, root)}<span class="pn-ixn">{E(x["c"])}</span></a></li>'
         r, e = _main_role(x['c'])
         tg = f'<span class="tg sm" style="background:var(--{e["t"]})" title="{RNAME[r]}, now">{e["t"]}</span>' if e else ''
-        return f'<li><a class="pn-ix" href="#{slug(x["c"])}" data-pc="{E(x["c"])}"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="26" height="26"><span class="pn-ixn">{E(x["c"])}</span>{tg}</a></li>'
+        return f'<li><a class="pn-ix" href="{root}patch/{p}/{slug(x["c"])}/" data-pc="{E(x["c"])}"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="26" height="26"><span class="pn-ixn">{E(x["c"])}</span>{tg}</a></li>'
     idx = ''.join(f'<p class="pn-ih pn-{k}">{lab} <span>{len(xs)}</span></p><ul>{"".join(ix(x) for x in xs)}</ul>' for k, lab, xs in groups)
     if n.get('items'): idx += f'<p class="pn-ih">Items <span>{len(n["items"])}</span></p><ul>{"".join(ix(x, True) for x in n["items"])}</ul>'
     has_other = bool(n.get('other') or n.get('skins') or n.get('none'))

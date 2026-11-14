@@ -140,6 +140,34 @@ def switches(role, c, kind, key, base):
                 sc = 1 - sum(t in ctypes(o) for o in rest) / len(rest)
                 if sc >= .5 and sc > best: best, typ = sc, t
     return [TYPE_NAME.get(typ), [[nm(o), round(sh, 1), n] for o, sh, n, _ in up[:2]]]
+# OP.GG synergies (bot lane): an ADC's 10 most played supports and a support's 10 most played ADCs, [position, partner,
+# games, wins]. Each duo is compared with the champion's own win rate and pulled toward it by sample size (tau fitted per
+# role like the matchups); clear = a gap of 1.64+ standard errors. Partners with 300+ games only.
+SYN = json.load(open('data/opgg_synergy.json', encoding='utf-8')) if os.path.exists('data/opgg_synergy.json') else {}
+DUO_PART = {'adc': 'SUPPORT', 'support': 'ADC'}
+def _duo_tau():
+    out = {}
+    for role, part in DUO_PART.items():
+        dl = []
+        for k, rows in SYN.items():
+            if not k.startswith(role + '|'): continue
+            P = [(n, w) for pos, _, n, w in rows if pos == part and n >= 300]
+            if not P: continue
+            o = sum(w for n, w in P) / sum(n for n, w in P)
+            dl += [((100 * w / n - 100 * o) ** 2 - 2500 / n) for n, w in P]
+        out[role] = max(sum(dl) / len(dl), 1) if dl else 1
+    return out
+DUO_TAU = _duo_tau()
+def duos(role, c, win):
+    part, rows = DUO_PART.get(role), SYN.get(f'{role}|{c}')
+    if not part or not rows or win is None: return None
+    t2, L = DUO_TAU.get(role, 1), []
+    for pos, p_, n, w in rows:
+        if pos != part or n < 300: continue
+        r = 100 * w / n; d = r - win; v = 2500 / n
+        L.append([nm(p_), round(r, 1), n, 1 if abs(d) / math.sqrt(v) >= 1.64 else 0, d * t2 / (t2 + v)])
+    L.sort(key=lambda x: -x[4])
+    return {'o': round(win, 1), 'l': [x[:4] for x in L]} if L else None
 # OP.GG runes page: up to 5 rune pages (the build page only shows 2), same format as the build page's
 RNP = json.load(open('data/opgg_rune_pages.json', encoding='utf-8')) if os.path.exists('data/opgg_rune_pages.json') else {}
 # OP.GG trends page: win rate by game length, buckets under 25, 25-30, 30-35, 35-40 and 40+ minutes. OP.GG gives no game
@@ -337,6 +365,7 @@ for role in ROLES:
         e['mu'] = matchups('e', role, c); e['mud'] = matchups('d', role, c)
         e['bd'] = build(role, c)
         e['gl'] = game_length(role, c, val('g', c, 'n'), val('g', c, 'win'))
+        e['duo'] = duos(role, c, val('g', c, 'win'))
         res.append(e)
     out[role] = res
 
@@ -445,6 +474,31 @@ facts = {'n5': len(pop), 'n5_lose': n_lose, 'z': {r: [e['c'] for e in out[r] if 
 out['_meta'] = {'patch': P['patch'], 'prev_patch': P['prev_patch'], 'next': P['next'], 'grade': grade, 'backtest': backtest,
                 'tau': meta_tau, 'facts': facts, 'weights': {'all_regions': VIEW_W}}
 json.dump(out, open('tiers.json', 'w', encoding='utf-8'), ensure_ascii=False)
+
+# ---------- counter-pick finder: for every champion X, who wins most against it in lane ----------
+# From X's own full matchup list (OP.GG counters page, 150+ games), turned around: C's win rate against X. Ranked by C's
+# gap to what an average opponent gets against X, pulled toward 0 by sample size (tau per role and rank, like the panel's
+# matchups); clear = a gap of 1.64+ standard errors. Written to counters.json, the site loads it when the finder opens.
+MUF = json.load(open('data/opgg_matchups_full.json', encoding='utf-8')) if os.path.exists('data/opgg_matchups_full.json') else {}
+if MUF and MU:
+    cdat = {}
+    for rk, D_ in MUF.items():
+        names, ix, res, by_role = [], {}, {}, {}
+        for k, Lm in D_.items():
+            o_ = MU.get(rk, {}).get('m', {}).get(k, {}).get('o')
+            if not o_: continue
+            ox = o_[1] / o_[0]
+            by_role.setdefault(k.split('|')[0], []).append((k, [(op, n, w, 100 * ((n - w) / n - (1 - ox)), 2500 / n) for op, n, w in Lm]))
+        for role, items in by_role.items():
+            big = [(d, v) for _, L_ in items for *_, d, v in L_ if 2500 / v >= 300]
+            t2 = max(sum(d * d - v for d, v in big) / len(big), 1) if big else 1
+            for k, L_ in items:
+                rows = sorted([(op, n, w, d * t2 / (t2 + v), 1 if abs(d) / math.sqrt(v) >= 1.64 else 0) for op, n, w, d, v in L_], key=lambda x: -x[3])
+                for op, *_ in rows:
+                    if op not in ix: ix[op] = len(names); names.append(op)
+                res.setdefault(role, {})[nm(k.split('|')[1])] = [[ix[op], round(1000 * (n - w) / n), n, cl] for op, n, w, _, cl in rows]
+        cdat[rk] = {'names': [nm(x) for x in names], 'r': res}
+    json.dump(cdat, open('counters.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
 
 # ---------- summary ----------
 print('backtest', backtest)
