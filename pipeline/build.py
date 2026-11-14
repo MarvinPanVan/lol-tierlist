@@ -76,14 +76,22 @@ def head_home(root):
         b = best(r)
         if not b: continue
         c, t, sc = b
-        cards += (f'<a class="rcd" href="{root}{r}/" style="--R:var(--R{r});--art:url(/img/tile/{slug(c)}.webp)"><span class="rn"><span class="ri">{RICON[r]}</span>{n}</span>'
-                  f'<span class="bp"><small>Best pick</small><b>{E(c)} <span class="tg" style="background:var(--{t})">{t}</span></b><small>{f1(sc)} vs role average</small></span></a>')
+        cards += (f'<a href="{root}{r}/" style="--R:var(--R{r})"><span class="ri">{RICON[r]}</span><img class="pic" src="{root}img/champ/{slug(c)}.webp" alt="" width="22" height="22" loading="lazy">'
+                  f'{E(c)} <span class="tg sm" style="background:var(--{t})">{t}</span></a>')
     mv = sorted([(e['tr'], r, e['c']) for r, _, _ in ROLES for e in D[r] if e.get('tr') is not None and e['pick'] >= 1 and abs(e['tr']) >= .4], reverse=True)
     pick = mv[:3] + [x for x in mv[::-1][:3] if x[0] < 0]
     chips = ''.join(f'<a href="{root}{r}/{slug(c)}/"><img class="pic" src="{root}img/champ/{slug(c)}.webp" alt="" width="22" height="22" loading="lazy">{E(c)} <span class="mu">{RNAME[r]}</span><em class="{"up" if t > 0 else "dn"}">{"↑" if t > 0 else "↓"} {f1(t)}</em></a>' for t, r, c in pick)
     nx = P.get('next', {}); nxt = f" · next patch {E(nx.get('patch', ''))} on {E(nx.get('date', ''))}" if nx else ''
-    return (f'<header class="band head home"><div class="wrap">{dline(nxt)}'
-            f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p><div class="rcards">{cards}</div>'
+    # patch leaders: the Z-tier champions, filled up to three with the highest-scoring S picks
+    lead = [(r, e) for r, _, _ in ROLES for e in D[r] if e['c'] in D['_meta']['facts']['z'].get(r, [])]
+    rest = sorted([(r, e) for r, _, _ in ROLES for e in D[r] if e['t'] == 'S' and e['pick'] >= 2], key=lambda x: -x[1]['score'])
+    lead = sorted(lead, key=lambda x: -x[1]['score'])[:3]; lead += rest[:3 - len(lead)]
+    lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
+                 f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
+                 f'<span><span class="tg" style="background:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {e["pick"]:.1f}% pick</span></span></a>' for r, e in lead)
+    hdl = f'<p class="dl">Patch <b>{PATCH}</b> · 9 stat sites · {kfmt(GAMES)} Emerald+ games · updated {E(UPD)}{nxt.replace(" next patch", " next")}</p>'
+    return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt">{hdl}'
+            f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div><div class="mvs bpr"><span>Best per role:</span>{cards}</div>'
             f'<div class="mvs"><span>Moved most since {E(P.get("prev_patch", ""))}:</span>{chips}</div></div></header>')
 def head_champ(r, e, root):
     s_ = slug(e['c']); tc = lambda t: f'var(--{t})' if t else 'var(--E)'

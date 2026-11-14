@@ -146,7 +146,7 @@ const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=(c,pg='build')=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/${pg}/${role}`;
 const HIGHV=()=>lens==='hi'||['dia','m','euwd','euwm','krd','krm','nad','nam'].includes(lens);
 function renderPanel(){if(!DATA[role])return;
-  const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';return;}
+  const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';$('panel').dataset.key='';return;}
   const rn=ROLES.find(r=>r[0]===role)[1],ht=hiTier(d),sx=stat(d)||{};
   const hcell=k=>{const v=d[k];if(v==null)return `<td class="na">–</td>`;const a=Math.min(Math.abs(v),3)/3;return `<td class="${lens===k?'on':''}" style="--h:color-mix(in srgb,var(${v>=0?'--pos':'--neg'}) ${Math.round(5+a*30)}%,transparent)"><button type="button" data-l="${k}" title="${DSN[k]}: ${d.st&&d.st[k]?d.st[k][0].toLocaleString('en-US')+' games. ':''}Tap to rank everyone by it." aria-label="${DSN[k]} ${fmt(v)}, show the tier list from this dataset">${fmt(v)}</button></td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RK.map(r=>`<th>${r}</th>`).join('')}</tr></thead><tbody>${GRID.map(([n,...ks])=>`<tr><th>${n}</th>${ks.map(hcell).join('')}</tr>`).join('')}</tbody></table>`;
@@ -154,7 +154,7 @@ function renderPanel(){if(!DATA[role])return;
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site">${k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site">Lolalytics, Emerald+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}</p>`;
   const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
-  $('panel').innerHTML=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${!ARCH&&PAGE!=='champ'?`<a href="${champURL(d.c)}" title="Open the full page for ${d.c}">${d.c}<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`:d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
+  const PH=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${!ARCH&&PAGE!=='champ'?`<a href="${champURL(d.c)}" title="Open the full page for ${d.c}">${d.c}<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`:d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
   <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a><button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong>${rngHTML(d)}</div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${LIM()?`<p class="cap">Win rate vs role average, Global Emerald+ only</p><div class="rows">${rows}</div>`:`<p class="cap">Win rate vs role average in points, by region and rank. Tap a cell to rank everyone by it.</p>${grid}`}
@@ -162,6 +162,19 @@ function renderPanel(){if(!DATA[role])return;
   ${tr}${histHTML(d)}${d.nx?`<p class="nx ${d.nx}">${META.next.patch}: ${d.nxt}.</p>`:''}
   ${ctrHTML(d)}
   ${sites?`<p class="cap">What other sites give it</p><div class="sites">${sites}</div>`:''}</div>`;
+  const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
+  if(P0.dataset.key===key&&P0.firstElementChild){const t=document.createElement('template');t.innerHTML=PH;morph(P0.firstElementChild,t.content.firstElementChild);}
+  else{P0.innerHTML=PH;P0.dataset.key=key;}
+}
+// update the panel in place: keep every element, only change what differs, fade just the changed numbers
+function morph(a,b){
+  if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){a.replaceWith(b);return;}
+  if(a.nodeType===3){if(a.data!==b.data){a.data=b.data;const el=a.parentElement;if(el&&el.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{opacity:.25},{opacity:1}],{duration:260,easing:'ease-out'});}return;}
+  if(a.nodeType!==1)return;
+  for(const at of [...a.attributes])if(!b.hasAttribute(at.name))a.removeAttribute(at.name);
+  for(const at of [...b.attributes])if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value);
+  const ac=[...a.childNodes],bc=[...b.childNodes];
+  for(let i=0;i<Math.max(ac.length,bc.length);i++){if(i>=ac.length)a.appendChild(bc[i]);else if(i>=bc.length)ac[i].remove();else morph(ac[i],bc[i]);}
 }
 let HIST=null,HISTP=null;
 function histHTML(d){

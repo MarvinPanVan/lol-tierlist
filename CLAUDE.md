@@ -88,7 +88,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      DOMParser (columns Win rate, Pick rate, Ban rate; "Total analyzed samples" is in the page text). Region values
      global/euw/kr/na, tiers emerald_plus/diamond_plus/master_plus, positions top/jungle/mid/adc/support. Wait ~0.4 s
      between pages.
-4. Update the texts: in `patch.json` `updated`, `headline`, `lede` (counts) and the five `takes`; in
+4. Update the texts: in `patch.json` `updated`, `headline` (short, names the patch leaders, about 40 characters),
+   `lede` (counts) and the five `takes`; the homepage leader cards are picked by build.py (Z tier, filled with the best S); in
    `pipeline/template.html` the top bar pill "Patch xx.xx", the NEXT list ("Changing on ..."), method and limits
    bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.
    Rewrite notes that no longer match the numbers.
