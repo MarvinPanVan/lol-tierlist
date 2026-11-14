@@ -6,6 +6,7 @@
 <title>ADC tier list, patch 26.22 | LoL Tier List</title>
 <meta name="description" content="Best ADCs in patch 26.22: Kog&#x27;Maw (Z), Xayah (Z), Yasuo (S), Zeri (S) and Twitch (S). Win rate above the role average from nine stat sites, corrected for sample size and one-tricks.">
 <meta name="theme-color" content="#0b0c0f">
+<script>try{var t=localStorage.getItem("tl-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="canonical" href="https://lol-tierlist.pages.dev/adc/">
 <link rel="icon" href="../favicon.ico" sizes="32x32">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -89,7 +90,7 @@ a{color:inherit}
 select,input{font:500 14px Inter,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:42px;padding:0 14px;transition:border-color .15s,box-shadow .15s}
 select{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
 select:hover,input:hover{border-color:var(--faint)}
-.search{position:relative;margin-left:auto;width:min(280px,100%)}
+.search{position:relative;margin-left:auto;flex:1 1 200px;max-width:300px}
 .search input{width:100%;padding-left:38px;padding-right:34px}
 .search::before{content:"";position:absolute;left:13px;top:50%;width:15px;height:15px;transform:translateY(-50%);background:var(--faint);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='black' stroke-width='2.4'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='black' stroke-width='2.4'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
 .search input:focus~kbd,.search input:not(:placeholder-shown)~kbd{opacity:0}
@@ -246,6 +247,13 @@ i.q{display:inline-grid;place-items:center;width:14px;height:14px;border-radius:
 .arch button{border:0;background:var(--acc);color:#fff;font:600 13px Inter,sans-serif;padding:8px 14px;border-radius:999px;cursor:pointer}
 .seg button:disabled{opacity:.4;cursor:not-allowed}
 select:disabled{opacity:.5;cursor:not-allowed}
+.theme{display:grid;place-items:center;width:38px;height:38px;margin-left:6px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;flex:none;transition:background .15s,border-color .15s,transform .2s var(--ease)}
+.theme:hover{border-color:var(--faint)}.theme:active{transform:rotate(-20deg)}
+.theme svg{width:17px;height:17px;grid-area:1/1;transition:opacity .2s,transform .3s var(--ease)}
+.i-sun{opacity:0;transform:rotate(-60deg) scale(.6)}
+:root[data-theme=dark] .i-sun{opacity:1;transform:none}:root[data-theme=dark] .i-moon{opacity:0;transform:rotate(60deg) scale(.6)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .i-sun{opacity:1;transform:none}:root:not([data-theme=light]) .i-moon{opacity:0;transform:rotate(60deg) scale(.6)}}
+body{transition:background-color .25s ease,color .25s ease}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 @keyframes pop{from{opacity:0;transform:translateY(-4px) scale(.99)}to{opacity:1;transform:none}}
@@ -267,7 +275,7 @@ select:disabled{opacity:.5;cursor:not-allowed}
 .x{display:block}
 .scrim.open{display:block;position:fixed;inset:0;background:rgba(10,12,16,.4);backdrop-filter:blur(2px);z-index:40;animation:fade .2s both}
 .split{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.bar select{flex:1 1 40%}.hero-band{padding-top:18px;padding-bottom:16px}.hero-band h1{font-size:26px;margin-bottom:12px}.hero-band .lede{display:none}.eyebrow{margin-bottom:12px}.eyebrow .pill:not(:first-child){display:none}.chip .pic{width:28px;height:28px;border-radius:8px}.best{grid-template-columns:repeat(5,160px);overflow-x:auto;scrollbar-width:none;margin:0 -2px}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%}.search kbd{display:none}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
+@media(max-width:640px){.theme{margin-left:auto}.bar select{flex:1 1 40%}.hero-band{padding-top:18px;padding-bottom:16px}.hero-band h1{font-size:26px;margin-bottom:12px}.hero-band .lede{display:none}.eyebrow{margin-bottom:12px}.eyebrow .pill:not(:first-child){display:none}.chip .pic{width:28px;height:28px;border-radius:8px}.best{grid-template-columns:repeat(5,160px);overflow-x:auto;scrollbar-width:none;margin:0 -2px}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%}.search kbd{display:none}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
 .row{grid-template-columns:50px minmax(0,1fr)}.lab{font-size:30px}.lab small{font-size:9.5px}
 .chips{gap:6px;padding:8px}.chip{min-height:46px;padding:6px 9px 6px 6px;column-gap:8px}.chip .nm{font-size:14px}
 .fig{height:380px}.gr{grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:8px}.gr .cv{display:none}
@@ -278,7 +286,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 </head>
 <body>
 <div class="top" id="top"><div class="wrap"><a class="brand" href="../"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
-<nav class="links" aria-label="Sections"><a href="#board-sec">Tier list</a><a href="#map-sec">Pick vs win</a><a href="../method/">How it works</a></nav></div></div>
+<nav class="links" aria-label="Sections"><a href="#board-sec">Tier list</a><a href="#map-sec">Pick vs win</a><a href="../method/">How it works</a></nav><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
 <header class="band hero-band">
 <div class="wrap hero">
 <div>
@@ -551,6 +559,7 @@ function navRole(r,champ){role=r;pick=champ||null;const url=SITE+r+'/'+(champ?'#
 function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;pick=champFromHash()||pick;render();}
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
+$('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
 if(PAGE==='method'){
 $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
 {const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). Pulling toward zero made last patch a better guess (error ${b.mse_shrunk} vs ${b.mse_raw}).`;}
