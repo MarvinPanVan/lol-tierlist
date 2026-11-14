@@ -68,7 +68,10 @@ function renderControls(){if(!DATA[role])return;
   document.querySelectorAll('.guide [data-rg]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.rg===G());b.disabled=lim&&b.dataset.rg!=='all';});
   const list=DATA[role],miss=list.filter(d=>tierOf(d)==null).length;
   const BLK={e:'OP.GG Global, EUW, KR and NA.',d:'Global from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs, plus EUW, KR and NA.',m:'Global from OP.GG and U.GG, plus EUW, KR and NA.'};
-  $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'');
+  const BLS={e:'OP.GG',d:'OP.GG + 4 more sites',m:'OP.GG + U.GG'};
+  $('vwn').textContent=lim?`Patch ${ARCH.patch}`:G()==='all'?`${RN[R()]}, all regions`:VNM();
+  $('hint').textContent=(lim?'Global Emerald+ only':G()==='all'?BLS[R()]:'OP.GG only, fewer games')+(miss?`, ${miss} with no games`:'');
+  $('gbtn').title=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'')+' Tap to see which rank and region to pick.';
   $('legend').hidden=lim||mode==='chart';
 }
 function renderTable(){if(!DATA[role])return;
@@ -522,7 +525,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = score clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="nxp buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> <span class="nxp nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg>${META.next.patch}</span> = buff or nerf coming in ${META.next.patch} (${META.next.date}).</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
+$('legend').innerHTML=`<span class="k" title="Win rate points above the role average"><b class="smp">+1.2</b>win rate vs role average</span><span class="k" title="Few games, so the score could be off"><b class="smp lowsc">+0.4</b>few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="smp"><b class="tri up">↑</b><b class="tri dn">↓</b></b>since ${META.prev_patch}</span>${META.next?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span>coming ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span>trap</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.

@@ -503,7 +503,7 @@ for q, n in NOTES.items():
 # ---------- link preview pictures (1200x630): build.py describes each one as HTML, scripts/assets.py renders only the ones whose
 # HTML changed (hashes in data/og_hashes.json), so the repo does not grow with every build. Placeholders: __PUB__ (public/ on
 # disk), __FONTS__, __MARK__ (filled by assets.py).
-TCOL = {'Z': '#f8ca65', 'S': '#f7ac72', 'A': '#c4b08f', 'B': '#9da5b0', 'C': '#8592a2', 'D': '#717e92', 'P': '#a798cb'}
+TCOL = {'Z': '#fbcd68', 'S': '#fbaa71', 'A': '#beaa85', 'B': '#7fa48f', 'C': '#638c9a', 'D': '#5d7094', 'P': '#ac96c8'}
 KCOL = {'buff': '#3fd17f', 'nerf': '#ff7a68'}
 OG_CSS = """__FONTS__
 *{box-sizing:border-box}body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0b0c0f;color:#eceef2;font-family:Inter;position:relative}

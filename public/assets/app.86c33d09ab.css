@@ -8,7 +8,7 @@
 --sh1:0 1px 2px light-dark(rgba(16,24,40,.05),rgba(0,0,0,.4));
 --sh2:0 1px 2px light-dark(rgba(16,24,40,.04),rgba(0,0,0,.35)),0 10px 28px -12px light-dark(rgba(16,24,40,.16),rgba(0,0,0,.6));
 --r:14px;--ease:cubic-bezier(.2,.7,.2,1);
---Z:light-dark(#8d5f00,#f8ca65);--S:light-dark(#a65322,#f7ac72);--A:light-dark(#826e50,#c4b08f);--B:light-dark(#707883,#9da5b0);--C:light-dark(#7a8492,#8592a2);--D:light-dark(#8b94a3,#717e92);--P:light-dark(#705b9b,#a798cb);--E:light-dark(#6b727e,#8b939f)}
+--Z:light-dark(#8d5f00,#fbcd68);--S:light-dark(#a65225,#fbaa71);--A:light-dark(#826e50,#beaa85);--B:light-dark(#567966,#7fa48f);--C:light-dark(#5a8391,#638c9a);--D:light-dark(#7788a7,#5d7094);--P:light-dark(#765997,#ac96c8);--E:light-dark(#6b727e,#8b939f)}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -710,7 +710,7 @@ details.brow{display:block}
 .row::before{content:none}
 .lab{font-size:40px;padding:10px 4px;margin:4px 0 4px 4px;border-radius:12px;background:color-mix(in srgb,var(--T) 9%,transparent)}
 .lab .lt{color:var(--T)}
-.t-Z{--Th:light-dark(#a37424,#ffe17c);--Tl:light-dark(#7e5100,#e7ba54)}.t-S{--Th:light-dark(#bd6839,#ffc388);--Tl:light-dark(#96440e,#e69c62)}.t-A{--Th:light-dark(#978364,#dbc6a5);--Tl:light-dark(#736042,#b4a080)}.t-B{--Th:light-dark(#858d98,#b3bbc6);--Tl:light-dark(#626a74,#8e96a0)}.t-C{--Th:light-dark(#8f99a8,#9aa8b8);--Tl:light-dark(#6b7583,#768393)}.t-D{--Th:light-dark(#a0aab9,#8693a8);--Tl:light-dark(#7c8594,#636f83)}.t-P{--Th:light-dark(#846fb1,#bdaee2);--Tl:light-dark(#624d8b,#9889bb)}
+.t-Z{--Th:light-dark(#a37424,#ffe47f);--Tl:light-dark(#7e5100,#eabd57)}.t-S{--Th:light-dark(#bd673b,#ffc187);--Tl:light-dark(#964313,#ea9a61)}.t-A{--Th:light-dark(#978364,#d5c09a);--Tl:light-dark(#736042,#ae9a76)}.t-B{--Th:light-dark(#6a8e7a,#94baa4);--Tl:light-dark(#486a58,#709580)}.t-C{--Th:light-dark(#6f98a7,#78a1b0);--Tl:light-dark(#4c7482,#547d8b)}.t-D{--Th:light-dark(#8c9dbd,#7185aa);--Tl:light-dark(#697997,#4f6285)}.t-P{--Th:light-dark(#8b6dad,#c2acdf);--Tl:light-dark(#684b88,#9d87b8)}
 .row[class*=t-] .lab .lt{background:linear-gradient(180deg,var(--Th,var(--T)) 10%,var(--T) 55%,var(--Tl,var(--T)));-webkit-background-clip:text;background-clip:text;color:transparent}
 .mine-row .lab .lt{background:none;color:var(--acc)}
 .chips,.chips.bigs,.chips.smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;padding:8px 8px 8px 0;align-content:start}
@@ -752,7 +752,18 @@ details.brow{display:block}
 .chip .nxp{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
 .chip.big .nxp{font-size:11.5px;padding:2px 4px 2px 3px;bottom:-7px}.chip.big .nxp svg{width:8px;height:8px}
 .lowsc{color:var(--faint);font-weight:600}
-.legend .bdg.demo+.bdg.demo{margin-left:3px}
+.hintline{flex-wrap:nowrap;gap:10px 22px;padding-top:4px}
+.vchip{display:inline-flex;align-items:center;gap:8px;flex:none;min-height:30px;padding:0 10px 0 12px;border-radius:9px;background:var(--surf);color:var(--mut);text-decoration:none;font:500 12.5px Inter,sans-serif;box-shadow:inset 0 0 0 1px var(--line)}
+.vchip b{color:var(--ink);font-weight:600}
+.vchip:hover,.vchip[aria-expanded=true]{color:var(--ink);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 45%,var(--line))}
+.vchip .qi{width:15px;height:15px;color:var(--acc);flex:none}
+.legend{gap:6px 18px;margin-left:auto;flex-wrap:nowrap}
+.legend .k{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend .smp{display:inline-flex;align-items:center;gap:1px;min-height:20px;padding:0 6px;border-radius:6px;background:var(--surf);color:var(--ink);font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px var(--line)}
+.legend .smp.lowsc{color:var(--faint)}
+.legend .tri{margin:0}
+@media(max-width:1340px){.legend .k:first-child{display:none}}
+@media(max-width:1180px){.hintline{flex-wrap:wrap}.legend{margin-left:0;flex-wrap:wrap}}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
 .chip.big[aria-pressed=true]{background:color-mix(in srgb,var(--T) 7%,var(--card))}
 @media(max-width:640px){

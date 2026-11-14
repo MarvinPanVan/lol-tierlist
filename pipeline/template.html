@@ -35,7 +35,7 @@
 --sh1:0 1px 2px light-dark(rgba(16,24,40,.05),rgba(0,0,0,.4));
 --sh2:0 1px 2px light-dark(rgba(16,24,40,.04),rgba(0,0,0,.35)),0 10px 28px -12px light-dark(rgba(16,24,40,.16),rgba(0,0,0,.6));
 --r:14px;--ease:cubic-bezier(.2,.7,.2,1);
---Z:light-dark(#8d5f00,#f8ca65);--S:light-dark(#a65322,#f7ac72);--A:light-dark(#826e50,#c4b08f);--B:light-dark(#707883,#9da5b0);--C:light-dark(#7a8492,#8592a2);--D:light-dark(#8b94a3,#717e92);--P:light-dark(#705b9b,#a798cb);--E:light-dark(#6b727e,#8b939f)}
+--Z:light-dark(#8d5f00,#fbcd68);--S:light-dark(#a65225,#fbaa71);--A:light-dark(#826e50,#beaa85);--B:light-dark(#567966,#7fa48f);--C:light-dark(#5a8391,#638c9a);--D:light-dark(#7788a7,#5d7094);--P:light-dark(#765997,#ac96c8);--E:light-dark(#6b727e,#8b939f)}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -737,7 +737,7 @@ details.brow{display:block}
 .row::before{content:none}
 .lab{font-size:40px;padding:10px 4px;margin:4px 0 4px 4px;border-radius:12px;background:color-mix(in srgb,var(--T) 9%,transparent)}
 .lab .lt{color:var(--T)}
-.t-Z{--Th:light-dark(#a37424,#ffe17c);--Tl:light-dark(#7e5100,#e7ba54)}.t-S{--Th:light-dark(#bd6839,#ffc388);--Tl:light-dark(#96440e,#e69c62)}.t-A{--Th:light-dark(#978364,#dbc6a5);--Tl:light-dark(#736042,#b4a080)}.t-B{--Th:light-dark(#858d98,#b3bbc6);--Tl:light-dark(#626a74,#8e96a0)}.t-C{--Th:light-dark(#8f99a8,#9aa8b8);--Tl:light-dark(#6b7583,#768393)}.t-D{--Th:light-dark(#a0aab9,#8693a8);--Tl:light-dark(#7c8594,#636f83)}.t-P{--Th:light-dark(#846fb1,#bdaee2);--Tl:light-dark(#624d8b,#9889bb)}
+.t-Z{--Th:light-dark(#a37424,#ffe47f);--Tl:light-dark(#7e5100,#eabd57)}.t-S{--Th:light-dark(#bd673b,#ffc187);--Tl:light-dark(#964313,#ea9a61)}.t-A{--Th:light-dark(#978364,#d5c09a);--Tl:light-dark(#736042,#ae9a76)}.t-B{--Th:light-dark(#6a8e7a,#94baa4);--Tl:light-dark(#486a58,#709580)}.t-C{--Th:light-dark(#6f98a7,#78a1b0);--Tl:light-dark(#4c7482,#547d8b)}.t-D{--Th:light-dark(#8c9dbd,#7185aa);--Tl:light-dark(#697997,#4f6285)}.t-P{--Th:light-dark(#8b6dad,#c2acdf);--Tl:light-dark(#684b88,#9d87b8)}
 .row[class*=t-] .lab .lt{background:linear-gradient(180deg,var(--Th,var(--T)) 10%,var(--T) 55%,var(--Tl,var(--T)));-webkit-background-clip:text;background-clip:text;color:transparent}
 .mine-row .lab .lt{background:none;color:var(--acc)}
 .chips,.chips.bigs,.chips.smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;padding:8px 8px 8px 0;align-content:start}
@@ -779,7 +779,18 @@ details.brow{display:block}
 .chip .nxp{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ink) 4.5%,var(--card))}
 .chip.big .nxp{font-size:11.5px;padding:2px 4px 2px 3px;bottom:-7px}.chip.big .nxp svg{width:8px;height:8px}
 .lowsc{color:var(--faint);font-weight:600}
-.legend .bdg.demo+.bdg.demo{margin-left:3px}
+.hintline{flex-wrap:nowrap;gap:10px 22px;padding-top:4px}
+.vchip{display:inline-flex;align-items:center;gap:8px;flex:none;min-height:30px;padding:0 10px 0 12px;border-radius:9px;background:var(--surf);color:var(--mut);text-decoration:none;font:500 12.5px Inter,sans-serif;box-shadow:inset 0 0 0 1px var(--line)}
+.vchip b{color:var(--ink);font-weight:600}
+.vchip:hover,.vchip[aria-expanded=true]{color:var(--ink);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 45%,var(--line))}
+.vchip .qi{width:15px;height:15px;color:var(--acc);flex:none}
+.legend{gap:6px 18px;margin-left:auto;flex-wrap:nowrap}
+.legend .k{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend .smp{display:inline-flex;align-items:center;gap:1px;min-height:20px;padding:0 6px;border-radius:6px;background:var(--surf);color:var(--ink);font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px var(--line)}
+.legend .smp.lowsc{color:var(--faint)}
+.legend .tri{margin:0}
+@media(max-width:1340px){.legend .k:first-child{display:none}}
+@media(max-width:1180px){.hintline{flex-wrap:wrap}.legend{margin-left:0;flex-wrap:wrap}}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
 .chip.big[aria-pressed=true]{background:color-mix(in srgb,var(--T) 7%,var(--card))}
 @media(max-width:640px){
@@ -827,7 +838,7 @@ details.brow{display:block}
 </style>
 </head>
 <body>
-<div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#f8ca65"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#f7ac72"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#c4b08f"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#9da5b0"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
+<div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#fbcd68"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#fbcd68" opacity="1"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#fbaa71"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#fbcd68" opacity=".75"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#beaa85"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#fbcd68" opacity=".5"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#7fa48f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#fbcd68" opacity=".3"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
 <!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="#board-sec" data-mode="counter">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#champions">Champions</a><a class="opt" href="#items">Items</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
 <!--B-->__HEAD__
 
@@ -840,7 +851,7 @@ details.brow{display:block}
 <div class="seg" id="regs" role="group" aria-label="Region"></div>
 <div class="seg" id="modes" role="group" aria-label="Layout"></div>
 <div class="search"><input id="q" type="search" placeholder="Find a champion" autocomplete="off" aria-label="Find a champion"><kbd aria-hidden="true">/</kbd><div class="res" id="res"></div></div>
-<div class="hintline"><button type="button" class="gbtn" id="gbtn" aria-expanded="false" aria-controls="guide">Which rank and region?</button><span id="hint"></span><span class="legend" id="legend"></span><select id="patchsel" aria-label="Patch"><option value="">Patch __PATCH__</option></select></div>
+<div class="hintline"><button type="button" class="gbtn vchip" id="gbtn" aria-expanded="false" aria-controls="guide" title="Which rank and region should I pick?"><b id="vwn"></b><span id="hint"></span><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.3 6.2a1.8 1.8 0 0 1 3.5.5c0 1.2-1.8 1.4-1.8 2.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.4" r=".9" fill="currentColor"/></svg></button><span class="legend" id="legend"></span><select id="patchsel" aria-label="Patch"><option value="">Patch __PATCH__</option></select></div>
 <div class="guide" id="guide" hidden>
 <p class="gh">Rank: pick the one you play in</p>
 <button type="button" class="gopt" data-rk="e"><b>Emerald+ <span class="rec">Most players</span></b><span class="who">Iron to Emerald.</span><span>The most games, so the least noise. Emerald+ also counts every game above it.</span></button>
@@ -934,7 +945,7 @@ details.brow{display:block}
 </ul>
 </div>
 </section>
-<!--/M--><!--N-->__HEAD__<!--/N--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#f8ca65"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#f7ac72"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#c4b08f"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#9da5b0"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__patch/">Patch notes</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
+<!--/M--><!--N-->__HEAD__<!--/N--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#fbcd68"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#fbcd68" opacity="1"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#fbaa71"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#fbcd68" opacity=".75"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#beaa85"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#fbcd68" opacity=".5"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#7fa48f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#fbcd68" opacity=".3"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__patch/">Patch notes</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
 
 <script>window.TL={DATA:__DATA__,ROOT:'__ROOT__',PAGE:'__PAGE__',ROLE:'__ROLE__',CHAMP:__CHAMP__};</script>
 <script>
@@ -1008,7 +1019,10 @@ function renderControls(){if(!DATA[role])return;
   document.querySelectorAll('.guide [data-rg]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.rg===G());b.disabled=lim&&b.dataset.rg!=='all';});
   const list=DATA[role],miss=list.filter(d=>tierOf(d)==null).length;
   const BLK={e:'OP.GG Global, EUW, KR and NA.',d:'Global from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs, plus EUW, KR and NA.',m:'Global from OP.GG and U.GG, plus EUW, KR and NA.'};
-  $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'');
+  const BLS={e:'OP.GG',d:'OP.GG + 4 more sites',m:'OP.GG + U.GG'};
+  $('vwn').textContent=lim?`Patch ${ARCH.patch}`:G()==='all'?`${RN[R()]}, all regions`:VNM();
+  $('hint').textContent=(lim?'Global Emerald+ only':G()==='all'?BLS[R()]:'OP.GG only, fewer games')+(miss?`, ${miss} with no games`:'');
+  $('gbtn').title=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'')+' Tap to see which rank and region to pick.';
   $('legend').hidden=lim||mode==='chart';
 }
 function renderTable(){if(!DATA[role])return;
@@ -1462,7 +1476,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span>Score = win rate points above the role average.</span><span><b class="lowsc">+0.4</b> grey = few games, could be off.</span><span><b class="tri up">↑</b><b class="tri dn">↓</b> = score clearly moved since ${META.prev_patch}.</span>${META.next?`<span><span class="nxp buff demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> <span class="nxp nerf demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.nerf}</svg>${META.next.patch}</span> = buff or nerf coming in ${META.next.patch} (${META.next.date}).</span>`:''}<span><span class="bdg trap demo"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = trap: picked a lot, still losing.</span>`;
+$('legend').innerHTML=`<span class="k" title="Win rate points above the role average"><b class="smp">+1.2</b>win rate vs role average</span><span class="k" title="Few games, so the score could be off"><b class="smp lowsc">+0.4</b>few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="smp"><b class="tri up">↑</b><b class="tri dn">↓</b></b>since ${META.prev_patch}</span>${META.next?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span>coming ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span>trap</span>`;
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.
