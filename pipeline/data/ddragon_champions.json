@@ -174,5 +174,1521 @@
 "26": "Zilean",
 "142": "Zoe",
 "143": "Zyra"
+},
+"traits": {
+"Aatrox": [
+[
+"Fighter"
+],
+175,
+8,
+3
+],
+"Ahri": [
+[
+"Mage",
+"Assassin"
+],
+550,
+3,
+8
+],
+"Akali": [
+[
+"Assassin"
+],
+125,
+5,
+8
+],
+"Akshan": [
+[
+"Marksman",
+"Assassin"
+],
+500,
+0,
+0
+],
+"Alistar": [
+[
+"Tank",
+"Support"
+],
+125,
+6,
+5
+],
+"Ambessa": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+9,
+0
+],
+"Amumu": [
+[
+"Tank",
+"Support"
+],
+125,
+2,
+8
+],
+"Anivia": [
+[
+"Mage"
+],
+600,
+1,
+10
+],
+"Annie": [
+[
+"Mage",
+"Support"
+],
+625,
+2,
+10
+],
+"Aphelios": [
+[
+"Marksman"
+],
+550,
+6,
+1
+],
+"Ashe": [
+[
+"Marksman",
+"Support"
+],
+600,
+7,
+2
+],
+"Aurelion Sol": [
+[
+"Mage"
+],
+550,
+2,
+8
+],
+"Aurora": [
+[
+"Mage",
+"Assassin"
+],
+550,
+3,
+8
+],
+"Azir": [
+[
+"Mage",
+"Marksman"
+],
+525,
+6,
+8
+],
+"Bard": [
+[
+"Support",
+"Mage"
+],
+500,
+4,
+5
+],
+"Bel'Veth": [
+[
+"Fighter"
+],
+150,
+4,
+7
+],
+"Blitzcrank": [
+[
+"Tank",
+"Support"
+],
+125,
+4,
+5
+],
+"Brand": [
+[
+"Mage",
+"Support"
+],
+550,
+2,
+9
+],
+"Braum": [
+[
+"Tank",
+"Support"
+],
+125,
+3,
+4
+],
+"Briar": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+9,
+3
+],
+"Caitlyn": [
+[
+"Marksman"
+],
+650,
+8,
+2
+],
+"Camille": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+8,
+3
+],
+"Cassiopeia": [
+[
+"Mage"
+],
+550,
+2,
+9
+],
+"Cho'Gath": [
+[
+"Tank",
+"Mage"
+],
+125,
+3,
+7
+],
+"Corki": [
+[
+"Marksman",
+"Mage"
+],
+550,
+8,
+6
+],
+"Darius": [
+[
+"Fighter",
+"Tank"
+],
+175,
+9,
+1
+],
+"Diana": [
+[
+"Fighter",
+"Assassin"
+],
+150,
+7,
+8
+],
+"Draven": [
+[
+"Marksman"
+],
+550,
+9,
+1
+],
+"Dr. Mundo": [
+[
+"Tank",
+"Fighter"
+],
+125,
+5,
+6
+],
+"Ekko": [
+[
+"Assassin",
+"Mage"
+],
+125,
+5,
+7
+],
+"Elise": [
+[
+"Assassin",
+"Mage"
+],
+550,
+6,
+7
+],
+"Evelynn": [
+[
+"Assassin",
+"Mage"
+],
+125,
+4,
+7
+],
+"Ezreal": [
+[
+"Marksman",
+"Mage"
+],
+550,
+7,
+6
+],
+"Fiddlesticks": [
+[
+"Mage",
+"Support"
+],
+480,
+2,
+9
+],
+"Fiora": [
+[
+"Fighter",
+"Assassin"
+],
+150,
+10,
+2
+],
+"Fizz": [
+[
+"Assassin",
+"Fighter"
+],
+175,
+6,
+7
+],
+"Galio": [
+[
+"Tank",
+"Mage"
+],
+150,
+1,
+6
+],
+"Gangplank": [
+[
+"Fighter"
+],
+125,
+7,
+4
+],
+"Garen": [
+[
+"Fighter",
+"Tank"
+],
+175,
+7,
+1
+],
+"Gnar": [
+[
+"Fighter",
+"Tank"
+],
+175,
+6,
+5
+],
+"Gragas": [
+[
+"Fighter",
+"Mage"
+],
+125,
+4,
+6
+],
+"Graves": [
+[
+"Marksman"
+],
+425,
+8,
+3
+],
+"Gwen": [
+[
+"Fighter"
+],
+150,
+7,
+5
+],
+"Hecarim": [
+[
+"Fighter",
+"Tank"
+],
+175,
+8,
+4
+],
+"Heimerdinger": [
+[
+"Mage",
+"Support"
+],
+550,
+2,
+8
+],
+"Hwei": [
+[
+"Mage",
+"Support"
+],
+550,
+7,
+8
+],
+"Illaoi": [
+[
+"Fighter",
+"Tank"
+],
+125,
+8,
+3
+],
+"Irelia": [
+[
+"Fighter",
+"Assassin"
+],
+200,
+7,
+5
+],
+"Ivern": [
+[
+"Support",
+"Mage"
+],
+475,
+3,
+7
+],
+"Janna": [
+[
+"Support",
+"Mage"
+],
+550,
+3,
+7
+],
+"Jarvan IV": [
+[
+"Fighter",
+"Tank"
+],
+175,
+6,
+3
+],
+"Jax": [
+[
+"Fighter"
+],
+125,
+7,
+7
+],
+"Jayce": [
+[
+"Fighter",
+"Marksman"
+],
+125,
+8,
+3
+],
+"Jhin": [
+[
+"Marksman",
+"Mage"
+],
+550,
+10,
+6
+],
+"Jinx": [
+[
+"Marksman"
+],
+525,
+9,
+4
+],
+"Kai'Sa": [
+[
+"Marksman",
+"Mage"
+],
+525,
+8,
+3
+],
+"Kalista": [
+[
+"Marksman"
+],
+525,
+8,
+4
+],
+"Karma": [
+[
+"Mage",
+"Support"
+],
+525,
+1,
+8
+],
+"Karthus": [
+[
+"Mage"
+],
+450,
+2,
+10
+],
+"Kassadin": [
+[
+"Assassin",
+"Mage"
+],
+150,
+3,
+8
+],
+"Katarina": [
+[
+"Assassin",
+"Mage"
+],
+125,
+4,
+9
+],
+"Kayle": [
+[
+"Marksman",
+"Mage"
+],
+175,
+6,
+7
+],
+"Kayn": [
+[
+"Fighter",
+"Assassin"
+],
+175,
+10,
+1
+],
+"Kennen": [
+[
+"Mage"
+],
+550,
+6,
+7
+],
+"Kha'Zix": [
+[
+"Assassin"
+],
+125,
+9,
+3
+],
+"Kindred": [
+[
+"Marksman"
+],
+500,
+8,
+2
+],
+"Kled": [
+[
+"Fighter"
+],
+125,
+8,
+2
+],
+"Kog'Maw": [
+[
+"Marksman",
+"Mage"
+],
+500,
+8,
+5
+],
+"K'Sante": [
+[
+"Tank",
+"Fighter"
+],
+150,
+8,
+7
+],
+"LeBlanc": [
+[
+"Assassin",
+"Mage"
+],
+525,
+1,
+10
+],
+"Lee Sin": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+8,
+3
+],
+"Leona": [
+[
+"Tank",
+"Support"
+],
+125,
+4,
+3
+],
+"Lillia": [
+[
+"Fighter",
+"Mage"
+],
+325,
+0,
+10
+],
+"Lissandra": [
+[
+"Mage"
+],
+550,
+2,
+8
+],
+"Locke": [
+[
+"Assassin",
+"Mage"
+],
+125,
+6,
+2
+],
+"Lucian": [
+[
+"Marksman",
+"Assassin"
+],
+500,
+8,
+3
+],
+"Lulu": [
+[
+"Support",
+"Mage"
+],
+550,
+4,
+7
+],
+"Lux": [
+[
+"Mage",
+"Support"
+],
+550,
+2,
+9
+],
+"Malphite": [
+[
+"Tank",
+"Mage"
+],
+125,
+5,
+7
+],
+"Malzahar": [
+[
+"Mage"
+],
+500,
+2,
+9
+],
+"Maokai": [
+[
+"Tank",
+"Support"
+],
+125,
+3,
+6
+],
+"Master Yi": [
+[
+"Fighter",
+"Assassin"
+],
+175,
+10,
+2
+],
+"Mel": [
+[
+"Mage",
+"Support"
+],
+550,
+2,
+9
+],
+"Milio": [
+[
+"Support",
+"Mage"
+],
+525,
+2,
+8
+],
+"Miss Fortune": [
+[
+"Marksman",
+"Mage"
+],
+550,
+8,
+5
+],
+"Wukong": [
+[
+"Fighter",
+"Tank"
+],
+175,
+8,
+2
+],
+"Mordekaiser": [
+[
+"Fighter",
+"Mage"
+],
+175,
+4,
+7
+],
+"Morgana": [
+[
+"Support",
+"Mage"
+],
+450,
+1,
+8
+],
+"Naafiri": [
+[
+"Assassin",
+"Fighter"
+],
+125,
+9,
+0
+],
+"Nami": [
+[
+"Support",
+"Mage"
+],
+550,
+4,
+7
+],
+"Nasus": [
+[
+"Fighter",
+"Tank"
+],
+125,
+7,
+6
+],
+"Nautilus": [
+[
+"Tank",
+"Support"
+],
+175,
+4,
+6
+],
+"Neeko": [
+[
+"Mage",
+"Support"
+],
+550,
+1,
+9
+],
+"Nidalee": [
+[
+"Assassin",
+"Mage"
+],
+525,
+5,
+7
+],
+"Nilah": [
+[
+"Fighter",
+"Assassin"
+],
+225,
+8,
+4
+],
+"Nocturne": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+9,
+2
+],
+"Nunu & Willump": [
+[
+"Tank",
+"Mage"
+],
+125,
+4,
+7
+],
+"Olaf": [
+[
+"Fighter",
+"Tank"
+],
+125,
+9,
+3
+],
+"Orianna": [
+[
+"Mage",
+"Support"
+],
+525,
+4,
+9
+],
+"Ornn": [
+[
+"Tank"
+],
+175,
+5,
+3
+],
+"Pantheon": [
+[
+"Fighter",
+"Assassin"
+],
+175,
+9,
+3
+],
+"Poppy": [
+[
+"Tank",
+"Fighter"
+],
+125,
+6,
+2
+],
+"Pyke": [
+[
+"Support",
+"Assassin"
+],
+150,
+9,
+1
+],
+"Qiyana": [
+[
+"Assassin"
+],
+150,
+0,
+4
+],
+"Quinn": [
+[
+"Marksman",
+"Assassin"
+],
+525,
+9,
+2
+],
+"Rakan": [
+[
+"Support"
+],
+300,
+2,
+8
+],
+"Rammus": [
+[
+"Tank"
+],
+125,
+4,
+5
+],
+"Rek'Sai": [
+[
+"Fighter",
+"Tank"
+],
+175,
+8,
+2
+],
+"Rell": [
+[
+"Tank",
+"Support"
+],
+175,
+0,
+0
+],
+"Renata Glasc": [
+[
+"Support",
+"Mage"
+],
+550,
+2,
+9
+],
+"Renekton": [
+[
+"Fighter",
+"Tank"
+],
+125,
+8,
+2
+],
+"Rengar": [
+[
+"Assassin",
+"Fighter"
+],
+125,
+7,
+2
+],
+"Riven": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+8,
+1
+],
+"Rumble": [
+[
+"Fighter",
+"Mage"
+],
+125,
+3,
+8
+],
+"Ryze": [
+[
+"Mage"
+],
+550,
+2,
+10
+],
+"Samira": [
+[
+"Marksman",
+"Assassin"
+],
+500,
+8,
+3
+],
+"Sejuani": [
+[
+"Tank"
+],
+150,
+5,
+6
+],
+"Senna": [
+[
+"Support",
+"Marksman"
+],
+600,
+7,
+6
+],
+"Seraphine": [
+[
+"Support",
+"Mage"
+],
+525,
+0,
+0
+],
+"Sett": [
+[
+"Fighter",
+"Tank"
+],
+125,
+8,
+1
+],
+"Shaco": [
+[
+"Assassin"
+],
+125,
+8,
+6
+],
+"Shen": [
+[
+"Tank"
+],
+125,
+3,
+3
+],
+"Shyvana": [
+[
+"Fighter",
+"Tank"
+],
+150,
+8,
+3
+],
+"Singed": [
+[
+"Tank",
+"Mage"
+],
+125,
+4,
+7
+],
+"Sion": [
+[
+"Tank",
+"Fighter"
+],
+175,
+5,
+3
+],
+"Sivir": [
+[
+"Marksman"
+],
+500,
+9,
+1
+],
+"Skarner": [
+[
+"Tank",
+"Fighter"
+],
+150,
+7,
+5
+],
+"Smolder": [
+[
+"Marksman",
+"Mage"
+],
+550,
+8,
+5
+],
+"Sona": [
+[
+"Support",
+"Mage"
+],
+550,
+5,
+8
+],
+"Soraka": [
+[
+"Support",
+"Mage"
+],
+550,
+2,
+7
+],
+"Swain": [
+[
+"Mage",
+"Support"
+],
+525,
+2,
+9
+],
+"Sylas": [
+[
+"Mage",
+"Assassin"
+],
+175,
+3,
+8
+],
+"Syndra": [
+[
+"Mage"
+],
+550,
+2,
+9
+],
+"Tahm Kench": [
+[
+"Tank",
+"Support"
+],
+175,
+3,
+6
+],
+"Taliyah": [
+[
+"Mage",
+"Support"
+],
+525,
+1,
+8
+],
+"Talon": [
+[
+"Assassin"
+],
+125,
+9,
+1
+],
+"Taric": [
+[
+"Support",
+"Tank"
+],
+150,
+4,
+5
+],
+"Teemo": [
+[
+"Marksman",
+"Mage"
+],
+500,
+5,
+7
+],
+"Thresh": [
+[
+"Support",
+"Tank"
+],
+450,
+5,
+6
+],
+"Tristana": [
+[
+"Marksman",
+"Assassin"
+],
+550,
+9,
+5
+],
+"Trundle": [
+[
+"Fighter",
+"Tank"
+],
+175,
+7,
+2
+],
+"Tryndamere": [
+[
+"Fighter",
+"Assassin"
+],
+175,
+10,
+2
+],
+"Twisted Fate": [
+[
+"Mage",
+"Marksman"
+],
+525,
+6,
+6
+],
+"Twitch": [
+[
+"Marksman",
+"Assassin"
+],
+550,
+9,
+3
+],
+"Udyr": [
+[
+"Fighter",
+"Tank"
+],
+125,
+8,
+4
+],
+"Urgot": [
+[
+"Fighter",
+"Tank"
+],
+350,
+8,
+3
+],
+"Varus": [
+[
+"Marksman",
+"Mage"
+],
+575,
+7,
+4
+],
+"Vayne": [
+[
+"Marksman",
+"Assassin"
+],
+550,
+10,
+1
+],
+"Veigar": [
+[
+"Mage"
+],
+550,
+2,
+10
+],
+"Vel'Koz": [
+[
+"Mage",
+"Support"
+],
+525,
+2,
+10
+],
+"Vex": [
+[
+"Mage"
+],
+550,
+0,
+0
+],
+"Vi": [
+[
+"Fighter",
+"Assassin"
+],
+125,
+8,
+3
+],
+"Viego": [
+[
+"Fighter",
+"Assassin"
+],
+200,
+6,
+2
+],
+"Viktor": [
+[
+"Mage"
+],
+525,
+2,
+10
+],
+"Vladimir": [
+[
+"Mage",
+"Fighter"
+],
+450,
+2,
+8
+],
+"Volibear": [
+[
+"Fighter",
+"Tank"
+],
+150,
+7,
+4
+],
+"Warwick": [
+[
+"Fighter",
+"Tank"
+],
+125,
+9,
+3
+],
+"Xayah": [
+[
+"Marksman"
+],
+525,
+10,
+1
+],
+"Xerath": [
+[
+"Mage",
+"Support"
+],
+525,
+1,
+10
+],
+"Xin Zhao": [
+[
+"Fighter",
+"Tank"
+],
+175,
+8,
+3
+],
+"Yasuo": [
+[
+"Fighter",
+"Assassin"
+],
+175,
+8,
+4
+],
+"Yone": [
+[
+"Fighter",
+"Assassin"
+],
+175,
+8,
+4
+],
+"Yorick": [
+[
+"Fighter",
+"Tank"
+],
+175,
+6,
+4
+],
+"Yunara": [
+[
+"Marksman"
+],
+575,
+9,
+0
+],
+"Yuumi": [
+[
+"Support",
+"Mage"
+],
+425,
+5,
+8
+],
+"Zaahen": [
+[
+"Fighter"
+],
+175,
+8,
+1
+],
+"Zac": [
+[
+"Tank",
+"Fighter"
+],
+175,
+3,
+7
+],
+"Zed": [
+[
+"Assassin"
+],
+125,
+9,
+1
+],
+"Zeri": [
+[
+"Marksman"
+],
+550,
+8,
+3
+],
+"Ziggs": [
+[
+"Mage"
+],
+550,
+2,
+9
+],
+"Zilean": [
+[
+"Support",
+"Mage"
+],
+550,
+2,
+8
+],
+"Zoe": [
+[
+"Mage"
+],
+550,
+1,
+8
+],
+"Zyra": [
+[
+"Mage",
+"Support"
+],
+575,
+4,
+8
+]
 }
 }
