@@ -57,8 +57,15 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Tiers, same rules for both views, no hand edits: Z score>=1.8, every dataset >=1.5, pick>=2; P pick<1.5 and
      >=.6; S>=1.15 and above average in every region; A>=.6; B>=.15; C>=-.45; else D.
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
-   - Also collect OP.GG EUW Diamond+ and Master+ (`opgg_euw_{d,m}_{role}.csv`), the previous patch Global Emerald+
-     (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
+   - Also collect OP.GG EUW, KR and NA Diamond+ and Master+ (`opgg_{euw,kr,na}_{d,m}_{role}.csv`), the previous patch
+     Global Emerald+ (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
+     KR and NA Diamond+/Master+ are view-only: Raw data menu and the region by rank grid in the panel, not in Overall
+     or High elo. Notes count all 12 datasets for "above/below average in all N".
+   - Quick way to read OP.GG: open any op.gg champions page in the browser, then in the page's JS fetch
+     `/lol/champions?region=kr&tier=master_plus&position=top&patch=16.xx` and parse the server-rendered table with
+     DOMParser (columns Win rate, Pick rate, Ban rate; "Total analyzed samples" is in the page text). Region values
+     global/euw/kr/na, tiers emerald_plus/diamond_plus/master_plus, positions top/jungle/mid/adc/support. Wait ~0.4 s
+     between pages.
 4. Update the texts in `pipeline/template.html`: title and meta tags, top bar pill "Patch xx.xx", hero meta line
    ("Updated ...", "Next patch ..."), headline, lede counts, the NEXT list ("Changing on ..."), method and limits
    bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.

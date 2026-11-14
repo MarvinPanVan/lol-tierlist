@@ -94,6 +94,9 @@ for role in ROLES:
     add('kr', opgg('opgg_kr_e', role), 'OP.GG KR E+'); add('na', opgg('opgg_na_e', role), 'OP.GG NA E+')
     add('m_op', opgg('opgg_global_m', role), 'OP.GG Master+'); add('d_op', opgg('opgg_global_d', role), 'OP.GG Diamond+')
     add('euwd', opgg('opgg_euw_d', role), 'OP.GG EUW Diamond+'); add('euwm', opgg('opgg_euw_m', role), 'OP.GG EUW Master+')
+    # view-only datasets (raw data menu and the panel grid, not part of Overall or High elo)
+    for rg in ['kr', 'na']:
+        add(f'{rg}d', opgg(f'opgg_{rg}_d', role), f'OP.GG {rg.upper()} Diamond+'); add(f'{rg}m', opgg(f'opgg_{rg}_m', role), f'OP.GG {rg.upper()} Master+')
     add('prev', opgg('opgg_global_e', role, P['prev_patch_code']), 'OP.GG Global E+ prev')
     # last patch as the starting point for champions this patch did not change (Global Emerald+ only):
     # prior = last patch's shrunk value, prior variance = true patch-to-patch change + last patch's own uncertainty
@@ -164,7 +167,7 @@ for role in ROLES:
         D_sh = avg([(val(k, c), w) for k, w in dsrc]); D_raw = avg([(val(k, c, 'raw'), w) for k, w in dsrc])
         e['ndia'] = sum(1 for k, _ in dsrc if val(k, c) is not None); e['nm'] = sum(1 for k in ['m_op', 'U.GG|M'] if val(k, c) is not None)
         e['dia'] = None if D_raw is None else round(D_raw, 2)
-        for k in ['euwd', 'euwm']:
+        for k in ['euwd', 'euwm', 'krd', 'krm', 'nad', 'nam']:
             v = val(k, c, 'raw'); e[k] = None if v is None else round(v, 2)
         E_sh = avg([(val('euwd', c), 1), (val('euwm', c), 1)])
         pick_d = float(dref.loc[c, 'pick']) if c in dref.index else None
@@ -217,16 +220,19 @@ for role, L in out.items():
 
 # ---------- notes, written from the numbers ----------
 DSN = {'g': 'Global', 'euw': 'EUW', 'kr': 'KR', 'na': 'NA', 'm': 'Master+', 'dia': 'Diamond+', 'euwd': 'EUW Diamond+', 'euwm': 'EUW Master+'}
-def f1(v): r = round(v, 1); return ('+' if r > 0 else '−' if r < 0 else '') + f'{abs(r):.1f}'
+def f1(v):  # same rounding as the site (Math.round), so notes and numbers match
+    r = math.floor(v * 10 + .5) / 10; return ('+' if r > 0 else '−' if r < 0 else '') + f'{abs(r):.1f}'
 LV = {'S+': 6, 'S': 5, 'S-': 4.5, 'A+': 4.3, 'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3, 'B-': 2.7, 'C': 2, 'D': 1}
+ALLDS = dict(DSN, krd='KR Diamond+', krm='KR Master+', nad='NA Diamond+', nam='NA Master+')   # everything the panel grid shows
 def note(e):
-    vals = {k: e[k] for k in DSN if e.get(k) is not None}
+    vals = {k: e[k] for k in DSN if e.get(k) is not None}   # datasets in the score, used for 'Mixed'
     lo_k, hi_k = min(vals, key=vals.get), max(vals, key=vals.get)
     lo, hi = vals[lo_k], vals[hi_k]
+    va = [e[k] for k in ALLDS if e.get(k) is not None]; alo, ahi = min(va), max(va)
     out = []
-    if e['t'] == 'Z': out.append((10, f'Clear outlier: {f1(lo)} to {f1(hi)} in every dataset.'))
-    elif lo >= .5: out.append((7, f'Above average in all {len(vals)} datasets ({f1(lo)} to {f1(hi)}).'))
-    elif hi <= -.5: out.append((7, f'Below average in all {len(vals)} datasets.'))
+    if e['t'] == 'Z': out.append((10, f'Clear outlier: {f1(alo)} to {f1(ahi)} across every dataset.'))
+    elif alo >= .5: out.append((7, f'Above average in all {len(va)} datasets ({f1(alo)} to {f1(ahi)}).'))
+    elif ahi <= -.5: out.append((7, f'Below average in all {len(va)} datasets.'))
     elif hi - lo >= 1.8 and hi > .3 and lo < -.3: out.append((8, f'Mixed: {f1(hi)} in {DSN[hi_k]}, {f1(lo)} in {DSN[lo_k]}.'))
     low_elo, high = e.get('g'), e.get('hi')
     if low_elo is not None and high is not None:
