@@ -75,7 +75,7 @@ select:hover,input:hover{border-color:var(--faint)}
 button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 35%,transparent)}
 input:focus,select:focus{border-color:var(--acc)}
 .hintline{width:100%;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;font-size:12.5px;color:var(--mut);padding-top:2px}
-.legend{display:flex;align-items:center;gap:8px;margin-left:auto}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-left:auto}.legend>span{white-space:nowrap}.legend .tri{margin-right:1px}
 
 
 
@@ -533,6 +533,26 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .ctr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:14px}
 .cc{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:7px;row-gap:3px;align-items:center;text-align:left;border-radius:10px;padding:7px 9px;font-size:13px;min-width:0}
 .cc .pic.xs{margin:0;width:20px;height:20px}
+.cc.good small{color:var(--pos)}
+.bld{display:grid;gap:7px;margin:0 0 6px}
+.brow,.bopt{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px;row-gap:1px;font-size:13px}
+.brow{grid-template-columns:44px auto minmax(0,1fr)}
+.brow .blab,.brow .bic{grid-row:span 2}.bopt .bic{grid-row:span 2}
+.brow .bnm,.brow .bst,.bopt .bnm,.bopt .bst{grid-column:-2}
+.blab{color:var(--mut);font:600 12px Inter,sans-serif}
+.bic{display:flex;align-items:center;gap:3px}.bic img{width:26px;height:26px;border-radius:6px;background:var(--surf2);flex:none}
+.bic img.rn{border-radius:50%;background:#0d0e12}.bic img.rn.sm{width:20px;height:20px}.bic img.tr{width:20px;height:20px;margin-left:2px}
+.bic img.chg{outline:2px solid var(--acc);outline-offset:1px}
+.bnm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;align-self:end}
+.bst{color:var(--mut);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;align-self:start}.bst b{color:var(--ink);font-weight:600}
+.bst .wk{color:var(--faint);text-decoration:underline dotted 1.5px;text-underline-offset:3px}.cc small.lowdemo,.cc.good small.lowdemo{color:var(--faint)}
+.bopt{padding:7px 0;border-top:1px solid var(--line);row-gap:4px}.bopt .bic{flex-wrap:wrap;max-width:190px}
+.bdesc{grid-column:1/-1;margin:0;font-size:12.5px;line-height:1.45;color:var(--mut)}.bdesc b{color:var(--ink);font-weight:600}
+.bnote{margin:10px 0 0;font-size:12px;line-height:1.45;color:var(--faint)}
+.bmore .mlab{margin-top:12px}
+@media(max-width:420px){.brow{grid-template-columns:40px auto minmax(0,1fr)}}
+.mlab{margin:10px 0 6px;font:600 12px Inter,sans-serif;color:var(--mut)}.caph+.mlab{margin-top:4px}
+.pmore{margin:2px 0 14px}.pmore>summary{cursor:pointer;width:max-content;font:600 12.5px Inter,sans-serif;color:var(--acc);list-style:none;padding:2px 0}.pmore>summary::-webkit-details-marker{display:none}.pmore>summary::after{content:" ▾"}.pmore[open]>summary::after{content:" ▴"}
 .cc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
 .cc small{grid-column:1/-1;margin:0;font-size:11.5px;line-height:1.2;white-space:nowrap}
 .site{font-size:12px;gap:6px;padding:2px 2px 2px 9px}.site b{font-size:10.5px;padding:3px 5px;min-width:20px}
@@ -562,7 +582,8 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .chip:not(.big){padding:5px 7px 5px 5px;column-gap:7px}.chip:not(.big) .pic{width:26px;height:26px}
 .chip .nm{font-size:13.5px;display:flex;flex-wrap:wrap;align-items:center;gap:1px 5px;min-width:0}
 .chip .nmt{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip:not(.big) .nm .flag{font-size:9.5px;padding:1px 4px;margin:0}}
+.chip:not(.big) .nm .flag{font-size:9.5px;padding:1px 4px;margin:0}.chip:not(.big) .nmt.l1{font-size:12px;letter-spacing:-.025em}.chip:not(.big) .nmt.l2{font-size:11px;letter-spacing:-.03em}}
+@media(max-width:375px){.chip:not(.big) .nmt.l1{font-size:11.5px}.chip:not(.big) .nmt.l2{font-size:10.75px}.chip:not(.big){column-gap:6px}}
 @media(max-width:380px){.chip:not(.big) .nm{font-size:12.5px;letter-spacing:-.015em}.chip:not(.big) .sc{font-size:11px}.chip:not(.big){column-gap:6px;padding-right:6px}.chip:not(.big) .pic{width:24px;height:24px}.row{grid-template-columns:34px minmax(0,1fr)}.lab{font-size:25px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 /* patch notes pages (/patch/<patch>/), all classes start with pn- */
@@ -601,6 +622,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .pn-c{display:block;break-inside:avoid;margin:0 0 14px;padding:16px;min-width:0;scroll-margin-top:16px}
 .pn-c:target{outline:2px solid var(--acc);outline-offset:2px}
 .pn-h{display:flex;align-items:center;gap:12px}
+.pn-share{margin-left:auto;font:600 12px Inter,sans-serif;color:var(--mut);background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}.pn-share:hover{color:var(--ink);border-color:var(--mut)}
 .pn-h .pic,.pn-h .pw{width:44px;height:44px;border-radius:12px;flex:none}
 .pn-h .pw .pic{width:100%;height:100%}
 .pn-h h3{font:800 19px/1.2 Inter,sans-serif;letter-spacing:-.015em;margin:0;flex:1;min-width:0}

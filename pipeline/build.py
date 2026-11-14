@@ -45,6 +45,37 @@ META_SLIM['hist'] = len(_arch | {f'{PATCH}.json'})   # patches with data; the pa
 NOTES = P.get('notes', {})
 META_SLIM['nitems'] = sorted({x['c'] for n in NOTES.values() for x in n.get('items', [])})   # item names: no portrait to load
 META_SLIM['notes'] = {p: [x['c'] for x in n['champs'] + n.get('items', [])] for p, n in NOTES.items()}   # the panel links to /patch/<p>/#<champion>
+# names and Riot's own short descriptions for the build card, only for the ids the builds use: items {id: name},
+# summoner spells {id: [name, description]}, runes {id: [name, description]}; from Data Dragon (saved by the icons workflow)
+def _lookup():
+    _bp = os.path.join(HERE, 'data', 'opgg_builds.json'); BUILDS = json.load(open(_bp, encoding='utf-8')) if os.path.exists(_bp) else {}
+    used = {'i': set(), 's': set(), 'r': set()}; keys = set()   # keystones: the only runes the card describes
+    for r, _, _ in ROLES:
+        for e in D[r]:
+            b = e.get('bd') or {}
+            for x in b.get('sp', []): used['s'].update(map(str, x[0]))
+            for x in b.get('rn', []): used['r'].update(map(str, [x[0], x[1], x[2], *x[3], *x[4]])); keys.add(str(x[0]))
+            for k in ['co', 'st']:
+                for x in b.get(k, []): used['i'].update(map(str, x[0]))
+            for x in b.get('bo', []): used['i'].add(str(x[0]))
+    di, ds = os.path.join(HERE, 'data', 'ddragon_items.json'), os.path.join(HERE, 'data', 'ddragon_spells_runes.json')
+    if not (os.path.exists(di) and os.path.exists(ds)): return None
+    iname = {v: k for k, v in json.load(open(di, encoding='utf-8'))['by_name'].items() if '<' not in k}
+    for i in list(used['i']):   # Data Dragon files some support items twice and keeps the 32xxxx id; OP.GG uses the short one
+        if i not in iname and '32' + i in iname: iname[i] = iname['32' + i]
+    for r in BUILDS.values():   # last resort: OP.GG's own item names
+        for b in r.values():
+            for k in ['c0', 'c1', 'b0', 's0']:
+                for iid, nm_ in b.get(k, []): iname.setdefault(str(iid), nm_)
+    SR = json.load(open(ds, encoding='utf-8'))
+    pair = lambda x: [x.get('name', ''), x.get('desc', '')]
+    lk = {'i': {i: iname[i] for i in sorted(used['i']) if i in iname},
+          's': {i: pair(SR['summoners'][i]) for i in sorted(used['s']) if i in SR['summoners']},
+          'r': {i: pair(SR['runes'][i]) if i in keys else [SR['runes'][i].get('name', ''), ''] for i in sorted(used['r']) if i in SR['runes']}}
+    miss = [(k, i) for k in 'isr' for i in used[k] if i not in lk[k]]
+    if miss: print('build card: no Data Dragon name for', miss[:10])
+    return lk
+META_SLIM['lk'] = _lookup()
 if PATCH in NOTES:   # the short lines on the panels (changes, item_changes) and the full notes must list the same things
     assert {x['c']: [x['kind'], x['short']] for x in NOTES[PATCH]['champs']} == P.get('changes'), 'patch.json: "changes" and "notes" disagree'
     assert {x['c']: [x['kind'], x['short'], x['slot']] for x in NOTES[PATCH].get('items', [])} == P.get('item_changes', {}), 'patch.json: "item_changes" and "notes" disagree'
@@ -346,6 +377,10 @@ GROUPS = [('buff', 'Buffs'), ('nerf', 'Nerfs'), ('adjust', 'Adjusted')]
 def _ipic(x, root):   # item icon, self-hosted from Data Dragon; the sword placeholder shows if it is missing
     iid = ITEM_ID.get(x['c'])
     return f'<span class="pw">{f"""<img class="pic" src="{root}img/item/{iid}.webp" alt="" width="40" height="40" loading="lazy" onerror="this.remove()">""" if iid else ""}</span>'
+def _sid(x, item=False): return ('i-' if item else '') + slug(x['c'])   # card id on the patch page = name of its share page
+def _share(p, x, item=False):   # copies (or on phones shares) the change's own link, which has its own preview in chats
+    u = f"{SITE}patch/{p}/{_sid(x, item)}/"
+    return f'<button type="button" class="pn-share" data-u="{u}" data-t="{E(x["c"])}, patch {p}" title="Copy a link to this change. In Discord and other chats it shows this change, not the whole patch.">Copy link</button>'
 def notes_body(p, root):
     global ROOTP; ROOTP = root
     n = NOTES[p]; live = n['status'] == 'live'; moves = live and p == PATCH
@@ -381,7 +416,7 @@ def notes_body(p, root):
     def card(x):
         body = _lines(x) if x['lines'] else '<p class="pn-nl">Riot listed this change, but the preview has no numbers for it yet.</p>'
         return (f'<article class="card pn-c pn-{x["kind"]}" id="{slug(x["c"])}"><div class="pn-h"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="44" height="44" loading="lazy" onerror="this.remove()">'
-                f'<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>{_roles(x["c"], root, moves)}'
+                f'<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span>{_share(p, x)}</div>{_roles(x["c"], root, moves)}'
                 f'{facts(x, moves)}{body}</article>')
     leg = 'Chips: tier and score per role right now (Emerald+, all regions). Score = win rate points above the role average, corrected for small samples.' + (f' Arrow = change since {P["prev_patch"]}, grey when it is too small to be sure.' if moves else '')
     champs = (f'<section class="pn-sec" id="champions"><h2>Champions</h2><p class="cap">{E(leg)}</p>'
@@ -392,7 +427,7 @@ def notes_body(p, root):
         for x in n['items']:
             core, start = _users(x['c'])
             who = _faces(core, root, 'Core item') + _faces(start, root, 'Starting item') or '<p class="pn-nl">Not in the core build of any listed champion.</p>'
-            ic.append(f'<article class="card pn-c pn-{x["kind"]}" id="i-{slug(x["c"])}"><div class="pn-h">{_ipic(x, root)}<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>'
+            ic.append(f'<article class="card pn-c pn-{x["kind"]}" id="i-{slug(x["c"])}"><div class="pn-h">{_ipic(x, root)}<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span>{_share(p, x, True)}</div>'
                       + facts(dict(x, item=True), False) + _lines(x, item=True) + who + '</article>')
         items = f'<section class="pn-sec" id="items"><h2>Items</h2><p class="cap">Who builds it: OP.GG core builds, boots and starting items, Global Emerald+.</p><div class="pn-grid">{"".join(ic)}</div></section>'
     oc = [f'<article class="card pn-c"><h3>{E(k)}</h3><p>{E(t)}</p></article>' for k, t in n.get('other', [])]
@@ -408,10 +443,116 @@ def notes_page(rel, p, root, url):
     n = NOTES[p]; live = n['status'] == 'live'; kind = 'notes' if live else 'preview'
     desc = f'Patch {p} {kind} for Summoner\'s Rift: every champion and item change with exact numbers, what it means and where each champion stands now.'[:160]
     page(rel, 'N', root, 'patch', 'top', f'Patch {p} {kind}: every change with numbers | LoL Tier List', f'LoL patch {p} {kind}: {_and([x["c"] for x in n["champs"][:3]])} and more',
-         desc, url, SITE + 'og.png', head=notes_body(p, root))
+         desc, url, SITE + f'og/patch/{p}.jpg', head=notes_body(p, root))
 LIVE_NOTES = sorted([q for q in NOTES if NOTES[q]['status'] == 'live'], key=lambda q: [int(v) for v in q.split('.')])
 for q in NOTES: notes_page(f'patch/{q}/index.html', q, '../../', SITE + f'patch/{q}/')
 if LIVE_NOTES: notes_page('patch/index.html', LIVE_NOTES[-1], '../', SITE + f'patch/{LIVE_NOTES[-1]}/')
+
+# ---------- one share page per change: /patch/<p>/<champion>/ and /patch/<p>/i-<item>/ ----------
+# Link previews (Discord, X, WhatsApp) never see the #part of a link, so /patch/26.23/#ezreal can only show the whole patch.
+# Each change gets a tiny page with its own title, text and picture (og/patch/<p>/<id>.jpg, made by scripts/assets.py) that
+# sends people on to its card. noindex: search engines should list the patch page, not 40 copies of it.
+def _plain(v): return re.sub(r'\s+', ' ', str(v)).strip()
+def share_text(p, x, item=False):
+    n = NOTES[p]; pre = n['status'] != 'live'; ab = x.get('ab') or {}
+    title = f"{x['c']}: {x['kind']} in patch {p}" + (' (preview)' if pre else '')
+    parts = []
+    for key, stat, old, new, tag, d in x['lines']:
+        pre_ = [v for v in [key, ab.get(key, '')] if v and key not in ('', 'Base')]
+        st_ = stat[0].lower() + stat[1:] if pre_ and len(stat) > 1 and stat[1].islower() else stat
+        lab = ' '.join(pre_ + [st_])
+        parts.append(f'{lab}: {old} → {new}' if old and new else f'{lab}: {new or old}')
+    head = f"{x['kind'].capitalize()} in patch {p}" + (', preview (numbers can still change)' if pre else '') + '. '
+    d, used = head, 0
+    for t in parts:
+        if len(d) + len(t) + 2 > 290: break
+        d += t + '; '; used += 1
+    d = d.rstrip('; ') + ('.' if used else '')
+    if used < len(parts): d += f' Plus {len(parts) - used} more.'
+    mn = '' if item else meaning(x)
+    if mn and len(d) + len(mn) + 1 <= 400: d += ' ' + mn
+    if not parts: d += _plain(x.get('short', ''))
+    return title, d
+def share_page(p, x, item=False):
+    sid = _sid(x, item); title, d = share_text(p, x, item); url = f'{SITE}patch/{p}/{sid}/'
+    h = (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+         f'<title>{E(title)} | LoL Tier List</title><meta name="robots" content="noindex"><link rel="canonical" href="{SITE}patch/{p}/">'
+         f'<meta name="description" content="{E(d)}"><meta property="og:type" content="article"><meta property="og:site_name" content="LoL Tier List">'
+         f'<meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(d)}"><meta property="og:url" content="{url}">'
+         f'<meta property="og:image" content="{SITE}og/patch/{p}/{sid}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
+         f'<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0b0c0f">'
+         f'<script>location.replace("../#{sid}")</script></head>'
+         f'<body style="background:#0b0c0f;color:#eceef2;font:16px/1.5 system-ui,sans-serif;padding:24px"><p><a style="color:#e3b34c" href="../#{sid}">{E(title)}: open the patch notes</a></p></body></html>')
+    write(f'patch/{p}/{sid}/index.html', h)
+for q, n in NOTES.items():
+    for x in n['champs']: share_page(q, x)
+    for x in n.get('items', []): share_page(q, x, True)
+
+# ---------- link preview pictures (1200x630): build.py describes each one as HTML, scripts/assets.py renders only the ones whose
+# HTML changed (hashes in data/og_hashes.json), so the repo does not grow with every build. Placeholders: __PUB__ (public/ on
+# disk), __FONTS__, __MARK__ (filled by assets.py).
+TCOL = {'Z': '#ff4fbf', 'S': '#ff6b6b', 'A': '#ff9f43', 'B': '#ffd23f', 'C': '#a6dc5c', 'D': '#6db3ff', 'P': '#b99dff'}
+KCOL = {'buff': '#3fd17f', 'nerf': '#ff7a68'}
+OG_CSS = """__FONTS__
+*{box-sizing:border-box}body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0b0c0f;color:#eceef2;font-family:Inter;position:relative}
+.art{position:absolute;right:0;top:0;width:760px;height:630px;background-size:cover;background-position:center 20%;opacity:.55;
+ -webkit-mask-image:linear-gradient(90deg,transparent,#000 45%)}
+.ico{position:absolute;right:90px;top:150px;width:300px;height:300px;border-radius:40px;opacity:.9;image-rendering:auto}
+.c{position:relative;padding:52px 64px;height:100%;display:flex;flex-direction:column}
+.b{display:flex;align-items:center;gap:12px;font:700 24px Inter;color:#cfd3db}.b svg{width:36px;height:36px}.b span{color:#959cab;font-weight:500}
+h1{font:800 88px/1 Inter;letter-spacing:-.04em;margin:30px 0 0;display:flex;align-items:center;gap:22px}
+.k{font:800 30px 'Barlow Condensed';letter-spacing:.02em;text-transform:uppercase;color:#0b0c0f;border-radius:10px;padding:4px 14px;margin-top:8px}
+.ls{margin-top:30px;display:grid;gap:18px;max-width:840px}
+.ln{display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start}.ln img{width:52px;height:52px;border-radius:12px}
+.ln.ni{grid-template-columns:1fr}
+.lb{margin:0;font:600 21px Inter;color:#959cab}.v{margin:3px 0 0;font:600 27px/1.25 Inter;letter-spacing:-.01em}
+.o{color:#959cab}.o em{font-style:normal;text-decoration:line-through}.n em{font-style:normal;font-weight:800;color:#e3b34c}
+.up .n em{color:#3fd17f}.dn .n em{color:#ff7a68}
+.more{margin:4px 0 0;font:600 21px Inter;color:#959cab}
+.ft{margin-top:auto;display:flex;align-items:center;gap:14px;font:600 22px Inter;color:#959cab}
+.ch{display:inline-flex;align-items:center;gap:10px;background:#181b21;border:1px solid #2a2e37;border-radius:999px;padding:6px 14px 6px 8px;color:#eceef2}
+.t{font:800 22px 'Barlow Condensed';color:#14151a;border-radius:6px;padding:1px 9px}
+.u{margin-left:auto}
+.grid{margin-top:34px;display:flex;flex-wrap:wrap;gap:14px;max-width:1080px}.f{width:86px;height:86px;border-radius:20px;border:4px solid #2a2e37}
+"""
+OG_JOBS = {}
+def og_change(p, x, item=False):
+    n = NOTES[p]; sid = _sid(x, item); pre = n['status'] != 'live'; ab = x.get('ab') or {}; sl = slug(x['c'])
+    rows = []
+    for key, stat, old, new, tag, d in x['lines'][:3]:
+        pre_ = [v for v in [key, ab.get(key, '')] if v and key not in ('', 'Base')]
+        lab = ' '.join(pre_) + ' · ' + stat if pre_ else ('Base stats · ' + stat if key == 'Base' else stat)
+        o, nn = _diff(old, new) if old else ('', E(new))
+        icon = f'<img src="__PUB__/img/spell/{sl}_{key.lower()}.webp">' if not item and key in KEYN and key != 'Base' else ''
+        cls = 'up' if d == '+' else 'dn' if d == '-' else ''
+        rows.append(f'<div class="ln {cls}{"" if icon else " ni"}">{icon}<div><p class="lb">{E(lab)}</p><p class="v">'
+                    + (f'<span class="o">{o}</span> → ' if old else '') + f'<span class="n">{nn}</span></p></div></div>')
+    if not rows: rows.append(f'<p class="more">{E(x.get("short", ""))}. Numbers not out yet.</p>')
+    more = len(x['lines']) - 3
+    if more > 0: rows.append(f'<p class="more">+{more} more change{"s" if more > 1 else ""}</p>')
+    chips = ''
+    if not item:
+        L = sorted([(r, nm_, e) for r, nm_, _ in ROLES for e in D[r] if e['c'] == x['c']], key=lambda t: -t[2]['pick'])[:3]
+        chips = ''.join(f'<span class="ch">{nm_} <span class="t" style="background:{TCOL.get(e["t"], "#959cab")}">{e["t"]}</span> {"+" if e["score"] > 0 else "−" if e["score"] < 0 else ""}{abs(e["score"]):.1f}</span>' for r, nm_, e in L)
+        chips = (f'<span>{"Now, before the change:" if pre else "Now:"}</span>' + chips) if chips else ''
+    art = f'<img class="ico" src="__PUB__/img/item/{ITEM_ID.get(x["c"], "")}.webp">' if item else f'<div class="art" style="background-image:url(__PUB__/img/splash/{sl}.webp)"></div>'
+    kc = KCOL.get(x['kind'], '#e3b34c')
+    OG_JOBS[f'og/patch/{p}/{sid}.jpg'] = (f'<html><head><style>{OG_CSS}</style></head><body>{art}<div class="c"><div class="b">__MARK__LoL Tier List <span>· Patch {p}{" preview" if pre else ""}</span></div>'
+        f'<h1>{E(x["c"])}<span class="k" style="background:{kc}">{E(x["kind"])}</span></h1><div class="ls">{"".join(rows)}</div>'
+        f'<div class="ft">{chips}<span class="u">lol-tierlist.pages.dev</span></div></div></body></html>')
+def og_patch(p):
+    n = NOTES[p]; pre = n['status'] != 'live'; cs = n['champs']
+    cnt = {k: sum(1 for x in cs if x['kind'] == k) for k in ('buff', 'nerf', 'adjust')}
+    line = ', '.join(f'{v} {k if k != "adjust" else "adjusted"}{"s" if v > 1 and k != "adjust" else ""}' for k, v in cnt.items() if v) + (f', {len(n["items"])} item{"s" if len(n["items"]) > 1 else ""}' if n.get('items') else '')
+    faces = ''.join(f'<img class="f" style="border-color:{KCOL.get(x["kind"], "#e3b34c")}" src="__PUB__/img/tile/{slug(x["c"])}.webp">' for x in cs[:20])
+    OG_JOBS[f'og/patch/{p}.jpg'] = (f'<html><head><style>{OG_CSS}</style></head><body><div class="c"><div class="b">__MARK__LoL Tier List</div>'
+        f'<h1 style="font-size:80px">Patch {p} {"preview" if pre else "notes"}</h1><p class="more" style="font-size:26px;margin-top:14px">{E(line)}. Every number, Summoner\'s Rift only.</p>'
+        f'<div class="grid">{faces}</div><div class="ft">' + ''.join(f'<span style="color:{KCOL.get(k, "#e3b34c")}">■ {lab}</span>' for k, lab in (('buff', 'buff'), ('nerf', 'nerf'), ('adjust', 'adjusted')) if cnt[k]) + '<span class="u">lol-tierlist.pages.dev</span></div></div></body></html>')
+for q, n in NOTES.items():
+    og_patch(q)
+    for x in n['champs']: og_change(q, x)
+    for x in n.get('items', []): og_change(q, x, True)
+json.dump(OG_JOBS, open(os.path.join(HERE, '.og_jobs.json'), 'w', encoding='utf-8'), ensure_ascii=False)
 
 # patch archive: the current patch in full, plus every older patch file already in public/data
 cur = json.loads(RAW); cur['_meta']['kind'] = 'full'; cur['_meta']['label'] = 'Full data'

@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 pipeline/shots/
 .DS_Store
+pipeline/.og_jobs.json

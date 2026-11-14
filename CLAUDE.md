@@ -20,6 +20,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   `__PAGE__`, `__ROLE__`, `__TITLE__`, `__DESC__`, `__URL__`, `__OGIMG__`, `__PATCH__` are filled per page.
 - Each page embeds only its own role plus a slim `_meta` (with `best` per role and `hist` = number of patches); the
   site fetches `data/<patch>.json` when you switch roles or search, and quietly after the first render.
+- Share pages and link previews: chats never see the `#part` of a link, so every change has `/patch/<p>/<champion>/` and
+  `/patch/<p>/i-<item>/` (noindex, own og title/text/picture, JS sends visitors to the card). "Copy link" on each card copies
+  it (phones: share sheet). Pictures: build.py writes their HTML to `pipeline/.og_jobs.json`, assets.py renders only changed
+  ones to `public/og/patch/` (hashes in `data/og_hashes.json`). Champion pages use their splash art as preview.
+- Method page check: `backtest.cover` = % of unchanged champions whose value lands inside last patch's ± range (about 85-90%
+  is healthy; far below means the ± is too narrow).
 - Patch notes pages: `/patch/<patch>/` for every patch in `patch.json` `notes`, `/patch/` = the newest live one. Built by
   build.py (`notes_body`): a short version made from the data (counts, clear score moves since last patch, items with how
   many listed champions build them, starred champions via JS), a sticky index (buffs / nerfs / adjusted / items), then per
@@ -119,10 +125,23 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Also collect OP.GG EUW, KR and NA Diamond+ and Master+ (`opgg_{euw,kr,na}_{d,m}_{role}.csv`), the previous patch
      Global Emerald+ (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
      Every one of these is a view of its own (see Views above).
-   - OP.GG counters: `positionCounters` from the same page data for Global Emerald+ and Diamond+, every role ->
-     `data/opgg_counters.json` (`{"e": {role: {champ: [[opponent, games, wins], ...]}}, "d": ...}`). The site only
-     shows matchups with 150+ games (about a third of Emerald+ and two thirds of Diamond+ ones have fewer). Stopgap
-     until the Riot data has enough games per matchup.
+   - OP.GG matchups (Global Emerald+ and Diamond+, every listed champion and role): fetch
+     `/lol/champions/{key}/counters/{position}?region=global&tier=emerald_plus|diamond_plus&patch=16.xx` and regex the records
+     `{"play":N,"win":W,"win_rate":..,"champion":{"image_url":..,"name":..}` (all opponents, 36-63 per champion). In the page,
+     before ranking: per role, tau^2 = mean(delta^2 - 2500/n) over matchups with 300+ games (delta = matchup win rate minus the
+     champion's own, in points); shrunk = delta * tau^2 / (tau^2 + 2500/n); keep the 5 lowest and 5 highest shrunk with 150+ games;
+     clear = |delta| >= 1.64 * sqrt(2500/n). -> `data/opgg_matchups.json` {"e"|"d": {names, m: {"role|champ": {o: [games, wins],
+     h|g: [[name index, games, wins, clear]]}}}}. Only ~29% (E+) / 23% (D+) of 150+ game matchups are clear; the rest is luck,
+     which is why the raw lowest win rates are never used. The panel shows Diamond+ when the view is Diamond+ or Master+.
+     `data/opgg_counters.json` (old positionCounters, 3 per champion) is only kept for archived patches.
+   - OP.GG build stats (the build page, same fetch as builds below): spells_table_N, core_items_N, boots_N, starter_items_N
+     rows plus `"data":{"rune_pages":[...]}`; RSC references (`$L9a`) are resolved by finding the chunk `9a:` and parsing it.
+     IMPORTANT: OP.GG splits page data across `<script>self.__next_f.push([1,"...` tags, so first remove every
+     `"])</script><script>self.__next_f.push([1,"` from the HTML, or chunks break mid-record. -> `data/opgg_build_stats.json`
+     {"role|champ": [spells, rune pages, core builds, boots, starters]} (OP.GG's overview shows 2, 2, 3, 2, 2 of them;
+     pick and win x10). Skill order: the row with `"metaType":"skill"` (max order in extraData, 15 level letters from the
+     `translate:"no"` strong tags, pick, win, games) -> `data/opgg_skills.json`. update.py turns both into `bd` per champion.
+     Build win rates are inflated (finishing items means you are ahead), so the card compares options with each other.
    - OP.GG builds, for item changes: for every listed champion and role fetch (page JS, like below)
      `/lol/champions/{key}/build/{position}?region=global&tier=emerald_plus&patch=16.xx` (key: OP.GG slug, e.g.
      monkeyking, nunu, renata; position top/jungle/mid/adc/support). In the page data, rows keyed `core_items_N`,
@@ -131,6 +150,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      Pages are ~700 KB, so 248 of them take about 15 minutes; run it in the background and poll. In `patch.json`
      `item_changes` = {item: [buff|nerf|adjust, short line, core|starter]} from the notes' Summoner's Rift item section.
      The site names a changed item only when it is in a champion's core builds or boots, never starter items.
+   - Getting data out of the browser: never copy it out of the page by reading it in pieces. The page saves ONE bundled
+     JSON per collection run with a Blob download (`a.download='lol-tierlist-16.xx-<what>.json'`); a save window opens on
+     Marvin's PC and he saves it to `Downloads/lol-tierlist-data/` (one click per file, so bundle everything of a run).
+     Then `device_stage_files` copies it into the container; check length and number sum against the page before using it.
+     The device shell does not run on his PC (virtualization is off in BIOS), so files there can't be moved or deleted.
    - Reading OP.GG: NEVER use the visible table. It stops at 55 rows ranked by OP.GG's own tier order, which silently
      drops losing champions (in 26.22 that hid K'Sante top, Jayce jungle and 9 others). Read the page data instead:
      open any op.gg champions page in the browser, then in page JS `fetch('/lol/champions?region=kr&tier=master_plus&
@@ -167,7 +191,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - Stored per match: match id, version, duration, champion/position/team/win for the 10 players, banned champion ids.
   No player names or ids. Keep it that way.
 - Not part of the scoring yet. Next: once the sample is big enough (and a production key is approved), add it as a
-  dataset in update.py and use the matchups for counters. Production key: apply on the portal with the live site.
+  dataset in update.py and use the matchups for counters. Production key: Marvin applied (Nov 2026), waiting for Riot; when approved it goes into the same secret.
 - `pipeline/data/riot/agg_*.json` uses `pipeline/data/ddragon_champions.json` to name banned champions.
 
 ## Champion portraits

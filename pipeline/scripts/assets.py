@@ -1,4 +1,5 @@
-"""Make favicon.svg, favicon.ico, apple-touch-icon.png and og.png (link preview) in public/.
+"""Make favicon.svg, favicon.ico, apple-touch-icon.png, og.png and og-<role>.png, plus the patch notes link previews
+(public/og/patch/<patch>.jpg and <patch>/<change>.jpg, described by build.py in .og_jobs.json) in public/.
 Run after build.py whenever the patch or the top picks change: python3 pipeline/scripts/assets.py"""
 import os, re, json, shutil, asyncio, io
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # pipeline/
@@ -62,6 +63,24 @@ async def main():
             open('/tmp/og_r.html','w',encoding='utf-8').write(h)
             await pg.goto('file:///tmp/og_r.html'); await pg.wait_for_timeout(300)
             await pg.screenshot(path=f'{PUB}/og-{r}.png')
+        # link preview pictures for the patch notes (one per change, one per patch): only the ones whose HTML changed
+        jobs=json.load(open('.og_jobs.json',encoding='utf-8')) if os.path.exists('.og_jobs.json') else {}
+        hp='data/og_hashes.json'; hashes=json.load(open(hp)) if os.path.exists(hp) else {}
+        import hashlib; made=0
+        for rel,h in jobs.items():
+            h=h.replace('__FONTS__',fonts).replace('__MARK__',mark).replace('__PUB__','file://'+PUB)
+            k=hashlib.sha1(h.encode()).hexdigest(); out=os.path.join(PUB,rel)
+            if hashes.get(rel)==k and os.path.exists(out): continue
+            os.makedirs(os.path.dirname(out),exist_ok=True); open('/tmp/og_c.html','w',encoding='utf-8').write(h)
+            await pg.goto('file:///tmp/og_c.html'); await pg.wait_for_timeout(250)
+            await pg.screenshot(path=out,type='jpeg',quality=84); hashes[rel]=k; made+=1
+        ogdir=os.path.join(PUB,'og','patch')   # pictures of changes no longer listed
+        for root,_,fs in os.walk(ogdir):
+            for f in fs:
+                rel=os.path.relpath(os.path.join(root,f),PUB).replace(os.sep,'/')
+                if rel not in jobs: os.remove(os.path.join(root,f)); hashes.pop(rel,None)
+        json.dump({k:v for k,v in sorted(hashes.items()) if k in jobs},open(hp,'w'),indent=0)
+        print(made,'link preview pictures rendered,',len(jobs)-made,'unchanged')
         pg=await b.new_page(viewport={'width':180,'height':180})
         await pg.goto('file:///tmp/touch.html'); await pg.screenshot(path=f'{PUB}/apple-touch-icon.png')
         pngs=[]

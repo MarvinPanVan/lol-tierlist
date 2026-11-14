@@ -86,6 +86,38 @@ MOBA = json.load(open('data2/moba_highelo.json'))
 CTR = json.load(open('data/opgg_counters.json')) if os.path.exists('data/opgg_counters.json') else {'e': {}, 'd': {}}
 # entries: [opponent, games, wins of this champion]; stored as [opponent, win rate, games]
 CTR = {rk: {r: {nm(c): [[nm(x[0]), round(100 * x[2] / x[1], 1), x[1]] for x in cs] for c, cs in v.items()} for r, v in CTR.get(rk, {}).items()} for rk in ['e', 'd']}
+# OP.GG matchups from each champion's full counters page, Global Emerald+ ("e") and Diamond+ ("d"). Per "role|champion":
+# o = [games, wins] over all its matchups; h / g = up to 5 hardest / easiest opponents with 150+ games, as
+# [opponent index, games, wins, clear]. Ranked by the matchup's difference from the champion's own win rate, shrunk by
+# sample size (empirical Bayes per role and rank, like the tier list), so a 150-game fluke cannot top the list.
+# clear = 1 when the raw difference is at least 1.64 standard errors (otherwise the site greys it out).
+MU = json.load(open('data/opgg_matchups.json', encoding='utf-8')) if os.path.exists('data/opgg_matchups.json') else {}
+def matchups(rk, role, c):   # -> {o: champion's own win rate, h/g: [[opponent, win rate of this champion, games, clear], ...]}
+    D = MU.get(rk); v = D and D['m'].get(f'{role}|{c}')
+    if not v: return None
+    f = lambda L: [[nm(D['names'][i]), round(100 * w / n, 1), n, cl] for i, n, w, cl in L]
+    return {'o': round(100 * v['o'][1] / v['o'][0], 1), 'h': f(v['h']), 'g': f(v['g'])}
+# OP.GG build page, Global Emerald+, per "role|champion": [spells, rune pages, core builds, boots, starting items], everything
+# OP.GG's overview shows. Pick and win rates come x10 (runes: per mille, same thing). Skills: [max order, 15 levels, pick %, win %, games].
+BST = json.load(open('data/opgg_build_stats.json', encoding='utf-8')) if os.path.exists('data/opgg_build_stats.json') else {}
+SKL = json.load(open('data/opgg_skills.json', encoding='utf-8')) if os.path.exists('data/opgg_skills.json') else {}
+def build(role, c):
+    v = BST.get(f'{role}|{c}')
+    if not v: return None
+    sp, rn, co, bo, st = v
+    tot = rn[0][5] / (rn[0][6] / 1000) if rn and rn[0][6] else None   # games of this champion in this role
+    p = lambda x: round(x / 10, 1)
+    b = {'sp': [[ids, p(pk), p(w), round(pk / 1000 * tot) if tot else None] for ids, pk, w in sp],
+         'rn': [[k, ps, ss, m3, s2, g, p(pk), p(w)] for k, ps, ss, m3, s2, g, pk, w in rn],
+         'co': [[ids, p(pk), p(w), g] for ids, pk, w, g in co],
+         'bo': [[i, p(pk), p(w), g] for i, pk, w, g in bo],
+         'st': [[ids, p(pk), p(w), g] for ids, pk, w, g in st]}
+    s = SKL.get(f'{role}|{c}')
+    if s and s[0]:   # max order (OP.GG repeats it on some pages), first three levels, % of games with exactly this 15-level order
+        mx = ''.join(dict.fromkeys(s[0]))
+        if 'R' in mx and s[1].find('R') >= 5: mx = mx.replace('R', '')   # R is only a normal skill if taken before level 6 (Udyr)
+        b['sk'] = [mx, s[1][:3], s[2], s[4]]
+    return b
 # OP.GG Emerald+ builds per champion and role: {role: {champ: {c0, c1: core builds, b0: boots, s0: starter, as [[item id, name], ...]}}}
 BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.exists('data/opgg_builds.json') else {}
 
@@ -214,7 +246,7 @@ for role in ROLES:
         rg, rp = val('g', c, 'raw'), val('prev', c, 'raw')
         e['trz'] = None if rg is None or rp is None else round((rg - rp) / math.sqrt(2500 / val('g', c, 'n') + 2500 / val('prev', c, 'n')), 1)
         if pv is not None and c not in P['changed_this_patch']:
-            prev_cmp.append((role, c, val('prev', c, 'raw'), pv, val('g', c, 'raw'), float(comp['prev'].loc[c, 'n']), float(comp['g'].loc[c, 'n'])))
+            prev_cmp.append((role, c, val('prev', c, 'raw'), pv, val('g', c, 'raw'), float(comp['prev'].loc[c, 'n']), float(comp['g'].loc[c, 'n']), float(comp['prev'].loc[c, 'sd'])))
         # site letters at Diamond+
         sites = {}
         for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'METAsrc']:
@@ -227,6 +259,8 @@ for role in ROLES:
         e['sites'] = sites
         e['ll'] = lolal.loc[c, 'tier'] if lolal is not None and c in lolal.index else None
         e['ctr'] = CTR['e'].get(role, {}).get(c); e['ctr_d'] = CTR['d'].get(role, {}).get(c)
+        e['mu'] = matchups('e', role, c); e['mud'] = matchups('d', role, c)
+        e['bd'] = build(role, c)
         res.append(e)
     out[role] = res
 
@@ -313,11 +347,16 @@ for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'Mobalytics experts
     grade.append([site, round(spearmanr(tv, wr).correlation, 2), round(spearmanr(tv, lp).correlation, 2), corr_num, len(tv)])
 
 # ---------- backtest: does last patch predict this patch for champions that were not changed? ----------
-bt = pd.DataFrame(prev_cmp, columns=['role', 'c', 'prev_raw', 'prev_sh', 'cur_raw', 'n_prev', 'n_cur'])
+bt = pd.DataFrame(prev_cmp, columns=['role', 'c', 'prev_raw', 'prev_sh', 'cur_raw', 'n_prev', 'n_cur', 'sd_prev'])
 bt = bt[bt.n_cur >= 1000]
 r_raw = float(np.corrcoef(bt.prev_raw, bt.cur_raw)[0, 1])
 mse_raw = float(((bt.cur_raw - bt.prev_raw) ** 2).mean()); mse_sh = float(((bt.cur_raw - bt.prev_sh) ** 2).mean()); mse_0 = float((bt.cur_raw ** 2).mean())
 backtest = {'n': int(len(bt)), 'r': round(r_raw, 2), 'mse_raw': round(mse_raw, 3), 'mse_shrunk': round(mse_sh, 3), 'mse_zero': round(mse_0, 3)}
+# does the ± hold up? Share of unchanged champions whose measured value this patch lands inside last patch's 90% range,
+# widened by this patch's own sampling noise. If nothing but chance moved them this would be about 90%; the gap is real
+# movement between patches (item and system changes, the meta), which the ± of one patch cannot know about.
+half = 1.64 * np.sqrt(bt.sd_prev ** 2 + 2500 / bt.n_cur)
+backtest['cover'] = round(100 * float(((bt.cur_raw - bt.prev_sh).abs() <= half).mean()))
 
 # ---------- headline facts ----------
 pop = [(r, e) for r in ROLES for e in out[r] if e['pick'] >= 5]
