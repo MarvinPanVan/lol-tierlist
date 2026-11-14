@@ -90,7 +90,8 @@ a{color:inherit}
 select,input{font:500 14px Inter,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:42px;padding:0 14px;transition:border-color .15s,box-shadow .15s}
 select{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
 select:hover,input:hover{border-color:var(--faint)}
-.search{position:relative;margin-left:auto;flex:1 1 200px;max-width:300px}
+.search{position:relative;margin-left:auto;flex:1 1 130px;max-width:300px}
+#ds{width:150px}
 .search input{width:100%;padding-left:38px;padding-right:34px}
 .search::before{content:"";position:absolute;left:13px;top:50%;width:15px;height:15px;transform:translateY(-50%);background:var(--faint);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='black' stroke-width='2.4'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='black' stroke-width='2.4'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
 .search input:focus~kbd,.search input:not(:placeholder-shown)~kbd{opacity:0}
@@ -103,6 +104,21 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{ou
 input:focus,select:focus{border-color:var(--acc)}
 .hintline{width:100%;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;font-size:12.5px;color:var(--mut);padding-top:2px}
 .legend{display:flex;align-items:center;gap:8px;margin-left:auto}
+.seg button.two{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;padding:0 14px}
+.seg button.two small{font:500 10.5px/1.2 Inter,sans-serif;color:var(--faint);margin-top:1px}
+.seg button.two[aria-pressed=true] small{color:var(--mut)}
+.gbtn{border:0;background:none;padding:0;font:600 12.5px Inter,sans-serif;color:var(--acc);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.gbtn[aria-expanded=true]{text-decoration:none}
+.guide{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:4px;animation:fade .18s both}
+.guide[hidden]{display:none}
+.gopt{display:flex;flex-direction:column;gap:3px;text-align:left;font:400 13px/1.45 Inter,sans-serif;color:var(--mut);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .15s}
+.gopt b{display:flex;align-items:center;gap:8px;font:700 14px/1.2 Inter,sans-serif;color:var(--ink)}
+.gopt .who{color:var(--ink);font-weight:500}
+.gopt.raw{cursor:default}
+button.gopt:hover{border-color:var(--faint)}
+.gopt[aria-pressed=true]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.gopt:disabled{opacity:.45;cursor:not-allowed}
+.rec{font:700 10.5px/1 Inter,sans-serif;padding:3px 7px;border-radius:999px;background:color-mix(in srgb,var(--pos) 14%,transparent);color:var(--pos)}
 .legend .ticks{grid-column:auto}.legend[hidden]{display:none}
 .ticks:empty{display:none}.chip:has(.ticks:empty){grid-template-areas:"p n s"}
 
@@ -282,7 +298,7 @@ body{transition:background-color .25s ease,color .25s ease}
 .x{display:block}
 .scrim.open{display:block;position:fixed;inset:0;background:rgba(10,12,16,.4);backdrop-filter:blur(2px);z-index:40;animation:fade .2s both}
 .split{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.theme{margin-left:auto}.bar select{flex:1 1 40%}.hero-band{padding-top:18px;padding-bottom:16px}.hero-band h1{font-size:26px;margin-bottom:12px}.hero-band .lede{display:none}.meta{margin-bottom:10px;font-size:12.5px;gap:2px 12px}.meta .nxp{display:none}.meta span+span::before{display:none}.nextc .list{columns:1}.kv{flex-wrap:wrap}.kv>div,.kv>[data-tip]{flex:1 1 calc(50% - 4px)}.chip .pic{width:28px;height:28px;border-radius:8px}.best{grid-template-columns:repeat(5,160px);overflow-x:auto;scrollbar-width:none;margin:0 -2px}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%;max-width:none;grid-column:1/-1}.search kbd{display:none}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
+@media(max-width:640px){.theme{margin-left:auto}.bar select{flex:1 1 40%}.hero-band{padding-top:18px;padding-bottom:16px}.hero-band h1{font-size:26px;margin-bottom:12px}.hero-band .lede{display:none}.meta{margin-bottom:10px;font-size:12.5px;gap:2px 12px}.meta .nxp{display:none}.meta span+span::before{display:none}.nextc .list{columns:1}.guide{grid-template-columns:minmax(0,1fr)}.hintline{gap:8px 18px}.kv{flex-wrap:wrap}.kv>div,.kv>[data-tip]{flex:1 1 calc(50% - 4px)}.chip .pic{width:28px;height:28px;border-radius:8px}.best{grid-template-columns:repeat(5,160px);overflow-x:auto;scrollbar-width:none;margin:0 -2px}.bar{position:static}h1{max-width:none}.links{display:none}.legend{margin-left:0}.site-foot .wrap{grid-template-columns:minmax(0,1fr)}.search{margin-left:0;width:100%;max-width:none}#views,.guide{grid-column:1/-1}#ds{width:100%}.search kbd{display:none}.seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:0 6px}
 .bar .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#roles,.arch,.hintline{grid-column:1/-1}.bar select{width:100%}#hint{display:none}.legend{font-size:12px}
 .row{grid-template-columns:50px minmax(0,1fr)}.lab{font-size:30px}.lab small{font-size:9.5px}
 .chips{gap:6px;padding:8px}.chip{min-height:46px;padding:6px 9px 6px 6px;column-gap:8px}.chip .nm{font-size:14px}
@@ -311,21 +327,30 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding:10
 <div class="seg" id="roles" role="group" aria-label="Role"></div>
 <div class="seg" id="views" role="group" aria-label="View"></div>
 <div class="seg" id="modes" role="group" aria-label="Layout"></div>
-<select id="ds" aria-label="Show one dataset on its own">
-<option value="">Just one dataset</option>
+<select id="ds" aria-label="Raw data from one dataset, not blended">
+<option value="">Raw data</option>
+<optgroup label="Emerald+">
 <option value="g">Global only</option>
 <option value="euw">EUW only</option>
 <option value="kr">KR only</option>
 <option value="na">NA only</option>
+</optgroup>
+<optgroup label="High elo">
 <option value="dia">Diamond+ only (5 sites)</option>
 <option value="m">Master+ only (2 sites)</option>
 <option value="euwd">EUW Diamond+ only</option>
 <option value="euwm">EUW Master+ only</option>
+</optgroup>
 </select>
 <select id="patchsel" aria-label="Patch"><option value="">Patch 26.22</option></select>
 <div class="search"><input id="q" type="search" placeholder="Find a champion" autocomplete="off" aria-label="Find a champion"><kbd aria-hidden="true">/</kbd><div class="res" id="res"></div></div>
 <div class="arch" id="arch" hidden></div>
-<div class="hintline"><span id="hint"></span><span class="legend" id="legend"></span></div>
+<div class="hintline"><button type="button" class="gbtn" id="gbtn" aria-expanded="false" aria-controls="guide">Which view is for me?</button><span id="hint"></span><span class="legend" id="legend"></span></div>
+<div class="guide" id="guide" hidden>
+<button type="button" class="gopt" data-l="score"><b>Overall <span class="rec">Recommended</span></b><span class="who">For Iron to Emerald, so most players.</span><span>Emerald+ games from Global, EUW, KR and NA, plus Master+, blended into one score. Biggest samples, least noise.</span></button>
+<button type="button" class="gopt" data-l="hi"><b>High elo</b><span class="who">For Diamond and up.</span><span>Only Diamond+ and Master+ games, with extra weight on EUW. Champions that need mechanics or coordination move up here. Smaller samples, a bit noisier.</span></button>
+<div class="gopt raw"><b>Raw data</b><span class="who">For checking one region or rank on its own.</span><span>One dataset with no blending, for example KR only to see what Korea wins with. Noisier, so odd picks show up. Pick it in the Raw data menu.</span></div>
+</div>
 </div>
 </nav>
 
@@ -408,13 +433,13 @@ function ticks(d){if(LIM())return '';return DS.map(([k])=>{const v=d[k];if(v==nu
 function renderControls(){
   $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}">${n}</button>`).join('');
   $('modes').innerHTML=[['tiers','Tiers'],['table','Table']].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
-  const TIP={score:'Average of Global, EUW, KR, NA (Emerald+) and Master+. Best for most players.',hi:'Diamond+ and Master+ only, with extra weight on EUW. For high elo players.'};
   const lim=LIM();
-  $('views').innerHTML=[['score','Overall'],['hi','High elo']].map(([k,n])=>`<button type="button" data-l="${k}" aria-pressed="${k===lens}" data-tip="${lim&&k==='hi'?'Not available for this patch':TIP[k]}"${lim&&k==='hi'?' disabled':''}>${n}</button>`).join('');
+  $('views').innerHTML=[['score','Overall','Iron to Emerald'],['hi','High elo','Diamond and up']].map(([k,n,w])=>`<button type="button" class="two" data-l="${k}" aria-pressed="${k===lens}"${lim&&k==='hi'?' disabled title="Not available for this patch"':''}><span>${n}</span><small>${w}</small></button>`).join('');
+  document.querySelectorAll('.gopt[data-l]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===lens);b.disabled=lim&&b.dataset.l==='hi';});
   $('ds').disabled=!!lim;
   $('ds').value=DSP.some(([k])=>k===lens)?lens:'';
   const list=DATA[role],miss=list.filter(d=>tierOf(d)==null).length;
-  $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:lens==='score'?'Overall blends Global, EUW, KR, NA and Master+. Fixed cutoffs, no hand edits.':lens==='hi'?'High elo: Diamond+ from five sites 40%, Master+ from two 35%, EUW Diamond+ and Master+ 25%.':'Raw tiers from '+DSN[lens]+' only.')+(miss?` ${miss} champions have no data here.`:'');
+  $('hint').textContent=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:lens==='score'?'Overall, for Iron to Emerald. Blends Global, EUW, KR, NA and Master+.':lens==='hi'?'High elo, for Diamond and up. Diamond+ and Master+ games only, extra weight on EUW.':'Raw data from '+DSN[lens]+' only, not blended. Noisier than the two main views.')+(miss?` ${miss} champions have no data here.`:'');
   $('legend').hidden=lim;
 }
 function renderTable(){
@@ -519,6 +544,7 @@ function render(){
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
 }
 function select(c,open){pick=c;try{history.replaceState(null,'',location.pathname+location.search+'#'+slug(c));}catch(e){}document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===pick));document.querySelectorAll('.tv tbody tr').forEach(r=>r.classList.toggle('on',r.dataset.c===pick));renderPanel();drawMap();if(open)openPanel(true);}
+function toggleGuide(o){const g=$('guide');o=o??g.hidden;g.hidden=!o;$('gbtn').setAttribute('aria-expanded',o);}
 function setLens(l){if(sortK===lens||sortK==='score'||sortK==='hi'||DSP.some(([x])=>x===sortK))sortK=l;lens=l;try{localStorage.setItem('tl-lens',l);}catch(e){}render();}
 function search(){
   q=$('q').value.trim().toLowerCase();
@@ -536,15 +562,17 @@ document.addEventListener('click',e=>{
   const r=t.closest('[data-r]'),l=t.closest('[data-l]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
   if(r){navRole(r.dataset.r);return;}
-  if(l){setLens(l.dataset.l);return;}
+  if(t.closest('#gbtn')){toggleGuide();return;}
+  if(l){setLens(l.dataset.l);if(l.closest('#guide'))toggleGuide(false);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
   if(md){mode=md.dataset.mode;try{localStorage.setItem('tl-mode',mode);}catch(e){}renderControls();renderBoard();return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
   if(!t.closest('.search'))$('res').style.display='none';
+  if(!t.closest('#bar'))toggleGuide(false);
 });
-document.addEventListener('keydown',e=>{if(PAGE==='method')return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';}});
+document.addEventListener('keydown',e=>{if(PAGE==='method')return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';toggleGuide(false);}});
 if(PAGE!=='method'){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));$('ds').addEventListener('change',e=>{if(e.target.value)setLens(e.target.value);});
 $('q').addEventListener('input',search);
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('res').querySelector('[data-jr]');if(b)b.click();}});}
@@ -576,8 +604,8 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>drawMap()).observe($('fig'));
-$('legend').innerHTML=`<span class="ticks" aria-hidden="true">${ticks({g:1.6,euw:2.2,kr:1.2,na:-.8,dia:1.4,m:2.4})}</span><span>Bars: Global, EUW, KR, NA, Diamond+, Master+. Up = above average. <u class="lowdemo">Dotted</u> score = few games.</span>`;
-{const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();}).observe(bar);setH();addEventListener('resize',fitTable);}
+$('legend').innerHTML=`<span class="ticks" aria-hidden="true">${ticks({g:1.6,euw:2.2,kr:1.2,na:-.8,dia:1.4,m:2.4})}</span><span>Bars: Global, EUW, KR, NA, Diamond+, Master+. <u class="lowdemo">Dotted</u> score = few games.</span>`;
+{const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 renderBest();
 if(!['score','hi','g','euw','kr','na','dia','m','euwd','euwm'].includes(lens))lens='score';
 role=INIT_ROLE;
