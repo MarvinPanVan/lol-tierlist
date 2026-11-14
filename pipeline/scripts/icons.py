@@ -14,5 +14,22 @@ for cid, c in champs.items():
     im = Image.open(io.BytesIO(get(f'https://ddragon.leagueoflegends.com/cdn/{ver}/img/champion/{c["image"]["full"]}'))).convert('RGB')
     im = im.resize((64, 64), Image.LANCZOS)
     im.save(os.path.join(PUB, 'img', 'champ', slug(c['name']) + '.webp'), 'WEBP', quality=82, method=6)
+    # art for the redesign: square face crop (tile) and wide centered splash. Art does not change between patches,
+    # so only missing files are fetched (delete a file to refresh it).
+    for kind, size, q in [('tile', (192, 192), 76), ('splash', (960, 540), 70)]:
+        out = os.path.join(PUB, 'img', kind, slug(c['name']) + '.webp')
+        if os.path.exists(out): continue
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        urls = [f'https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/{cid}_0.jpg'] if kind == 'tile' else \
+               [f'https://ddragon.leagueoflegends.com/cdn/img/champion/centered/{cid}_0.jpg', f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{cid}_0.jpg']
+        for u in urls:
+            try:
+                a = Image.open(io.BytesIO(get(u))).convert('RGB')
+            except Exception as e:
+                print('miss', kind, cid, u, e); continue
+            if kind == 'splash':   # cover-crop to 16:9
+                w, h = a.size; th = int(w * 9 / 16)
+                if th <= h: a = a.crop((0, (h - th) // 2, w, (h - th) // 2 + th))
+            a = a.resize(size, Image.LANCZOS); a.save(out, 'WEBP', quality=q, method=6); break
 json.dump({'version': ver, 'by_key': by_key}, open(os.path.join(PIPE, 'data', 'ddragon_champions.json'), 'w'), ensure_ascii=False, indent=0)
 print(f'{len(champs)} portraits from Data Dragon {ver}')
