@@ -1,5 +1,6 @@
 """Download champion portraits from Riot's Data Dragon into public/img/champ/<slug>.webp (64x64).
-Runs in GitHub Actions (the build sandbox can't reach Riot). Also writes pipeline/data/ddragon_champions.json."""
+Runs in GitHub Actions (the build sandbox can't reach Riot). Also writes pipeline/data/ddragon_champions.json,
+and item icons to public/img/item/<id>.webp plus pipeline/data/ddragon_items.json."""
 import os, re, json, io, urllib.request
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); PIPE = os.path.dirname(HERE); PUB = os.path.join(os.path.dirname(PIPE), 'public')
@@ -36,4 +37,19 @@ for cid, c in champs.items():
             if os.path.exists(sp):
                 a = Image.open(sp); w, h = a.size; a.crop(((w - h) // 2, 0, (w - h) // 2 + h, h)).resize(size, Image.LANCZOS).save(out, 'WEBP', quality=q, method=6)
 json.dump({'version': ver, 'by_key': by_key}, open(os.path.join(PIPE, 'data', 'ddragon_champions.json'), 'w'), ensure_ascii=False, indent=0)
+# item icons for the patch notes pages: every Summoner's Rift item, 64x64 webp in public/img/item/<id>.webp (only missing files)
+items = json.loads(get(f'https://ddragon.leagueoflegends.com/cdn/{ver}/data/en_US/item.json'))['data']
+os.makedirs(os.path.join(PUB, 'img', 'item'), exist_ok=True)
+by_name, got = {}, 0
+for iid, it in items.items():
+    if not it.get('maps', {}).get('11'): continue
+    by_name.setdefault(it['name'], iid)
+    out = os.path.join(PUB, 'img', 'item', f'{iid}.webp')
+    if os.path.exists(out): continue
+    try:
+        Image.open(io.BytesIO(get(f'https://ddragon.leagueoflegends.com/cdn/{ver}/img/item/{iid}.png'))).convert('RGB').resize((64, 64), Image.LANCZOS).save(out, 'WEBP', quality=82, method=6); got += 1
+    except Exception as e:
+        print('miss item', iid, e)
+json.dump({'version': ver, 'by_name': by_name}, open(os.path.join(PIPE, 'data', 'ddragon_items.json'), 'w'), ensure_ascii=False, indent=0)
+print(f'{got} new item icons')
 print(f'{len(champs)} portraits from Data Dragon {ver}')

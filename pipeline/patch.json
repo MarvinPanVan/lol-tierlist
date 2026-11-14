@@ -216,7 +216,11 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "E": "Singularity"
+     },
+     "why": "Most players level E second even though it was the weaker choice, so Riot made E stronger to match."
     },
     {
      "c": "Corki",
@@ -239,7 +243,11 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "R": "Missile Barrage"
+     },
+     "why": "Held back for Worlds. Now Riot gives him room to be stronger for everyone."
     },
     {
      "c": "Kayle",
@@ -262,7 +270,12 @@
        "cd",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Radiant Blast",
+      "R": "Divine Judgment"
+     },
+     "why": "She faded after the role quest shake-up. The buff is aimed at her early laning."
     },
     {
      "c": "Locke",
@@ -293,7 +306,12 @@
        "mech",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Ritual Nails",
+      "W": "Soul Ignition"
+     },
+     "why": "Fine on average, but players who master him are clearly too strong, especially early."
     },
     {
      "c": "Maokai",
@@ -308,13 +326,17 @@
        "pct",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Bramble Smash"
+     },
+     "why": "He ended up almost only in support. The buff is meant to help top and jungle Maokai."
     },
     {
      "c": "Mel",
      "kind": "adjust",
      "short": "rework of W, Q and E",
-     "m": "Bigger update: W works differently now (a nova that destroys projectiles, shields her and speeds her up). Less health at level 1 but more from level 8, more mana from level 4, shorter R cooldown at ranks 2 and 3.",
+     "m": "Less health at level 1 but more from level 8, more mana from level 4, shorter R cooldown at ranks 2 and 3.",
      "lines": [
       [
        "Base",
@@ -500,7 +522,15 @@
        "cd",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "P": "Searing Brilliance",
+      "Q": "Radiant Volley",
+      "W": "Rebuttal",
+      "E": "Solar Snare",
+      "R": "Golden Eclipse"
+     },
+     "why": "Midscope update: power moves from early game to late game, W destroys missiles and hits back instead of reflecting, Q and R cooldowns drop later on."
     },
     {
      "c": "Naafiri",
@@ -523,7 +553,12 @@
        "mech",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Darkin Daggers",
+      "W": "The Call of the Pack"
+     },
+     "why": "After earlier nerfs she fell out of mid and is mediocre in jungle. Mainly meant to help mid."
     },
     {
      "c": "Rumble",
@@ -546,7 +581,11 @@
        "ratio",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "R": "The Equalizer"
+     },
+     "why": "He was tuned for pro play. This should help the average Rumble more than pros."
     },
     {
      "c": "Shen",
@@ -561,7 +600,11 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Twilight Assault"
+     },
+     "why": "Shen jungle fell too far out of the meta, so his damage to monsters goes up."
     },
     {
      "c": "Smolder",
@@ -576,7 +619,11 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "W": "ACHOOO!"
+     },
+     "why": "Earlier buffs landed softer than planned. Riot also expects the Doran's Bow nerf to help him."
     },
     {
      "c": "Thresh",
@@ -599,7 +646,11 @@
        "base",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "R": "The Box"
+     },
+     "why": "Still at the top of support for the best players, even after the last nerf."
     },
     {
      "c": "Viktor",
@@ -622,7 +673,11 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "R": "Arcane Storm"
+     },
+     "why": "Last patch's nerf hit harder than planned. Riot keeps the early game nerf and gives power back later."
     },
     {
      "c": "Yasuo",
@@ -637,7 +692,11 @@
        "base",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Steel Tempest"
+     },
+     "why": "His win rate and ban rate kept climbing as players moved to crit builds, so he gets the nerf Yone got."
     },
     {
      "c": "Zaahen",
@@ -652,7 +711,11 @@
        "cd",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "The Darkin Glaive"
+     },
+     "why": "Strong late but with too little to do in lane. This is for his early fights."
     }
    ],
    "items": [
@@ -670,7 +733,8 @@
        "stats",
        "-"
       ]
-     ]
+     ],
+     "why": "Slightly too strong: ADCs that should start Doran's Blade were buying Bow almost every game."
     },
     {
      "c": "Overlord's Bloodmail",
@@ -695,7 +759,8 @@
        "mech",
        "-"
       ]
-     ]
+     ],
+     "why": "Meant as a main item for juggernauts, but only Sett really built it. A net buff for most users without pushing Sett much higher."
     }
    ],
    "other": [
@@ -722,7 +787,7 @@
    "status": "preview",
    "live": "18 Nov 2026",
    "url": "https://www.strafe.com/news/read/lol-patch-26-23-preview/",
-   "src": "Riot Phroxzon's preview of 26.23, numbers as listed on strafe.com",
+   "src": "Riot Phroxzon's preview of 26.23, numbers as listed on strafe.com, reasons as reported by strafe.com, gameriv.com and insider-gaming.com",
    "champs": [
     {
      "c": "Akshan",
@@ -759,7 +824,10 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "R": "Summon: Tibbers"
+     }
     },
     {
      "c": "Azir",
@@ -782,7 +850,11 @@
        "ratio",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "W": "Arise!"
+     },
+     "why": "A former pro staple. Riot buffs these to round out the year for average players."
     },
     {
      "c": "Bard",
@@ -797,7 +869,10 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Cosmic Binding"
+     }
     },
     {
      "c": "Ezreal",
@@ -820,7 +895,12 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "W": "Essence Flux",
+      "R": "Trueshot Barrage"
+     },
+     "why": "A former pro staple. Riot buffs these to round out the year for average players."
     },
     {
      "c": "Galio",
@@ -835,7 +915,11 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "W": "Shield of Durand"
+     },
+     "why": "A former pro staple. Riot buffs these to round out the year for average players."
     },
     {
      "c": "Gnar",
@@ -858,7 +942,10 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Boomerang Throw / Boulder Toss"
+     }
     },
     {
      "c": "K'Sante",
@@ -890,7 +977,11 @@
        "base",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "W": "Path Maker"
+     },
+     "why": "A former pro staple. W is often his second ability to level and is easier to see coming, so the power goes there."
     },
     {
      "c": "Mel",
@@ -929,7 +1020,12 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Radiant Volley",
+      "W": "Rebuttal"
+     },
+     "why": "More power after last patch's update. Riot is watching how popular she gets in bot lane."
     },
     {
      "c": "Vel'Koz",
@@ -945,7 +1041,10 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "R": "Life Form Disintegration Ray"
+     }
     },
     {
      "c": "Vi",
@@ -960,7 +1059,10 @@
        "base",
        "+"
       ]
-     ]
+     ],
+     "ab": {
+      "E": "Relentless Force"
+     }
     },
     {
      "c": "LeBlanc",
@@ -975,7 +1077,11 @@
        "ratio",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Sigil of Malice"
+     },
+     "why": "Strong and frustrating at high ranks."
     },
     {
      "c": "Master Yi",
@@ -998,7 +1104,11 @@
        "base",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "Q": "Alpha Strike"
+     },
+     "why": "High in Riot's frustration surveys, especially among regular players."
     },
     {
      "c": "Syndra",
@@ -1021,7 +1131,11 @@
        "cd",
        "-"
       ]
-     ]
+     ],
+     "ab": {
+      "E": "Scatter the Weak"
+     },
+     "why": "Frustrating to play against at higher levels of play."
     }
    ],
    "items": [
@@ -1039,7 +1153,8 @@
        "base",
        "-"
       ]
-     ]
+     ],
+     "why": "Slightly too strong after the Bastionbreaker nerfs, crowding out the other first items for assassins."
     }
    ],
    "other": [],

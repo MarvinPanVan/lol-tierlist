@@ -141,15 +141,22 @@ page('method/index.html', 'M', '../', 'method', 'top', 'How the tier list is mad
 # "m" that says nothing the numbers don't show): which ranks change, whether only the scaling changes, base stats per level.
 _BP = os.path.join(HERE, 'data', 'opgg_builds.json')
 BUILDS = json.load(open(_BP, encoding='utf-8')) if os.path.exists(_BP) else {}
+_DI = os.path.join(HERE, 'data', 'ddragon_items.json')
+ITEM_ID = json.load(open(_DI, encoding='utf-8')).get('by_name', {}) if os.path.exists(_DI) else {}
+for _r in BUILDS.values():   # item ids from the OP.GG builds win over Data Dragon names
+    for _b in _r.values():
+        for _k in _b.values():
+            for _id, _nm in _k: ITEM_ID[_nm] = str(_id)
 NUM = r'\d+(?:\.\d+)?'
-def _ranks(s):   # leading numbers: "10 / 9 / 8s" (per rank), "45 - 165" (low to high end), "56" (one value)
+def _ranks(s):   # leading numbers: "10 / 9 / 8s" (per rank), "45 - 165" (low to high end), "56" (one value); plus the unit right after
     s = s.strip()
-    m = re.match(rf'({NUM}(?:\s*/\s*{NUM})+)', s)
-    if m: return [float(x) for x in re.split(r'\s*/\s*', m.group(1))], 'rank'
-    m = re.match(rf'({NUM})%?\s*-\s*({NUM})', s)
-    if m: return [float(m.group(1)), float(m.group(2))], 'range'
-    m = re.match(rf'({NUM})', s)
-    return ([float(m.group(1))], 'one') if m else (None, None)
+    for rx, kind in ((rf'({NUM}(?:\s*/\s*{NUM})+)', 'rank'), (rf'({NUM})%?\s*-\s*({NUM})', 'range'), (rf'({NUM})', 'one')):
+        m = re.match(rx, s)
+        if m:
+            vals = [float(x) for x in re.split(r'\s*/\s*', m.group(1))] if kind == 'rank' else [float(g) for g in m.groups()]
+            u = s[m.end():m.end() + 1]
+            return vals, kind, (u if u in ('%', 's') else '')
+    return None, None, ''
 def _stat(s):   # "590 + 107/level", "5.4/level", "54"
     m = re.match(rf'({NUM})\s*\+\s*({NUM})%?/level', s)
     if m: return float(m.group(1)), float(m.group(2))
@@ -157,6 +164,7 @@ def _stat(s):   # "590 + 107/level", "5.4/level", "54"
     if m: return None, float(m.group(1))
     m = re.fullmatch(rf'({NUM})', s.strip())
     return (float(m.group(1)), None) if m else (None, None)
+def _par(s): return re.findall(r'\(([^)]*)\)', s)
 def _phase(l):   # when the change matters: early, late, all, items (scaling), pct (% of target health)
     _, _, old, new, tag, _ = l
     if tag == 'mech' or not old: return set(), None
@@ -167,7 +175,7 @@ def _phase(l):   # when the change matters: early, late, all, items (scaling), p
         if g0 is not None and g1 is not None and g0 != g1: ph.add('late')
         if b0 is not None and b1 is not None and b0 != b1: ph.add('all')
         return ph, None
-    (a, ka), (b, kb) = _ranks(old), _ranks(new); ph, det = set(), None
+    (a, ka, ua), (b, kb, ub) = _ranks(old), _ranks(new); ph, det = set(), None
     if a and b:
         if len(a) == 1 and len(b) == 1:
             if a != b: ph.add('all')
@@ -177,10 +185,12 @@ def _phase(l):   # when the change matters: early, late, all, items (scaling), p
             if rf and not rl: ph.add('early')
             elif rl and not rf: ph.add('late')
             elif rf and rl: ph.add('early' if rf >= 2 * rl else 'late' if rl >= 2 * rf else 'all')
-            det = ('range' if 'range' in (ka, kb) else 'rank', f0, f1, l0, l1)
-    if re.findall(r'\(([^)]*)\)', old) != re.findall(r'\(([^)]*)\)', new): ph.add('items')
+            det = ('range' if 'range' in (ka, kb) else 'rank', f0, f1, l0, l1, ua or ub or ('s' if tag == 'cd' else ''))
+    if _par(old) != _par(new): ph.add('items')
     return ph, det
 def _g(v): return f'{v:g}'
+def _who(l):   # how a line is named inside a sentence: "Q", "the passive", "attack damage"
+    return l[0] if l[0] in ('Q', 'W', 'E', 'R') else 'the passive' if l[0] == 'P' else l[1].lower()
 def meaning(x):
     if x.get('m'): return x['m']
     L = [l for l in x['lines'] if l[4] != 'mech' and l[5] in '+-' and l[2]]
@@ -188,17 +198,21 @@ def meaning(x):
     info = [(l, *_phase(l)) for l in L]; dirs = {l[5] for l in L}; name = x['c']; out = []
     if len(dirs) == 1:
         w = 'helps' if '+' in dirs else 'hurts'
-        ph = set().union(*[p for _, p, _ in info]); dets = [d for _, p, d in info if d]
-        lo, hi = ('rank 1', 'max rank') if dets and dets[0][0] == 'rank' else ('the low end', 'the top end')
-        if ph == {'early'} and dets:
-            d = dets[0]
-            out.append(f'Mostly {w} early: {hi} stays the same.' if all(t[3] == t[4] for t in dets) else
-                       f'Mostly {w} early: {_g(d[1])} → {_g(d[2])} at {lo} is a much bigger change than {_g(d[3])} → {_g(d[4])} at {hi}.')
-        elif ph == {'late'} and dets:
-            d = dets[0]
-            out.append(f'Mostly {w} later: {lo} stays the same.' if all(t[1] == t[2] for t in dets) else
-                       f'Mostly {w} later: {_g(d[1])} → {_g(d[2])} at {lo} is a much smaller change than {_g(d[3])} → {_g(d[4])} at {hi}.')
-        elif ph == {'items'}: out.append(f'Only the scaling changes, so it {w} more the more items {name} has.')
+        ph = set().union(*[p for _, p, _ in info]); dl = [(l, d) for l, _, d in info if d]
+        if ph <= {'early', 'late'} and len(ph) == 1 and dl:
+            l, (kind, f0, f1, l0, l1, u) = dl[0]; k = _who(l)
+            lo, hi = ('at rank 1', 'at max rank') if kind == 'rank' else ('at the low end', 'at the top end')
+            a, b, c, d = f'{_g(f0)}{u}', f'{_g(f1)}{u}', f'{_g(l0)}{u}', f'{_g(l1)}{u}'
+            if ph == {'early'}:
+                out.append(f'Mostly {w} early: {k} goes {a} → {b} {lo} and stays {c} {hi}.' if l0 == l1 else
+                           f'Mostly {w} early: {k} goes {a} → {b} {lo}, only {c} → {d} {hi}.')
+            else:
+                out.append(f'Mostly {w} later: {k} stays {a} {lo} and goes {c} → {d} {hi}.' if f0 == f1 else
+                           f'Mostly {w} later: {k} goes only {a} → {b} {lo}, but {c} → {d} {hi}.')
+        elif ph == {'items'}:
+            l = L[0]; po, pn = _par(l[2]), _par(l[3])
+            ch = next(((o, n) for o, n in zip(po, pn) if o != n), None) if l[4] != 'ratio' else (l[2], l[3])
+            out.append(f'Only the scaling changes' + (f' ({ch[0]} → {ch[1]})' if ch else '') + f', so it {w} more the more items {name} has.')
         elif ph == {'late', 'items'}: out.append(f'Matters more later in the game, once {name} has ranks and items.')
         elif ph == {'pct'}: out.append(f'Only the % max health part changes, so it {w} most against tanky targets.')
     else:
@@ -215,27 +229,73 @@ def meaning(x):
             if lv: out.append(f'{lab}: {"less" if b1 < b0 else "more"} at level 1, {"more" if b1 < b0 else "less"} from level {lv}.')
     return ' '.join(out)
 
-PILL = {'buff': 'pos', 'nerf': 'neg'}
-def _lines(L):
-    li = []
-    for k, stat, old, new, tag, d in L:
-        v = (f'<span class="pn-o">{E(old)}</span> <span class="pn-ar" aria-label="changed to">→</span> ' if old else '') + f'<span class="pn-n">{E(new)}</span>'
-        li.append(f'<li class="pn-l{" pn-up" if d == "+" else " pn-dn" if d == "-" else ""}">' + (f'<span class="pn-k">{E(k)}</span>' if k else '') + f'<div><b>{E(stat)}</b><p>{v}</p></div></li>')
-    if len(li) > 8:   # long reworks: the first 6 lines, the rest behind a toggle
-        return f'<ul class="pn-ls">{"".join(li[:6])}</ul><details class="pn-more"><summary>Show all {len(li)} changes</summary><ul class="pn-ls">{"".join(li[6:])}</ul></details>'
-    return f'<ul class="pn-ls">{"".join(li)}</ul>'
+import difflib
+SEGRX = re.compile(r'\([^)]*\)|[^()]+')
+def _skel(t): return re.sub(NUM, '#', t).strip()
+def _wrap(t):   # mark a whole piece, keeping the spaces around it outside the mark
+    m = re.match(r'(\s*)(.*?)(\s*)$', t, re.S)
+    return E(m.group(1)) + (f'<em>{E(m.group(2))}</em>' if m.group(2) else '') + E(m.group(3))
+def _pair(a, b):   # same shape: mark the numbers that changed, rank by rank; different shape: mark the whole piece
+    if a == b: return E(a), E(b)
+    if _skel(a) != _skel(b): return _wrap(a), _wrap(b)
+    na, nb = re.findall(NUM, a), re.findall(NUM, b)
+    def mark(t, mine, other):
+        out, k = [], 0
+        for part in re.split(rf'({NUM})', t):
+            if re.fullmatch(NUM, part): out.append(f'<em>{part}</em>' if float(part) != float(other[k]) else part); k += 1
+            else: out.append(E(part))
+        return ''.join(out)
+    return mark(a, na, nb), mark(b, nb, na)
+def _diff(old, new):   # "(+105% AD) → (+100% AD)" marks only 105 and 100; a list that changes length is marked whole
+    A, B = SEGRX.findall(old), SEGRX.findall(new); ho, hn = [], []
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, [_skel(x) for x in A], [_skel(x) for x in B], autojunk=False).get_opcodes():
+        if op == 'equal' or (op == 'replace' and i2 - i1 == j2 - j1):
+            for x, y in zip(A[i1:i2], B[j1:j2]): o, n = _pair(x, y); ho.append(o); hn.append(n)
+        else: ho += [_wrap(x) for x in A[i1:i2]]; hn += [_wrap(y) for y in B[j1:j2]]
+    return ''.join(ho), ''.join(hn)
+KEYN = {'P': 'Passive', 'Q': 'Q', 'W': 'W', 'E': 'E', 'R': 'R (ultimate)', 'Base': 'Base stats'}
+KORD = {'Base': 0, 'P': 1, 'Q': 2, 'W': 3, 'E': 4, 'R': 5}
+def _line(stat, old, new, d):
+    cls = ' pn-up' if d == '+' else ' pn-dn' if d == '-' else ''
+    if not old: v = f'<p class="pn-v"><span class="pn-n">{E(new)}</span></p>'
+    else:
+        o, n = _diff(old, new)
+        if len(old) + len(new) <= 34: v = f'<p class="pn-v"><span class="pn-o">{o}</span> <span class="pn-ar" aria-label="changed to">→</span> <span class="pn-n">{n}</span></p>'
+        else: v = f'<p class="pn-v pn-st"><span class="pn-lb">Was</span><span class="pn-o">{o}</span><span class="pn-lb">Now</span><span class="pn-n">{n}</span></p>'
+    return f'<li class="pn-l{cls}"><b>{E(stat)}</b>{v}</li>'
+def _lines(x, item=False):   # grouped by ability like Riot's notes (base stats first, then P Q W E R), the changed part of each value marked
+    if item: return f'<ul class="pn-ls pn-nk">{"".join(_line(l[1], l[2], l[3], l[5]) for l in x["lines"])}</ul>'
+    ab, out = x.get('ab', {}), []
+    for k in sorted(dict.fromkeys(l[0] for l in x['lines']), key=lambda k: KORD.get(k, 9)):
+        nm = 'Base stats' if k == 'Base' else ab.get(k, 'Passive' if k == 'P' else '')
+        out.append(f'<div class="pn-ab"><p class="pn-abh">' + (f'<span class="pn-k" title="{KEYN.get(k, k)}">{E(k)}</span>' if k != 'Base' else '')
+                   + f'{E(nm)}</p><ul class="pn-ls">{"".join(_line(l[1], l[2], l[3], l[5]) for l in x["lines"] if l[0] == k)}</ul></div>')
+    return f'<div class="pn-abs">{"".join(out)}</div>'
+def _main_role(c):
+    rs = [(r, e) for r, _, _ in ROLES for e in D[r] if e['c'] == c]
+    return max(rs, key=lambda x: x[1]['pick']) if rs else (None, None)
 def _roles(c, root, moves):   # where the champion stands now, every role it is listed in, most played first
     rs = sorted([(r, e) for r, _, _ in ROLES for e in D[r] if e['c'] == c], key=lambda x: -x[1]['pick'])
     if not rs: return '<p class="pn-nl">Not in the tier list: too few games in every role.</p>'
     ch = []
     for r, e in rs:
         mv = ''
-        if moves and e.get('tr') is not None:
+        if moves and e.get('tr') is not None and round(e['tr'], 1):
             weak = e.get('trz') is not None and abs(e['trz']) < 1.64
-            mv = f' <span class="pn-mv{" pn-weak" if weak else " pos" if e["tr"] > 0 else " neg"}"{" title=\"Could be chance\"" if weak else ""}>{"↑" if e["tr"] > 0 else "↓" if e["tr"] < 0 else "·"} {f1(e["tr"])}</span>'
-        ch.append(f'<a class="pn-r" href="{root}{r}/{slug(c)}/" style="--R:var(--R{r})"><span class="ri">{RICON[r]}</span>{RNAME[r]} '
-                  f'<span class="tg sm" style="background:var(--{e["t"]})">{e["t"]}</span> <b>{f1(e["score"])}</b>{mv}</a>')
+            mv = (f'<span class="pn-mv{" pn-weak" if weak else " pos" if e["tr"] > 0 else " neg"}" title="Change since {P["prev_patch"]}{", could be chance" if weak else ""}">'
+                  f'{"↑" if e["tr"] > 0 else "↓"}{f1(abs(e["tr"])).lstrip("+")}</span>')
+        off = e['pick'] < 1
+        ch.append(f'<a class="pn-r{" pn-off" if off else ""}" href="{root}{r}/{slug(c)}/" style="--R:var(--R{r})" title="{RNAME[r]}: {e["t"]} tier, score {f1(e["score"])}, {fx(e["pick"])}% pick">'
+                  f'<span class="ri">{RICON[r]}</span>{RNAME[r]} <span class="tg sm" style="background:var(--{e["t"]})">{e["t"]}</span> <b>{f1(e["score"])}</b>{mv}</a>')
     return f'<div class="pn-rs">{"".join(ch)}</div>'
+def _effect(c):   # what happened since last patch in the champion's most played role, Global Emerald+ (live patch only)
+    r, e = _main_role(c)
+    if not e or e.get('tr') is None or not e.get('st', {}).get('g'): return None
+    w1, p1 = e['st']['g'][3], e['st']['g'][1]; w0, p0 = e.get('wr0'), e.get('pk0')
+    clear = e.get('trz') is not None and abs(e['trz']) >= 1.64
+    bits = ([f'win rate {fx(w0)}% → {fx(w1)}%'] if w0 is not None else []) + ([f'pick rate {fx(p0)}% → {fx(p1)}%'] if p0 is not None else [])
+    v = (f'<span class="pn-vd {"pos" if e["tr"] > 0 else "neg"}">Clearly {"better" if e["tr"] > 0 else "worse"}.</span>' if clear else '<span class="pn-vd">Could be chance.</span>')
+    return f'{v} {RNAME[r]}, Global Emerald+: {E(", ".join(bits))}.'
 def _users(name):   # listed champions with the item in their OP.GG core build or boots, and as starting item: {champion: [roles]}, most played first
     core, start, pk = {}, {}, {}
     for r, _, _ in ROLES:
@@ -245,75 +305,106 @@ def _users(name):   # listed champions with the item in their OP.GG core build o
             if any(n == name for _, n in b.get('s0', [])): start.setdefault(e['c'], []).append(r)
     order = lambda m: dict(sorted(m.items(), key=lambda kv: -pk[kv[0]]))
     return order(core), order(start)
-def _names(M, n=6):
-    s = [f'{c} ({", ".join(RNAME[r] for r in rs)})' for c, rs in list(M.items())[:n]]
-    if len(M) > n: return ', '.join(s) + f' and {len(M) - n} more'
-    return ', '.join(s[:-1]) + (' and ' if len(s) > 1 else '') + s[-1]
+def _faces(M, root, label):   # who builds an item: names when there are a few, faces plus a count per role when there are many
+    if not M: return ''
+    many = len(M) > 6
+    fs = ''.join(f'<a class="pn-f{" pn-fo" if many else ""}" href="{root}{rs[0]}/{slug(c)}/" title="{E(c)}, {", ".join(RNAME[r] for r in rs)}" aria-label="{E(c)}">'
+                 f'<img class="pic" src="{root}img/champ/{slug(c)}.webp" alt="" width="26" height="26" loading="lazy">{"" if many else f"<span>{E(c)}</span>"}</a>' for c, rs in M.items())
+    from collections import Counter
+    rc = Counter(r for rs in M.values() for r in rs)
+    split = f' ({", ".join(f"{RNAME[r]} {k}" for r, k in rc.most_common())})' if many else ''
+    return f'<div class="pn-us"><p class="pn-ul">{label} for {_count(len(M), "listed champion", "listed champions")}{split}</p><div class="pn-fs">{fs}</div></div>'
 def _count(n, one, many): return f'{n} {one if n == 1 else many}'
+def _and(L): return ', '.join(L[:-1]) + (' and ' if len(L) > 1 else '') + (L[-1] if L else '')
 def tldr(p, n):
     out, live = [], n['status'] == 'live'
     ks = [x['kind'] for x in n['champs']]; adj = [x['c'] for x in n['champs'] if x['kind'] not in ('buff', 'nerf')]
-    parts = [_count(ks.count('buff'), 'buff', 'buffs'), _count(ks.count('nerf'), 'nerf', 'nerfs')] + ([f'{" and ".join(adj)} reworked'] if adj else [])
-    out.append(f'{_count(len(ks), "champion", "champions")} {"changed" if live else "planned"}: {", ".join(parts[:-1])} and {parts[-1]}.')
+    parts = [_count(ks.count('buff'), 'buff', 'buffs'), _count(ks.count('nerf'), 'nerf', 'nerfs')] + ([f'{_and(adj)} reworked'] if adj else [])
+    out.append(f'{_count(len(ks), "champion", "champions")} {"changed" if live else "planned"}: {_and(parts)}.')
     if live and p == PATCH:
         mv = []
         for x in n['champs']:
             es = [(r, e) for r, _, _ in ROLES for e in D[r] if e['c'] == x['c'] and e.get('tr') is not None and e.get('trz') is not None and abs(e['trz']) >= 1.64]
             if es:
-                r, e = max(es, key=lambda t: abs(t[1]['tr'])); mv.append((abs(e['tr']), f'{x["c"]} {RNAME[r]} {"↑" if e["tr"] > 0 else "↓"} {f1(e["tr"])}'))
-        out.append(f'Clear moves in our score since {P["prev_patch"]}: {", ".join(t for _, t in sorted(mv, reverse=True)[:4])}. Everything else moved too little to rule out chance.'
+                r, e = max(es, key=lambda t: abs(t[1]['tr'])); mv.append((abs(e['tr']), f'{x["c"]} ({RNAME[r]}) {"up" if e["tr"] > 0 else "down"} {f1(abs(e["tr"])).lstrip("+")}'))
+        out.append(f'Clear moves since {P["prev_patch"]}: {_and([t for _, t in sorted(mv, reverse=True)[:4]])}. The rest moved too little to rule out chance.'
                    if mv else 'None of the changed champions moved clearly in our numbers yet.')
     its = []
     for x in n.get('items', []):
         core, start = _users(x['c'])
         who = f'core for {_count(len(core), "listed champion", "listed champions")}' if core else f'starting item for {_count(len(start), "listed champion", "listed champions")}' if start else 'in no listed build'
         its.append(f'{x["c"]} {"buffed" if x["kind"] == "buff" else "nerfed" if x["kind"] == "nerf" else "adjusted"} ({who})')
-    if its: out.append('Items: ' + ', '.join(its) + '.')
+    if its: out.append('Items: ' + _and(its) + '.')
     for k, t in n.get('other', []): out.append(f'{k}: {t.split(". ")[0].rstrip(".")}.')
     if n.get('skins'): out.append(f'{_count(len(n["skins"]), "new skin", "new skins")}' + (f' and {_count(len(n.get("chromas", [])), "chroma", "chromas")}' if n.get('chromas') else '') + '.')
     if not live: out.append(f'This is the preview. Numbers can still change before the patch goes live on {n["live"]}.')
     return out
+PILL = {'buff': 'pos', 'nerf': 'neg'}
+GROUPS = [('buff', 'Buffs'), ('nerf', 'Nerfs'), ('adjust', 'Adjusted')]
+def _ipic(x, root):   # item icon, self-hosted from Data Dragon; the sword placeholder shows if it is missing
+    iid = ITEM_ID.get(x['c'])
+    return f'<span class="pw">{f"""<img class="pic" src="{root}img/item/{iid}.webp" alt="" width="40" height="40" loading="lazy" onerror="this.remove()">""" if iid else ""}</span>'
 def notes_body(p, root):
     n = NOTES[p]; live = n['status'] == 'live'; moves = live and p == PATCH
     order = sorted(NOTES, key=lambda q: [int(v) for v in q.split('.')], reverse=True)
     sw = ''.join(f'<a href="{root}patch/{q}/"{" aria-current=\"page\"" if q == p else ""}>{q}{" preview" if NOTES[q]["status"] != "live" else ""}</a>' for q in order)
-    head = (f'<header class="band hero-band pn-hero"><div class="wrap pn-w"><p class="meta"><span>Patch {p}</span><span>{"Live since" if live else "Preview, goes live"} {E(n["live"])}</span></p>'
-            f'<h1>Patch {p} {"notes" if live else "preview"}, short</h1><p class="lede">Summoner\'s Rift only: champions, items and anything else that touches ranked games. '
-            f'Exact numbers, what they mean, and where each champion stands in this tier list right now.</p><nav class="pn-sw" aria-label="Patches">{sw}</nav></div></header>')
-    tl = f'<section class="card pn-tl"><h2>Short version</h2><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n))}</ul></section>'
-    cards = []
-    for x in sorted(n['champs'], key=lambda x: ({'buff': 0, 'nerf': 1}.get(x['kind'], 2), x['c'])):
+    head = (f'<header class="band hero-band pn-hero"><div class="wrap"><p class="meta"><span>Patch {p}</span><span>{"Live since" if live else "Preview, goes live"} {E(n["live"])}</span></p>'
+            f'<h1>Patch {p} {"notes" if live else "preview"}</h1><p class="lede">Every Summoner\'s Rift change with the exact numbers, what they mean, '
+            f'and where each champion stands in this tier list right now.</p><nav class="pn-sw" aria-label="Patches">{sw}</nav></div></header>')
+    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh">Short version</h2><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n))}</ul>'
+          f'<p class="pn-mine" id="pnmine" hidden></p></section>')
+    groups = [(k, lab, [x for x in n['champs'] if (x['kind'] if x['kind'] in ('buff', 'nerf') else 'adjust') == k]) for k, lab in GROUPS]
+    groups = [(k, lab, sorted(xs, key=lambda x: x['c'])) for k, lab, xs in groups if xs]
+    # index: every change on the page, jump links (sticky on desktop)
+    def ix(x, item=False):
+        if item: return f'<li><a class="pn-ix" href="#i-{slug(x["c"])}">{_ipic(x, root)}<span class="pn-ixn">{E(x["c"])}</span></a></li>'
+        r, e = _main_role(x['c'])
+        tg = f'<span class="tg sm" style="background:var(--{e["t"]})" title="{RNAME[r]}, now">{e["t"]}</span>' if e else ''
+        return f'<li><a class="pn-ix" href="#{slug(x["c"])}" data-pc="{E(x["c"])}"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="26" height="26"><span class="pn-ixn">{E(x["c"])}</span>{tg}</a></li>'
+    idx = ''.join(f'<p class="pn-ih pn-{k}">{lab} <span>{len(xs)}</span></p><ul>{"".join(ix(x) for x in xs)}</ul>' for k, lab, xs in groups)
+    if n.get('items'): idx += f'<p class="pn-ih">Items <span>{len(n["items"])}</span></p><ul>{"".join(ix(x, True) for x in n["items"])}</ul>'
+    has_other = bool(n.get('other') or n.get('skins') or n.get('none'))
+    if has_other: idx += '<p class="pn-ih"><a href="#other">Everything else</a></p>'
+    nav = f'<nav class="pn-idx" aria-label="Changes in patch {p}">{idx}</nav>'
+    def facts(x, live_now):   # Riot's stated reason, what happened in our numbers, what the numbers mean
+        fs = []
+        if x.get('why'): fs.append(('Riot says', E(x['why'])))
+        if live_now and not x.get('item'):
+            ef = _effect(x['c'])
+            if ef: fs.append(('So far', ef))
         mn = meaning(x)
-        body = _lines(x['lines']) if x['lines'] else '<p class="pn-nl">Riot listed this change but the preview shows no numbers yet.</p>'
-        cards.append(f'<article class="card pn-c" id="{slug(x["c"])}"><div class="pn-h"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="40" height="40" loading="lazy" onerror="this.remove()">'
-                     f'<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>{_roles(x["c"], root, moves)}'
-                     + (f'<p class="pn-m">{E(mn)}</p>' if mn else '') + f'{body}</article>')
-    since = f', then the change since {P["prev_patch"]}' if moves else ''
-    leg = f'Tier and score now (Emerald+, all regions){since}. ' + ('A grey change is small enough to be chance. ' if moves else '') + 'Tap a role to open the champion.'
-    champs = f'<section class="pn-sec" id="champions"><h2>Champions <span class="pn-cnt">{len(n["champs"])}</span></h2><p class="cap">{E(leg)}</p><div class="pn-grid">{"".join(cards)}</div></section>'
+        if mn: fs.append(('Means', E(mn)))
+        return f'<dl class="pn-fx">{"".join(f"<dt>{lab}</dt><dd>{t}</dd>" for lab, t in fs)}</dl>' if fs else ''
+    def card(x):
+        body = _lines(x) if x['lines'] else '<p class="pn-nl">Riot listed this change, but the preview has no numbers for it yet.</p>'
+        return (f'<article class="card pn-c pn-{x["kind"]}" id="{slug(x["c"])}"><div class="pn-h"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="44" height="44" loading="lazy" onerror="this.remove()">'
+                f'<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>{_roles(x["c"], root, moves)}'
+                f'{facts(x, moves)}{body}</article>')
+    leg = 'Chips: tier and score per role right now (Emerald+, all regions). Score = win rate points above the role average, corrected for small samples.' + (f' Arrow = change since {P["prev_patch"]}, grey when it could be chance.' if moves else '')
+    champs = (f'<section class="pn-sec" id="champions"><h2>Champions</h2><p class="cap">{E(leg)}</p>'
+              + ''.join(f'<h3 class="pn-gh pn-{k}">{lab} <span>{len(xs)}</span></h3><div class="pn-grid{" pn-one" if len(xs) == 1 else ""}">{"".join(card(x) for x in xs)}</div>' for k, lab, xs in groups) + '</section>')
     items = ''
     if n.get('items'):
         ic = []
         for x in n['items']:
-            core, start = _users(x['c']); mn = meaning(x)
-            who = (f'<p class="pn-u">Core item for {E(_names(core))}.</p>' if core else '') + (f'<p class="pn-u">Starting item for {E(_names(start))}.</p>' if start else '')
-            if not who: who = '<p class="pn-u">Not in the core build of any listed champion.</p>'
-            ic.append(f'<article class="card pn-c" id="i-{slug(x["c"])}"><div class="pn-h"><span class="pw"></span><h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>'
-                      + who + (f'<p class="pn-m">{E(mn)}</p>' if mn else '') + _lines(x['lines']) + '</article>')
-        items = f'<section class="pn-sec" id="items"><h2>Items <span class="pn-cnt">{len(n["items"])}</span></h2><p class="cap">Builds from OP.GG, Global Emerald+.</p><div class="pn-grid">{"".join(ic)}</div></section>'
-    rest = ''.join(f'<div class="pn-o2"><h3>{E(k)}</h3><p>{E(t)}</p></div>' for k, t in n.get('other', []))
-    if n.get('none'): rest += f'<div class="pn-o2"><p class="pn-nl">{E(n["none"])}</p></div>'
+            core, start = _users(x['c'])
+            who = _faces(core, root, 'Core item') + _faces(start, root, 'Starting item') or '<p class="pn-nl">Not in the core build of any listed champion.</p>'
+            ic.append(f'<article class="card pn-c pn-{x["kind"]}" id="i-{slug(x["c"])}"><div class="pn-h">{_ipic(x, root)}<h3>{E(x["c"])}</h3><span class="pill {PILL.get(x["kind"], "pn-adj")}">{E(x["kind"])}</span></div>'
+                      + facts(dict(x, item=True), False) + _lines(x, item=True) + who + '</article>')
+        items = f'<section class="pn-sec" id="items"><h2>Items</h2><p class="cap">Who builds it: OP.GG core builds, boots and starting items, Global Emerald+.</p><div class="pn-grid">{"".join(ic)}</div></section>'
+    oc = [f'<article class="card pn-c"><h3>{E(k)}</h3><p>{E(t)}</p></article>' for k, t in n.get('other', [])]
     if n.get('skins'):
-        rest += f'<div class="pn-o2"><h3>New skins</h3><p>{E(", ".join(n["skins"]))}.</p>' + (f'<p class="pn-nl">Chromas: {E(", ".join(n["chromas"]))}.</p>' if n.get('chromas') else '') + '</div>'
-    other = f'<section class="pn-sec" id="other"><h2>Everything else</h2>{rest}</section>' if rest else ''
+        oc.append(f'<article class="card pn-c"><h3>New skins <span class="pn-cnt">{len(n["skins"])}</span></h3><ul class="pn-sk">{"".join(f"<li>{E(s)}</li>" for s in n["skins"])}</ul>'
+                  + (f'<p class="pn-nl">Chromas: {E(", ".join(n["chromas"]))}.</p>' if n.get('chromas') else '') + '</article>')
+    other = (f'<section class="pn-sec" id="other"><h2>Everything else</h2>' + (f'<p class="cap">{E(n["none"])}</p>' if n.get('none') else '')
+             + (f'<div class="pn-grid">{"".join(oc)}</div>' if oc else '') + '</section>') if has_other else ''
     src = (f'<p class="pn-src">Source: <a href="{E(n["url"])}" rel="noopener">{E(n["src"])}</a>. Written short in our own words, the numbers are copied as listed. '
            'ARAM, Arena, Classic and other modes are left out on purpose.</p>')
-    return head + f'<main class="band pn"><div class="wrap pn-w">{tl}{champs}{items}{other}{src}</div></main>'
+    return head + f'<main class="band pn"><div class="wrap">{tl}<div class="pn-lay">{nav}<div class="pn-body">{champs}{items}{other}{src}</div></div></div></main>'
 def notes_page(rel, p, root, url):
-    n = NOTES[p]; live = n['status'] == 'live'
-    nm = ', '.join(x['c'] for x in n['champs'][:4])
-    desc = f'Patch {p} {"notes" if live else "preview"} for Summoner\'s Rift: every champion and item change with exact numbers, what it means and where each champion stands now.'[:160]
-    page(rel, 'N', root, 'patch', 'top', f'Patch {p} {"notes" if live else "preview"}, short with numbers | LoL Tier List', f'LoL patch {p} {"notes" if live else "preview"}: {nm} and more',
+    n = NOTES[p]; live = n['status'] == 'live'; kind = 'notes' if live else 'preview'
+    desc = f'Patch {p} {kind} for Summoner\'s Rift: every champion and item change with exact numbers, what it means and where each champion stands now.'[:160]
+    page(rel, 'N', root, 'patch', 'top', f'Patch {p} {kind}: every change with numbers | LoL Tier List', f'LoL patch {p} {kind}: {_and([x["c"] for x in n["champs"][:3]])} and more',
          desc, url, SITE + 'og.png', head=notes_body(p, root))
 LIVE_NOTES = sorted([q for q in NOTES if NOTES[q]['status'] == 'live'], key=lambda q: [int(v) for v in q.split('.')])
 for q in NOTES: notes_page(f'patch/{q}/index.html', q, '../../', SITE + f'patch/{q}/')

@@ -22,10 +22,14 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   site fetches `data/<patch>.json` when you switch roles or search, and quietly after the first render.
 - Patch notes pages: `/patch/<patch>/` for every patch in `patch.json` `notes`, `/patch/` = the newest live one. Built by
   build.py (`notes_body`): a short version made from the data (counts, clear score moves since last patch, items with how
-  many listed champions build them), champions with exact numbers, where each stands now (tier chips per role, plus the
-  change since last patch with chance in grey), items with their OP.GG core and starter users, everything else, skins.
-  The "what it means" line comes from fixed rules in `meaning()` (which ranks change, only scaling, % health, base stats
-  per level) or a hand-written `m` that only says what the numbers show. No guessing about how a change plays out.
+  many listed champions build them, starred champions via JS), a sticky index (buffs / nerfs / adjusted / items), then per
+  champion: tier chips per role now (plus the change since last patch, grey = could be chance), "Riot says" (`why`: Riot's
+  stated reason, short and in our own words), "So far" (live patch only: most played role, Global Emerald+ win and pick
+  rate last patch → now from `wr0`/`pk0`, verdict from `trz`), "Means" (fixed rules in `meaning()`: which ranks change,
+  only scaling, % health, base stats per level; or a hand-written `m` that only says what the numbers show), then the
+  numbers grouped by ability (`ab` = ability names) with only the changed numbers marked (`_diff`, rank by rank).
+  Items show who builds them (OP.GG core/boots/starter) and an icon from `public/img/item/<id>.webp` (icons workflow).
+  No guessing about how a change plays out.
   Linked from the nav ("Patch notes"), the footer, the homepage data line, the next-patch card and every panel
   line about a change ("All numbers" → `/patch/<p>/#<champion>` or `#i-<item>`). CSS classes all start with `pn-`.
 - `pipeline/privacy.html` : the privacy page (English + German), built to `public/privacy/`. Contact is Discord
@@ -64,7 +68,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   section (separate mode with old kits, e.g. 2011 Volibear) and ARAM changes. Those do not count (26.22 had 15 of them
   wrongly listed until 14 Nov).
   `notes` = {patch: {status live|preview, live (date), url, src, champs, items, other, none, skins, chromas}}. Each champion
-  or item: {c, kind, short, (slot for items), (m), lines: [[key, stat, old, new, tag, dir]]}. key Q/W/E/R/P/Base or "" for
+  or item: {c, kind, short, (slot for items), (ab), (why), (m), lines: [[key, stat, old, new, tag, dir]]}. key Q/W/E/R/P/Base or "" for
   items; tag base (values per rank or low - high), cd, cost, ratio (scaling only), pct (% of target health), stats (base
   stats like "590 + 107/level"), mech (anything else, no rule applies); dir + better for the champion, - worse, ~ neither.
   Numbers copied exactly, text in our own short words. `changes` and `item_changes` must list the same names, kinds and

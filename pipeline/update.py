@@ -210,6 +210,7 @@ for role in ROLES:
         own = {name for key in ['c0', 'c1', 'b0'] for _, name in bd.get(key, [])}
         e['it'] = [[name, kind, text] for name, (kind, text, slot) in P.get('item_changes', {}).items() if slot != 'starter' and name in own] or None
         e['pk0'] = None if val('prev', c, 'pick') is None else round(val('prev', c, 'pick'), 2)
+        e['wr0'] = None if val('prev', c, 'win') is None else round(val('prev', c, 'win'), 2)   # last patch's win rate, Global Emerald+ (patch notes page)
         rg, rp = val('g', c, 'raw'), val('prev', c, 'raw')
         e['trz'] = None if rg is None or rp is None else round((rg - rp) / math.sqrt(2500 / val('g', c, 'n') + 2500 / val('prev', c, 'n')), 1)
         if pv is not None and c not in P['changed_this_patch']:
