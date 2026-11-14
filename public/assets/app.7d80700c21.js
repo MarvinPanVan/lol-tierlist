@@ -11,7 +11,7 @@ const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['sup
 const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only']];
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
-const META=CUR._meta;let ARCH=null;
+const META=CUR._meta;let ARCH=null;const DOC=PAGE==="method"||PAGE==="patch";
 // pages carry one role; the rest of the patch loads on demand (and quietly after the first render)
 let FULLP=null;
 function ensureFull(){if(!CUR._meta.part)return Promise.resolve();return FULLP||(FULLP=fetch(SITE+'data/'+META.patch+'.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(j=>{for(const [r] of ROLES)if(!CUR[r])CUR[r]=j[r];CUR._meta.part=false;}).catch(()=>{FULLP=null;}));}
@@ -163,7 +163,7 @@ function renderPanel(){if(!DATA[role])return;
   <div class="kv"><div class="km" data-tip="Win rate points above the role average in ${VNM()}, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>${VNM()}</u></span><strong>${tt(vx.t)}${fmt(vx.s)}<small> ±${vx.se==null?'?':vx.se.toFixed(1)}</small></strong>${rngHTML(d)}</div><div><span>Win</span><strong>${sx.wr==null?'–':sx.wr.toFixed(1)+'%'}</strong></div><div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap">Every rank and region. Tap one to show that list.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
-  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.</p>`:''}
+  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.${nlink(META.next.patch,d.c)}</p>`:''}
   ${ctrHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+:</span>${sites}</div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
@@ -200,6 +200,8 @@ function rngHTML(d){const x=vw(d);if(!x||!'SABCD'.includes(x.t)||x.se==null)retu
 const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};
+// links to the patch notes page when it has the champion or item
+const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/#${item?'i-':''}${slug(c)}">All numbers</a>`:'';
 const chLine=d=>d.ch?`${CHW[d.ch[0]]||'Changed'}: ${d.ch[1]}`:'';
 const ITW={buff:'buffed',nerf:'nerfed'};
 const itLine=d=>d.it?`Core item ${ITW[d.it[0][1]]||'changed'}: ${d.it.map(x=>x[0]).join(', ')}`:'';
@@ -253,11 +255,11 @@ function renderSide(){if(!DATA[role])return;
   const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
   const NXL=ALL?6:99;
   $('next').innerHTML=nx.map(([r,c,t,kd],i)=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
-    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
+    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${(META.nitems||[]).includes(names[0])?'':pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${ALL&&one?RNm[r]+': ':''}${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
     return `<li${i>=NXL?' class="xtra"':''}>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   const nb=$('nxmore');nb.dataset.n=nx.length;nb.hidden=nx.length<=NXL;nb.textContent=$('next').classList.contains('all')?'Show fewer':`Show all ${nx.length}`;
-  $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
+  $('nextcap').innerHTML=`Patch ${META.next.patch} on ${META.next.date}, from the ${(META.notes||{})[META.next.patch]?`<a href="${SITE}patch/${META.next.patch}/">patch preview</a>`:'patch preview'}.`;
   $('nextc').hidden=!!ARCH||!nx.length;
 }
 // chart layout: pick rate (x, log) against score (y) for the chosen rank and region
@@ -318,7 +320,7 @@ function search(){
   renderBoard();
 }
 document.addEventListener('click',e=>{
-  if(PAGE==='method')return;
+  if(DOC)return;
   const t=e.target;
   const st=t.closest('[data-star]');if(st){toggleMine(st.dataset.star);return;}
   const sh=t.closest('[data-share]');if(sh){share(sh.dataset.share);return;}
@@ -341,8 +343,8 @@ document.addEventListener('click',e=>{
   if(!t.closest('.search'))$('res').style.display='none';
   if(!t.closest('#bar'))toggleGuide(false);
 });
-document.addEventListener('keydown',e=>{if(PAGE==='method')return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';toggleGuide(false);}});
-if(PAGE!=='method'){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));
+document.addEventListener('keydown',e=>{if(DOC)return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';toggleGuide(false);}});
+if(!DOC){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));
 $('q').addEventListener('input',search);
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('res').querySelector('[data-jr]');if(b)b.click();}});}
 async function loadPatches(){try{const r=await fetch(SITE+'data/patches.json',{cache:'no-cache'});const j=await r.json();
@@ -377,7 +379,7 @@ function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
-if(PAGE==='method'){
+if(PAGE==='patch'){}else if(PAGE==='method'){
 $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
 {const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). Pulling toward zero made last patch a better guess (error ${b.mse_shrunk} vs ${b.mse_raw}).`;}
 renderGrade();

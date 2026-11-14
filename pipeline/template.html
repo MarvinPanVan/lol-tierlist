@@ -592,11 +592,58 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .chip:not(.big) .nm .flag{font-size:9.5px;padding:1px 4px;margin:0}}
 @media(max-width:380px){.chip:not(.big) .nm{font-size:12.5px;letter-spacing:-.015em}.chip:not(.big) .sc{font-size:11px}.chip:not(.big){column-gap:6px;padding-right:6px}.chip:not(.big) .pic{width:24px;height:24px}.row{grid-template-columns:34px minmax(0,1fr)}.lab{font-size:25px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+/* patch notes pages (/patch/<patch>/), all classes start with pn- */
+.pn-w{max-width:1120px}
+.pn-sw{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pn-sw a{font:600 13px/1 Inter,sans-serif;padding:9px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--card)}
+.pn-sw a:hover{border-color:var(--faint)}
+.pn-sw a[aria-current]{background:var(--acc);border-color:var(--acc);color:#14151a}
+.pn{padding-top:8px}
+.pn-tl{padding:20px 22px;margin-bottom:36px}
+.pn-tl h2{font-size:20px;margin-bottom:10px}
+.pn-tl ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:75ch}
+.pn-sec{margin-bottom:40px}
+.pn-sec>h2{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.pn-cnt{font:700 14px Inter,sans-serif;color:var(--mut);letter-spacing:0}
+.pn-sec>.cap{margin:0 0 16px;color:var(--mut);font-size:13.5px;max-width:75ch}
+.pn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:14px;align-items:start}
+.pn-c{padding:16px 16px 14px;min-width:0;scroll-margin-top:16px}
+.pn-c:target{outline:2px solid var(--acc);outline-offset:2px}
+.pn-h{display:flex;align-items:center;gap:12px}
+.pn-h .pic,.pn-h .pw{width:40px;height:40px;border-radius:11px}
+.pn-h h3{font:800 18px/1.2 Inter,sans-serif;letter-spacing:-.015em;margin:0;flex:1;min-width:0}
+.pill.pn-adj{background:var(--surf2);color:var(--mut)}
+.pn-rs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.pn-r{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--surf);color:var(--ink);text-decoration:none;font:600 12.5px/1 Inter,sans-serif;font-variant-numeric:tabular-nums}
+.pn-r:hover{background:var(--surf2)}
+.pn-r .ri{width:24px;height:24px;border-radius:7px}.pn-r .ri svg{width:14px;height:14px}
+.pn-mv{font-weight:700}.pn-mv.pos{color:var(--pos)}.pn-mv.neg{color:var(--neg)}.pn-mv.pn-weak{color:var(--faint)}
+.pn-m{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:var(--surf);font-size:14px;line-height:1.5}
+.pn-u,.pn-nl{margin:10px 0 0;font-size:13.5px;color:var(--mut)}
+.pn-ls{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.pn-l{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start}
+.pn-l:not(:has(.pn-k)){grid-template-columns:minmax(0,1fr)}
+.pn-k{display:inline-grid;place-items:center;min-width:30px;height:24px;padding:0 6px;border-radius:7px;background:var(--surf2);font:700 12px/1 Inter,sans-serif;color:var(--ink)}
+.pn-l>div b{display:block;font:600 13px/1.3 Inter,sans-serif;color:var(--mut)}
+.pn-l>div p{margin:2px 0 0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.pn-o{color:var(--mut)}.pn-ar{color:var(--faint);margin:0 2px}.pn-n{font-weight:600}
+.pn-up .pn-n{color:var(--pos)}.pn-dn .pn-n{color:var(--neg)}
+.pn-more{margin-top:10px}
+.pn-more summary{cursor:pointer;font:600 13px Inter,sans-serif;color:var(--acc);list-style:none;width:max-content}
+.pn-more summary::-webkit-details-marker{display:none}
+.pn-o2{margin:0 0 16px;max-width:75ch}
+.pn-o2 h3{font:700 15px Inter,sans-serif;margin:0 0 4px}
+.pn-o2 p{margin:0}
+.pn-src{font-size:13px;color:var(--mut);max-width:75ch;margin-top:8px}
+.pn-src a,.nxa{color:var(--acc);font-weight:600}
+.nxa{white-space:nowrap;text-decoration:none}.nxa:hover{text-decoration:underline}
+.dl a,.ich .cap a{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px}.dl a:hover,.ich .cap a:hover{color:var(--acc)}
+@media(max-width:640px){.pn-c{padding:14px 12px 12px}.pn-tl{padding:16px}.pn-sw{margin-top:4px}}
 </style>
 </head>
 <body>
 <div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><span class="pill">Patch 26.22</span>
-<!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav><!--/M--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
+<!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#grades-sec">Site grades</a><a class="opt" href="#method-sec">Method</a><a href="#sites-sec">Sources</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a class="opt" href="#champions">Champions</a><a class="opt" href="#items">Items</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
 <!--B-->__HEAD__
 
 <nav class="bar" id="bar" aria-label="Tier list controls">
@@ -702,7 +749,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 </ul>
 </div>
 </section>
-<!--/M--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
+<!--/M--><!--N-->__HEAD__<!--/N--><footer class="site-foot"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#ff4fbf"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#f3f3f5"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#ff6b6b"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#f3f3f5" opacity=".8"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#ff9f43"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#f3f3f5" opacity=".6"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#ffd23f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#f3f3f5" opacity=".4"/></svg>LoL Tier List</a><div><p>Patch 26.22, data read on 14 Nov 2026. Rebuilt every patch. <a href="__ROOT__method/">How it works</a> · <a href="__ROOT__patch/">Patch notes</a> · <a href="__ROOT__privacy/">Privacy</a></p><p>LoL Tier List was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p></div></div></footer>
 
 <script>window.TL={DATA:__DATA__,ROOT:'__ROOT__',PAGE:'__PAGE__',ROLE:'__ROLE__',CHAMP:__CHAMP__};</script>
 <script>
@@ -719,7 +766,7 @@ const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['sup
 const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only']];
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
-const META=CUR._meta;let ARCH=null;
+const META=CUR._meta;let ARCH=null;const DOC=PAGE==="method"||PAGE==="patch";
 // pages carry one role; the rest of the patch loads on demand (and quietly after the first render)
 let FULLP=null;
 function ensureFull(){if(!CUR._meta.part)return Promise.resolve();return FULLP||(FULLP=fetch(SITE+'data/'+META.patch+'.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(j=>{for(const [r] of ROLES)if(!CUR[r])CUR[r]=j[r];CUR._meta.part=false;}).catch(()=>{FULLP=null;}));}
@@ -871,7 +918,7 @@ function renderPanel(){if(!DATA[role])return;
   <div class="kv"><div class="km" data-tip="Win rate points above the role average in ${VNM()}, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>${VNM()}</u></span><strong>${tt(vx.t)}${fmt(vx.s)}<small> ±${vx.se==null?'?':vx.se.toFixed(1)}</small></strong>${rngHTML(d)}</div><div><span>Win</span><strong>${sx.wr==null?'–':sx.wr.toFixed(1)+'%'}</strong></div><div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap">Every rank and region. Tap one to show that list.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
-  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.</p>`:''}
+  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.${nlink(META.next.patch,d.c)}</p>`:''}
   ${ctrHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+:</span>${sites}</div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
@@ -908,6 +955,8 @@ function rngHTML(d){const x=vw(d);if(!x||!'SABCD'.includes(x.t)||x.se==null)retu
 const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};
+// links to the patch notes page when it has the champion or item
+const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/#${item?'i-':''}${slug(c)}">All numbers</a>`:'';
 const chLine=d=>d.ch?`${CHW[d.ch[0]]||'Changed'}: ${d.ch[1]}`:'';
 const ITW={buff:'buffed',nerf:'nerfed'};
 const itLine=d=>d.it?`Core item ${ITW[d.it[0][1]]||'changed'}: ${d.it.map(x=>x[0]).join(', ')}`:'';
@@ -961,11 +1010,11 @@ function renderSide(){if(!DATA[role])return;
   const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
   const NXL=ALL?6:99;
   $('next').innerHTML=nx.map(([r,c,t,kd],i)=>{const names=c.split(',').map(x=>x.trim()),one=names.length===1&&(DATA[r]||[]).some(d=>d.c===names[0]);
-    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
+    const icon=names.length>1?`<span class="pstack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${(META.nitems||[]).includes(names[0])?'':pic(names[0])}</span>`;
     const inner=`${icon}<span class="in"><b>${c}</b><small>${ALL&&one?RNm[r]+': ':''}${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
     return `<li${i>=NXL?' class="xtra"':''}>${one?`<button type="button" class="irow" ${ALL?`data-jr="${r}" data-jc="${names[0]}"`:`data-c="${names[0]}"`}>${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   const nb=$('nxmore');nb.dataset.n=nx.length;nb.hidden=nx.length<=NXL;nb.textContent=$('next').classList.contains('all')?'Show fewer':`Show all ${nx.length}`;
-  $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
+  $('nextcap').innerHTML=`Patch ${META.next.patch} on ${META.next.date}, from the ${(META.notes||{})[META.next.patch]?`<a href="${SITE}patch/${META.next.patch}/">patch preview</a>`:'patch preview'}.`;
   $('nextc').hidden=!!ARCH||!nx.length;
 }
 // chart layout: pick rate (x, log) against score (y) for the chosen rank and region
@@ -1026,7 +1075,7 @@ function search(){
   renderBoard();
 }
 document.addEventListener('click',e=>{
-  if(PAGE==='method')return;
+  if(DOC)return;
   const t=e.target;
   const st=t.closest('[data-star]');if(st){toggleMine(st.dataset.star);return;}
   const sh=t.closest('[data-share]');if(sh){share(sh.dataset.share);return;}
@@ -1049,8 +1098,8 @@ document.addEventListener('click',e=>{
   if(!t.closest('.search'))$('res').style.display='none';
   if(!t.closest('#bar'))toggleGuide(false);
 });
-document.addEventListener('keydown',e=>{if(PAGE==='method')return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';toggleGuide(false);}});
-if(PAGE!=='method'){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));
+document.addEventListener('keydown',e=>{if(DOC)return;if(e.key==='/'&&document.activeElement!==$('q')&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('q').focus();return;}if(e.key==='Escape'){openPanel(false);$('res').style.display='none';toggleGuide(false);}});
+if(!DOC){$('patchsel').addEventListener('change',e=>setPatch(e.target.value));
 $('q').addEventListener('input',search);
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('res').querySelector('[data-jr]');if(b)b.click();}});}
 async function loadPatches(){try{const r=await fetch(SITE+'data/patches.json',{cache:'no-cache'});const j=await r.json();
@@ -1085,7 +1134,7 @@ function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h
 addEventListener('popstate',fromURL);
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
-if(PAGE==='method'){
+if(PAGE==='patch'){}else if(PAGE==='method'){
 $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
 {const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). Pulling toward zero made last patch a better guess (error ${b.mse_shrunk} vs ${b.mse_raw}).`;}
 renderGrade();

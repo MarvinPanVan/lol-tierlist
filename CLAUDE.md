@@ -16,10 +16,18 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `pipeline/build.py` : `python3 pipeline/build.py` builds every page from template + tiers.json: `public/index.html`,
   one page per role (`public/<role>/index.html`, own title, description and link preview), `public/method/` (site
   grades, method, sources), `404.html`, `robots.txt`, `sitemap.xml`, and the patch archive in `public/data/`.
-  Template blocks: `<!--B-->` only on tier list pages, `<!--M-->` only on the method page. Placeholders `__ROOT__`,
+  Template blocks: `<!--B-->` only on tier list pages, `<!--M-->` only on the method page, `<!--N-->` only on patch notes pages. Placeholders `__ROOT__`,
   `__PAGE__`, `__ROLE__`, `__TITLE__`, `__DESC__`, `__URL__`, `__OGIMG__`, `__PATCH__` are filled per page.
 - Each page embeds only its own role plus a slim `_meta` (with `best` per role and `hist` = number of patches); the
   site fetches `data/<patch>.json` when you switch roles or search, and quietly after the first render.
+- Patch notes pages: `/patch/<patch>/` for every patch in `patch.json` `notes`, `/patch/` = the newest live one. Built by
+  build.py (`notes_body`): a short version made from the data (counts, clear score moves since last patch, items with how
+  many listed champions build them), champions with exact numbers, where each stands now (tier chips per role, plus the
+  change since last patch with chance in grey), items with their OP.GG core and starter users, everything else, skins.
+  The "what it means" line comes from fixed rules in `meaning()` (which ranks change, only scaling, % health, base stats
+  per level) or a hand-written `m` that only says what the numbers show. No guessing about how a change plays out.
+  Linked from the nav ("Patch notes"), the footer, the homepage data line, the next-patch card and every panel
+  line about a change ("All numbers" → `/patch/<p>/#<champion>` or `#i-<item>`). CSS classes all start with `pn-`.
 - `pipeline/privacy.html` : the privacy page (English + German), built to `public/privacy/`. Contact is Discord
   `marvinpanvan` only (Marvin's choice, no real name, no Impressum). If the site starts using anything new that
   touches visitors (another service, cookies, embeds), update this page.
@@ -55,6 +63,13 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   (no last-patch prior, excluded from the backtest). Summoner's Rift section only: the notes also have a "Classic"
   section (separate mode with old kits, e.g. 2011 Volibear) and ARAM changes. Those do not count (26.22 had 15 of them
   wrongly listed until 14 Nov).
+  `notes` = {patch: {status live|preview, live (date), url, src, champs, items, other, none, skins, chromas}}. Each champion
+  or item: {c, kind, short, (slot for items), (m), lines: [[key, stat, old, new, tag, dir]]}. key Q/W/E/R/P/Base or "" for
+  items; tag base (values per rank or low - high), cd, cost, ratio (scaling only), pct (% of target health), stats (base
+  stats like "590 + 107/level"), mech (anything else, no rule applies); dir + better for the champion, - worse, ~ neither.
+  Numbers copied exactly, text in our own short words. `changes` and `item_changes` must list the same names, kinds and
+  short lines as `notes[patch]` (build.py stops with an error if not). Only Summoner's Rift, the client, ranked, map and
+  new skins; never ARAM, Arena, Classic or other modes.
 - `pipeline/data/samples.json` : OP.GG "Total analyzed samples" per dataset. It counts 10 per match, so
   games for a champion = pick% / 100 x samples / 10 (checked against U.GG game counts, they match).
 - `pipeline/data/prev/` : last patch's OP.GG Global Emerald+ files, for the trend arrows and the backtest.
@@ -62,6 +77,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 ## Update procedure (each patch, every two weeks)
 
 1. Find the patch number and the date of the next patch (official patch notes). Note big buffs/nerfs.
+   Write the patch into `patch.json` `notes` with every number (status live), and the next patch from Riot Phroxzon's
+   preview (status preview, numbers as far as the preview has them; strafe.com lists them as text). The old preview
+   entry is replaced by the official notes once the patch is live.
 2. Collect data for the new patch, ranked solo/duo. Save raw files in the same formats as now:
    - OP.GG champion stats, Emerald+: Global, EUW, KR, NA; plus Global Master+ and Global Diamond+.
      Always add `&patch=16.xx` (OP.GG's internal number, 16.22 = 26.22) or it serves an old patch.

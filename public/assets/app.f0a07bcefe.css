@@ -565,3 +565,50 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .chip:not(.big) .nm .flag{font-size:9.5px;padding:1px 4px;margin:0}}
 @media(max-width:380px){.chip:not(.big) .nm{font-size:12.5px;letter-spacing:-.015em}.chip:not(.big) .sc{font-size:11px}.chip:not(.big){column-gap:6px;padding-right:6px}.chip:not(.big) .pic{width:24px;height:24px}.row{grid-template-columns:34px minmax(0,1fr)}.lab{font-size:25px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+/* patch notes pages (/patch/<patch>/), all classes start with pn- */
+.pn-w{max-width:1120px}
+.pn-sw{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pn-sw a{font:600 13px/1 Inter,sans-serif;padding:9px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--card)}
+.pn-sw a:hover{border-color:var(--faint)}
+.pn-sw a[aria-current]{background:var(--acc);border-color:var(--acc);color:#14151a}
+.pn{padding-top:8px}
+.pn-tl{padding:20px 22px;margin-bottom:36px}
+.pn-tl h2{font-size:20px;margin-bottom:10px}
+.pn-tl ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:75ch}
+.pn-sec{margin-bottom:40px}
+.pn-sec>h2{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.pn-cnt{font:700 14px Inter,sans-serif;color:var(--mut);letter-spacing:0}
+.pn-sec>.cap{margin:0 0 16px;color:var(--mut);font-size:13.5px;max-width:75ch}
+.pn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:14px;align-items:start}
+.pn-c{padding:16px 16px 14px;min-width:0;scroll-margin-top:16px}
+.pn-c:target{outline:2px solid var(--acc);outline-offset:2px}
+.pn-h{display:flex;align-items:center;gap:12px}
+.pn-h .pic,.pn-h .pw{width:40px;height:40px;border-radius:11px}
+.pn-h h3{font:800 18px/1.2 Inter,sans-serif;letter-spacing:-.015em;margin:0;flex:1;min-width:0}
+.pill.pn-adj{background:var(--surf2);color:var(--mut)}
+.pn-rs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.pn-r{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--surf);color:var(--ink);text-decoration:none;font:600 12.5px/1 Inter,sans-serif;font-variant-numeric:tabular-nums}
+.pn-r:hover{background:var(--surf2)}
+.pn-r .ri{width:24px;height:24px;border-radius:7px}.pn-r .ri svg{width:14px;height:14px}
+.pn-mv{font-weight:700}.pn-mv.pos{color:var(--pos)}.pn-mv.neg{color:var(--neg)}.pn-mv.pn-weak{color:var(--faint)}
+.pn-m{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:var(--surf);font-size:14px;line-height:1.5}
+.pn-u,.pn-nl{margin:10px 0 0;font-size:13.5px;color:var(--mut)}
+.pn-ls{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.pn-l{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start}
+.pn-l:not(:has(.pn-k)){grid-template-columns:minmax(0,1fr)}
+.pn-k{display:inline-grid;place-items:center;min-width:30px;height:24px;padding:0 6px;border-radius:7px;background:var(--surf2);font:700 12px/1 Inter,sans-serif;color:var(--ink)}
+.pn-l>div b{display:block;font:600 13px/1.3 Inter,sans-serif;color:var(--mut)}
+.pn-l>div p{margin:2px 0 0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.pn-o{color:var(--mut)}.pn-ar{color:var(--faint);margin:0 2px}.pn-n{font-weight:600}
+.pn-up .pn-n{color:var(--pos)}.pn-dn .pn-n{color:var(--neg)}
+.pn-more{margin-top:10px}
+.pn-more summary{cursor:pointer;font:600 13px Inter,sans-serif;color:var(--acc);list-style:none;width:max-content}
+.pn-more summary::-webkit-details-marker{display:none}
+.pn-o2{margin:0 0 16px;max-width:75ch}
+.pn-o2 h3{font:700 15px Inter,sans-serif;margin:0 0 4px}
+.pn-o2 p{margin:0}
+.pn-src{font-size:13px;color:var(--mut);max-width:75ch;margin-top:8px}
+.pn-src a,.nxa{color:var(--acc);font-weight:600}
+.nxa{white-space:nowrap;text-decoration:none}.nxa:hover{text-decoration:underline}
+.dl a,.ich .cap a{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px}.dl a:hover,.ich .cap a:hover{color:var(--acc)}
+@media(max-width:640px){.pn-c{padding:14px 12px 12px}.pn-tl{padding:16px}.pn-sw{margin-top:4px}}

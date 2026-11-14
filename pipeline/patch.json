@@ -195,5 +195,856 @@
    "40 attack damage instead of 30, but Retribution gives up to 10% instead of 12%",
    "core"
   ]
+ },
+ "notes": {
+  "26.22": {
+   "status": "live",
+   "live": "4 Nov 2026",
+   "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+   "src": "Riot's patch 26.22 notes",
+   "champs": [
+    {
+     "c": "Aurelion Sol",
+     "kind": "buff",
+     "short": "E damage up",
+     "lines": [
+      [
+       "E",
+       "Total magic damage",
+       "50 / 75 / 100 / 125 / 150 (+60% AP) over 5s",
+       "50 / 80 / 110 / 140 / 170 (+60 / 65 / 70 / 75 / 80% AP) over 5s",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Corki",
+     "kind": "buff",
+     "short": "R damage up",
+     "lines": [
+      [
+       "R",
+       "Damage",
+       "90 / 170 / 250 (+85% bonus AD)",
+       "100 / 190 / 280 (+90% bonus AD)",
+       "base",
+       "+"
+      ],
+      [
+       "R",
+       "Big One damage",
+       "180 / 340 / 500 (+170% bonus AD)",
+       "200 / 380 / 560 (+180% bonus AD)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Kayle",
+     "kind": "buff",
+     "short": "Q and R cooldowns down",
+     "lines": [
+      [
+       "Q",
+       "Cooldown",
+       "12 / 11 / 10 / 9 / 8s",
+       "10 / 9.5 / 9 / 8.5 / 8s",
+       "cd",
+       "+"
+      ],
+      [
+       "R",
+       "Cooldown",
+       "160 / 120 / 80s",
+       "140 / 110 / 80s",
+       "cd",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Locke",
+     "kind": "nerf",
+     "short": "Q damage down, shorter W",
+     "lines": [
+      [
+       "Q",
+       "Bonus damage per stack",
+       "18 / 26 / 34 / 42 / 50",
+       "15 / 22 / 29 / 36 / 43",
+       "base",
+       "-"
+      ],
+      [
+       "Q",
+       "Damage at max stacks",
+       "75.6 / 109.2 / 142.8 / 176.4 / 210",
+       "63 / 92.4 / 121.8 / 151.2 / 180.6",
+       "base",
+       "-"
+      ],
+      [
+       "W",
+       "Duration",
+       "6s",
+       "5s",
+       "mech",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Maokai",
+     "kind": "buff",
+     "short": "Q damage up",
+     "lines": [
+      [
+       "Q",
+       "Damage",
+       "75 / 120 / 165 / 210 / 255 (+2 / 2.5 / 3 / 3.5 / 4% of target max health) (+50% AP)",
+       "75 / 120 / 165 / 210 / 255 (+2.5 / 3 / 3.5 / 4 / 4.5% of target max health) (+50% AP)",
+       "pct",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Mel",
+     "kind": "adjust",
+     "short": "rework of W, Q and E",
+     "m": "Bigger update: W works differently now (a nova that destroys projectiles, shields her and speeds her up). Less health at level 1 but more from level 8, more mana from level 4, shorter R cooldown at ranks 2 and 3.",
+     "lines": [
+      [
+       "Base",
+       "Health",
+       "640 + 99/level",
+       "590 + 107/level",
+       "stats",
+       "~"
+      ],
+      [
+       "Base",
+       "Mana",
+       "480 + 28/level",
+       "455 + 38/level",
+       "stats",
+       "~"
+      ],
+      [
+       "Base",
+       "Armor growth",
+       "5.2/level",
+       "5.4/level",
+       "stats",
+       "+"
+      ],
+      [
+       "Base",
+       "Attack damage",
+       "54 + 3.3/level",
+       "52 + 3.3/level",
+       "stats",
+       "-"
+      ],
+      [
+       "Base",
+       "Attack speed growth",
+       "2.5%/level",
+       "2.75%/level",
+       "stats",
+       "+"
+      ],
+      [
+       "P",
+       "Bonus damage per bolt",
+       "8 - 30 (+4% AP)",
+       "4 - 30 (+4% AP)",
+       "base",
+       "-"
+      ],
+      [
+       "P",
+       "First stack damage to minions",
+       "50% less",
+       "45% less",
+       "mech",
+       "+"
+      ],
+      [
+       "Q",
+       "First hit damage",
+       "60 / 85 / 110 / 135 / 160 (+55% AP)",
+       "60 (+25% AP)",
+       "base",
+       "-"
+      ],
+      [
+       "Q",
+       "Damage per extra bolt",
+       "5 / 7 / 9 / 11 / 13 (+5% AP)",
+       "5 / 10 / 15 / 20 / 25 (+8% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "Q",
+       "Total damage",
+       "85 - 277 (+80 - 100% AP)",
+       "85 - 285 (+65 - 97% AP)",
+       "base",
+       "~"
+      ],
+      [
+       "Q",
+       "New",
+       "",
+       "0.5 to 1s cooldown refund (by level) when it hits a champion",
+       "mech",
+       "+"
+      ],
+      [
+       "Q",
+       "Mana cost",
+       "70 / 75 / 80 / 85 / 90",
+       "60 / 65 / 70 / 75 / 80",
+       "cost",
+       "+"
+      ],
+      [
+       "Q",
+       "Missile speed",
+       "3800",
+       "3200",
+       "mech",
+       "-"
+      ],
+      [
+       "W",
+       "Reworked",
+       "",
+       "Expanding nova (400 radius over 0.75s) that destroys enemy projectiles and shields and hits back for each projectile it destroys",
+       "mech",
+       "~"
+      ],
+      [
+       "W",
+       "Hit-back damage",
+       "",
+       "35 / 40 / 45 / 50 / 55 (+10% AP), then 5 / 10 / 15 / 20 / 25 (+5% AP) per later hit, up to 7 per enemy",
+       "mech",
+       "~"
+      ],
+      [
+       "W",
+       "Shield",
+       "",
+       "80 / 110 / 140 / 170 / 200 (+70% AP) for 2s",
+       "mech",
+       "~"
+      ],
+      [
+       "W",
+       "Move speed",
+       "",
+       "10 to 30% (by level) for 2s",
+       "mech",
+       "~"
+      ],
+      [
+       "W",
+       "Mana cost",
+       "",
+       "100 / 80 / 60 / 40 / 0",
+       "mech",
+       "~"
+      ],
+      [
+       "W",
+       "Cooldown",
+       "",
+       "30 / 28.5 / 27 / 25.5 / 24s",
+       "mech",
+       "~"
+      ],
+      [
+       "E",
+       "Root duration",
+       "1.5s",
+       "0.8 to 1.6s at rank 1 up to 1.0 to 2.2s at rank 5, longer the farther it travels",
+       "mech",
+       "~"
+      ],
+      [
+       "E",
+       "Slow",
+       "30%",
+       "20 / 25 / 30 / 35 / 40%",
+       "base",
+       "~"
+      ],
+      [
+       "E",
+       "Mana cost",
+       "50 / 60 / 70 / 80 / 90",
+       "40 / 50 / 60 / 70 / 80",
+       "cost",
+       "+"
+      ],
+      [
+       "R",
+       "Cooldown",
+       "120 / 100 / 80s",
+       "120 / 90 / 60s",
+       "cd",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Naafiri",
+     "kind": "buff",
+     "short": "Q healing and W damage up",
+     "lines": [
+      [
+       "Q",
+       "Heal",
+       "45 / 60 / 75 / 90 / 105 (+40% bonus AD)",
+       "55 / 70 / 85 / 100 / 115 (+45% bonus AD)",
+       "base",
+       "+"
+      ],
+      [
+       "W",
+       "Bonus attack damage for the pack",
+       "20%",
+       "22%",
+       "mech",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Rumble",
+     "kind": "buff",
+     "short": "R damage up",
+     "lines": [
+      [
+       "R",
+       "Damage per second",
+       "120 / 200 / 280 (+35% AP)",
+       "120 / 200 / 280 (+40% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "R",
+       "Max damage AP ratio",
+       "175% AP",
+       "200% AP",
+       "ratio",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Shen",
+     "kind": "buff",
+     "short": "Q damage to monsters up",
+     "lines": [
+      [
+       "Q",
+       "Damage to monsters",
+       "100 / 125 / 150 / 175 / 200%",
+       "120 / 140 / 160 / 180 / 200%",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Smolder",
+     "kind": "buff",
+     "short": "W damage up",
+     "lines": [
+      [
+       "W",
+       "Explosion damage",
+       "10 / 35 / 60 / 85 / 110 (+50% bonus AD) (+80% AP)",
+       "25 / 50 / 75 / 100 / 125 (+50% bonus AD) (+80% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Thresh",
+     "kind": "nerf",
+     "short": "R and base damage down",
+     "lines": [
+      [
+       "Base",
+       "Attack damage",
+       "56",
+       "54",
+       "stats",
+       "-"
+      ],
+      [
+       "R",
+       "Damage",
+       "250 / 400 / 550 (+100% AP)",
+       "200 / 350 / 500 (+100% AP)",
+       "base",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Viktor",
+     "kind": "buff",
+     "short": "R damage and health up",
+     "lines": [
+      [
+       "Base",
+       "Health growth",
+       "100/level",
+       "105/level",
+       "stats",
+       "+"
+      ],
+      [
+       "R",
+       "Damage when cast",
+       "100 / 175 / 250 (+50% AP)",
+       "100 / 175 / 250 (+60% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Yasuo",
+     "kind": "nerf",
+     "short": "Q damage down",
+     "lines": [
+      [
+       "Q",
+       "Damage",
+       "20 / 45 / 70 / 95 / 120 (+105% AD)",
+       "20 / 45 / 70 / 95 / 120 (+100% AD)",
+       "base",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Zaahen",
+     "kind": "buff",
+     "short": "Q cooldown down",
+     "lines": [
+      [
+       "Q",
+       "Cooldown",
+       "10 / 9 / 8 / 7 / 6s",
+       "8 / 7.5 / 7 / 6.5 / 6s",
+       "cd",
+       "+"
+      ]
+     ]
+    }
+   ],
+   "items": [
+    {
+     "c": "Doran's Bow",
+     "kind": "nerf",
+     "short": "7 attack damage instead of 8",
+     "slot": "starter",
+     "lines": [
+      [
+       "",
+       "Attack damage",
+       "8",
+       "7",
+       "stats",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Overlord's Bloodmail",
+     "kind": "adjust",
+     "short": "40 attack damage instead of 30, but Retribution gives up to 10% instead of 12%",
+     "slot": "core",
+     "m": "More attack damage from the moment you buy it, a bit less extra damage when you are low on health.",
+     "lines": [
+      [
+       "",
+       "Attack damage",
+       "30",
+       "40",
+       "stats",
+       "+"
+      ],
+      [
+       "",
+       "Retribution (bonus AD by missing health)",
+       "up to 12% of total AD",
+       "up to 10% of total AD",
+       "mech",
+       "-"
+      ]
+     ]
+    }
+   ],
+   "other": [
+    [
+     "Client",
+     "TFT moved to its own client on 4 Nov. A button switches between League and TFT, and TFT cosmetics you already own still work in League. That is why this download was bigger than usual. An option to skip TFT downloads comes in a later patch."
+    ]
+   ],
+   "none": "No rune, summoner spell, map or ranked changes.",
+   "skins": [
+    "K/DA Firestarter Ahri",
+    "K/DA Firestarter Evelynn",
+    "K/DA Firestarter Kai'Sa",
+    "K/DA Firestarter Ignition Akali",
+    "K/DA Hitmaker Evelynn",
+    "Prestige Classic Baron Kog'Maw"
+   ],
+   "chromas": [
+    "Music Fan Gragas (Firestarter)",
+    "Prestige Classic Baron Kog'Maw (Vivid)"
+   ]
+  },
+  "26.23": {
+   "status": "preview",
+   "live": "18 Nov 2026",
+   "url": "https://www.strafe.com/news/read/lol-patch-26-23-preview/",
+   "src": "Riot Phroxzon's preview of 26.23, numbers as listed on strafe.com",
+   "champs": [
+    {
+     "c": "Akshan",
+     "kind": "buff",
+     "short": "buff, numbers not out yet",
+     "lines": []
+    },
+    {
+     "c": "Annie",
+     "kind": "buff",
+     "short": "Tibbers stronger",
+     "lines": [
+      [
+       "R",
+       "Tibbers health",
+       "1150 - 3500 (+50% AP)",
+       "1275 - 4000 (+50% AP) (+150% bonus health)",
+       "base",
+       "+"
+      ],
+      [
+       "R",
+       "Tibbers aura damage per second",
+       "8 - 16 (+4% AP)",
+       "10 - 20 (+4% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "R",
+       "Tibbers attack damage",
+       "30 - 60 (+10% AP)",
+       "30 / 50 / 70 (+10% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Azir",
+     "kind": "buff",
+     "short": "more range, W on-hit up",
+     "lines": [
+      [
+       "Base",
+       "Attack range",
+       "525",
+       "550",
+       "stats",
+       "+"
+      ],
+      [
+       "W",
+       "On-hit AD ratio",
+       "50%",
+       "67%",
+       "ratio",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Bard",
+     "kind": "buff",
+     "short": "Q damage and AP ratio up",
+     "lines": [
+      [
+       "Q",
+       "Damage",
+       "80 - 240 (+80% AP)",
+       "80 - 260 (+100% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Ezreal",
+     "kind": "buff",
+     "short": "W and R damage up",
+     "lines": [
+      [
+       "W",
+       "Damage",
+       "80 - 300 (+100% bonus AD) (+90% AP)",
+       "80 - 300 (+115% bonus AD) (+100% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "R",
+       "Damage",
+       "350 - 750 (+100% bonus AD) (+110% AP)",
+       "350 - 850 (+110% bonus AD) (+120% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Galio",
+     "kind": "buff",
+     "short": "W shield up",
+     "lines": [
+      [
+       "W",
+       "Shield",
+       "7.5 - 13.5% of max health",
+       "8 - 20% of max health",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Gnar",
+     "kind": "buff",
+     "short": "Q ratios up",
+     "lines": [
+      [
+       "Q",
+       "Mini Gnar damage",
+       "5 - 165 (+125% AD)",
+       "5 - 165 (+135% AD)",
+       "base",
+       "+"
+      ],
+      [
+       "Q",
+       "Mega Gnar damage",
+       "45 - 225 (+140% AD)",
+       "45 - 225 (+150% AD)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "K'Sante",
+     "kind": "buff",
+     "short": "W cheaper and stronger",
+     "m": "Cheaper and stronger W at higher ranks, rank 1 stays the same. In All Out the charge bonus tops out a bit lower (75% instead of 80%).",
+     "lines": [
+      [
+       "W",
+       "Mana cost",
+       "45 - 65",
+       "45",
+       "cost",
+       "+"
+      ],
+      [
+       "W",
+       "Damage",
+       "45 - 165",
+       "45 - 205",
+       "base",
+       "+"
+      ],
+      [
+       "W",
+       "All Out: damage bonus from charging",
+       "10 - 80%",
+       "10 - 75%",
+       "base",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Mel",
+     "kind": "buff",
+     "short": "Q and W up",
+     "lines": [
+      [
+       "Q",
+       "Damage per extra bolt",
+       "5 - 25 (+8% AP)",
+       "6 - 26 (+9% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "Q",
+       "Max damage",
+       "85 / 120 / 165 / 220 / 285 (+65 / 73 / 81 / 89 / 97% AP)",
+       "90 / 126 / 172 / 228 / 294 (+70 / 79 / 88 / 97 / 106% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "W",
+       "Shield",
+       "50 - 170 (+50% AP)",
+       "50 - 210 (+50% AP)",
+       "base",
+       "+"
+      ],
+      [
+       "W",
+       "Hit-back damage",
+       "35 - 55 (+10% AP)",
+       "35 - 75 (+10% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Vel'Koz",
+     "kind": "buff",
+     "short": "R rank 3 damage up",
+     "m": "Riot lists this as a bug fix. Only rank 3 changes.",
+     "lines": [
+      [
+       "R",
+       "Total damage",
+       "450 / 700 / 925",
+       "450 / 700 / 950",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "Vi",
+     "kind": "buff",
+     "short": "E damage up",
+     "lines": [
+      [
+       "E",
+       "Damage",
+       "10 - 90 (+110% AD) (+100% AP)",
+       "10 - 110 (+110% AD) (+100% AP)",
+       "base",
+       "+"
+      ]
+     ]
+    },
+    {
+     "c": "LeBlanc",
+     "kind": "nerf",
+     "short": "Q AP ratio 40% to 35%",
+     "lines": [
+      [
+       "Q",
+       "AP ratio",
+       "40%",
+       "35%",
+       "ratio",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Master Yi",
+     "kind": "nerf",
+     "short": "Q AD ratio 70% to 60%",
+     "lines": [
+      [
+       "Q",
+       "Damage",
+       "20 - 100 (+70% AD)",
+       "20 - 100 (+60% AD)",
+       "base",
+       "-"
+      ],
+      [
+       "Q",
+       "Max damage to one target",
+       "35 - 175 (+122.5% AD)",
+       "35 - 175 (+105% AD)",
+       "base",
+       "-"
+      ]
+     ]
+    },
+    {
+     "c": "Syndra",
+     "kind": "nerf",
+     "short": "E costs more, longer early cooldown",
+     "lines": [
+      [
+       "E",
+       "Mana cost",
+       "50",
+       "60",
+       "cost",
+       "-"
+      ],
+      [
+       "E",
+       "Cooldown",
+       "15s",
+       "17 / 16.5 / 16 / 15.5 / 15s",
+       "cd",
+       "-"
+      ]
+     ]
+    }
+   ],
+   "items": [
+    {
+     "c": "Voltaic Cyclosword",
+     "kind": "nerf",
+     "short": "current-health damage down",
+     "slot": "core",
+     "lines": [
+      [
+       "",
+       "Firmament bonus damage (two values)",
+       "9% | 7% of target's current health",
+       "8% | 6% of target's current health",
+       "base",
+       "-"
+      ]
+     ]
+    }
+   ],
+   "other": [],
+   "none": "",
+   "skins": []
+  }
  }
 }
