@@ -59,6 +59,27 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.
 
+## Riot API collector (prototype, development key)
+
+- `.github/workflows/collect.yml` runs `pipeline/riot/collect.py` then `aggregate.py` on GitHub's servers and commits
+  `pipeline/data/riot/matches_<region>_<version>.jsonl` and `agg_<version>.json` (champion win rates per role, lane
+  matchups, ban rates). Trigger: change `pipeline/riot/run.txt` and push, or "Run workflow" on the Actions tab.
+- The key lives only in the repo secret `RIOT_API_KEY`. Never copy or handle the key. A development key expires every
+  24 hours: Marvin regenerates it on developer.riotgames.com (captcha) and pastes it into the secret himself.
+- Stored per match: match id, version, duration, champion/position/team/win for the 10 players, banned champion ids.
+  No player names or ids. Keep it that way.
+- Not part of the scoring yet. Next: once the sample is big enough (and a production key is approved), add it as a
+  dataset in update.py and use the matchups for counters. Production key: apply on the portal with the live site.
+- `pipeline/data/riot/agg_*.json` uses `pipeline/data/ddragon_champions.json` to name banned champions.
+
+## Champion portraits
+
+- `.github/workflows/icons.yml` runs `pipeline/scripts/icons.py`: downloads every champion portrait from Riot's Data
+  Dragon, saves 64x64 webp to `public/img/champ/<slug>.webp` (slug = lowercase letters and digits of the name) and
+  commits them. Re-run when a new champion comes out: change `pipeline/riot/icons.txt` and push.
+- Images are served from the site itself, never hotlinked (same privacy reason as the fonts).
+- Lolalytics best players per role (`data/lolalytics_best_<role>.csv`, top 20 per role) feed the "Rewards mastery" tag.
+
 ## Keep
 
 - Footer must keep Riot's Legal Jibber Jabber notice. No ads and no Riot logos (fan project rules).

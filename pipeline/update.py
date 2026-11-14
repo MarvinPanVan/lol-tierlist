@@ -107,6 +107,8 @@ for role in ROLES:
         t2 = fit_tau2(dl, n); s, sd = shrink(dl, n, t2)
         meta_tau[f'{site} {rk}+|{role}'] = round(math.sqrt(t2), 2)
         comp[f'{site}|{rk}'] = pd.DataFrame({'raw': dl, 'sh': s, 'sd': sd, 'n': n})
+    bestf = f'data/lolalytics_best_{role}.csv'
+    best = pd.read_csv(bestf).drop_duplicates('champion').set_index('champion') if os.path.exists(bestf) else None
     lolal = pd.read_csv(f'data/lolalytics_global_e_{role}.csv').set_index('champion') if os.path.exists(f'data/lolalytics_global_e_{role}.csv') else None
 
     def val(key, c, f='sh'):
@@ -124,6 +126,12 @@ for role in ROLES:
         e = {'c': c}
         pick = float(base.loc[c, 'pick']); ban = float(base.loc[c, 'ban'])
         e['pick'] = round(pick, 2); e['ban'] = round(ban, 2)
+        e['wr'] = round(float(base.loc[c, 'win']), 2); e['games'] = int(base.loc[c, 'n'])
+        e['games_d'] = int(dref.loc[c, 'n']) if c in dref.index else None
+        # Lolalytics: best players on the champion (last 7 days) vs the Emerald+ average on it
+        if best is not None and c in best.index and best.loc[c, 'best_games'] >= 1500:
+            e['mx'] = round(float(best.loc[c, 'best_delta']), 1); e['mxw'] = round(float(best.loc[c, 'best_win']), 1)
+        else: e['mx'] = e['mxw'] = None
         # consensus parts (shrunk) and display (raw)
         m_sh = avg([(val('m_op', c), 1), (val('U.GG|M', c), 1)]); m_raw = avg([(val('m_op', c, 'raw'), 1), (val('U.GG|M', c, 'raw'), 1)])
         m_sd = avg([(val('m_op', c, 'sd'), 1), (val('U.GG|M', c, 'sd'), 1)])
@@ -226,6 +234,8 @@ def note(e):
         if LV[sl[a]] - LV[sl[b]] >= 3: out.append((5, f'Sites disagree: {a} gives {sl[a]}, {b} gives {sl[b]}.'))
     if e.get('tr') is not None and abs(e['tr']) >= 1:
         out.append((6, f'{"Up" if e["tr"] > 0 else "Down"} {abs(e["tr"]):.1f} points in Global since {P["prev_patch"]}.'))
+    if e.get('mx') is not None and e['mx'] >= 6:
+        out.append((7, f'Rewards mastery: the best players on it win {e["mxw"]:.0f}%, {e["mx"]:.1f} points above the Emerald+ average on it.'))
     if e['se'] >= .8: out.append((4, 'Small sample, so treat the tier as rough.'))
     out.sort(key=lambda x: -x[0])
     return ' '.join(t for _, t in out[:2])
