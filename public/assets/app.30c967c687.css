@@ -181,6 +181,7 @@ button.gopt:hover{border-color:var(--faint)}
 .nx{font-size:13.5px;margin:0 0 12px;padding:10px 12px;border-radius:12px}
 .nx.buff{background:color-mix(in srgb,var(--pos) 11%,transparent)}
 .nx.nerf{background:color-mix(in srgb,var(--neg) 11%,transparent)}
+.nx.adjust{background:var(--surf)}
 .sites{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
 .hist{display:block;width:100%;height:auto;margin:0 0 14px;overflow:visible}
 .hist .z{stroke:var(--faint);stroke-dasharray:3 3;stroke-width:1}

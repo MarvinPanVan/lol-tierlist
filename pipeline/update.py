@@ -200,6 +200,12 @@ for role in ROLES:
         # previous patch (Global Emerald+), both shrunk
         pv, gv = val('prev', c), val('g', c)
         e['tr'] = None if pv is None or gv is None else round(gv - pv, 2)
+        # facts behind a move, no guessing: this patch's change from the patch notes, last patch's pick rate,
+        # and how big the raw change is against normal sampling noise (z; under 1.64 it could be chance)
+        e['ch'] = P.get('changes', {}).get(c)
+        e['pk0'] = None if val('prev', c, 'pick') is None else round(val('prev', c, 'pick'), 2)
+        rg, rp = val('g', c, 'raw'), val('prev', c, 'raw')
+        e['trz'] = None if rg is None or rp is None else round((rg - rp) / math.sqrt(2500 / val('g', c, 'n') + 2500 / val('prev', c, 'n')), 1)
         if pv is not None and c not in P['changed_this_patch']:
             prev_cmp.append((role, c, val('prev', c, 'raw'), pv, val('g', c, 'raw'), float(comp['prev'].loc[c, 'n']), float(comp['g'].loc[c, 'n'])))
         # site letters at Diamond+

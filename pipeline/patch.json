@@ -15,22 +15,7 @@
   "Thresh",
   "Viktor",
   "Yasuo",
-  "Zaahen",
-  "Hecarim",
-  "Aatrox",
-  "Amumu",
-  "Evelynn",
-  "Ezreal",
-  "Fiddlesticks",
-  "Gangplank",
-  "Janna",
-  "Mordekaiser",
-  "Nami",
-  "Olaf",
-  "Rammus",
-  "Volibear",
-  "Swain",
-  "Elise"
+  "Zaahen"
  ],
  "prev_patch": "26.21",
  "prev_patch_code": "2621",
@@ -140,5 +125,63 @@
   "mid": "Ekko is the outlier at every rank. Vex and Vladimir follow in Emerald+, Katarina and Zoe in Diamond+ and Master+. Mel gained the most since last patch and Viktor is up too, but Viktor is still a trap at 7.7% pick.",
   "adc": "Kog'Maw and Xayah are ahead of everyone, and of the usual ADCs Corki gained the most since last patch. Ezreal is in 15% of games and has the worst score of any popular ADC.",
   "support": "Rell, Zilean and Leona score highest in Emerald+, so pick what fits your bot laner. Rell is the outlier in Master+. Yuumi, Karma and Lux are popular and lose, and Thresh dropped the most since last patch."
+ },
+ "changes": {
+  "Aurelion Sol": [
+   "buff",
+   "E damage up"
+  ],
+  "Corki": [
+   "buff",
+   "R damage up"
+  ],
+  "Kayle": [
+   "buff",
+   "Q and R cooldowns down"
+  ],
+  "Locke": [
+   "nerf",
+   "Q damage down, shorter W"
+  ],
+  "Maokai": [
+   "buff",
+   "Q damage up"
+  ],
+  "Mel": [
+   "adjust",
+   "rework of W, Q and E"
+  ],
+  "Naafiri": [
+   "buff",
+   "Q healing and W damage up"
+  ],
+  "Rumble": [
+   "buff",
+   "R damage up"
+  ],
+  "Shen": [
+   "buff",
+   "Q damage to monsters up"
+  ],
+  "Smolder": [
+   "buff",
+   "W damage up"
+  ],
+  "Thresh": [
+   "nerf",
+   "R and base damage down"
+  ],
+  "Viktor": [
+   "buff",
+   "R damage and health up"
+  ],
+  "Yasuo": [
+   "nerf",
+   "Q damage down"
+  ],
+  "Zaahen": [
+   "buff",
+   "Q cooldown down"
+  ]
  }
 }

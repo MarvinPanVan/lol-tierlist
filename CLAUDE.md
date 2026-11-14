@@ -50,7 +50,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   Prints a backtest (last patch vs this patch for unchanged champions), fitted spreads and the tiers.
 - `pipeline/patch.json` : texts for the page headers (`updated`, `headline`, `lede` for the homepage, `takes` = two
   sentences per role, written by hand each patch from the numbers, Marvin's writing rules), patch numbers, previous patch code for the trend files, next patch preview per role
-  (shown on the site and used for buff/nerf flags), champions changed this patch (excluded from the backtest).
+  (shown on the site and used for buff/nerf flags), `changes` = this patch's champion changes as
+  {name: [buff|nerf|adjust, short line]} from Riot's notes, shown on the site, and `changed_this_patch` = the same names
+  (no last-patch prior, excluded from the backtest). Summoner's Rift section only: the notes also have a "Classic"
+  section (separate mode with old kits, e.g. 2011 Volibear) and ARAM changes. Those do not count (26.22 had 15 of them
+  wrongly listed until 14 Nov).
 - `pipeline/data/samples.json` : OP.GG "Total analyzed samples" per dataset. It counts 10 per match, so
   games for a champion = pick% / 100 x samples / 10 (checked against U.GG game counts, they match).
 - `pipeline/data/prev/` : last patch's OP.GG Global Emerald+ files, for the trend arrows and the backtest.
