@@ -101,6 +101,14 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      `data/opgg_counters.json` (`{"e": {role: {champ: [[opponent, games, wins], ...]}}, "d": ...}`). The site only
      shows matchups with 150+ games (about a third of Emerald+ and two thirds of Diamond+ ones have fewer). Stopgap
      until the Riot data has enough games per matchup.
+   - OP.GG builds, for item changes: for every listed champion and role fetch (page JS, like below)
+     `/lol/champions/{key}/build/{position}?region=global&tier=emerald_plus&patch=16.xx` (key: OP.GG slug, e.g.
+     monkeyking, nunu, renata; position top/jungle/mid/adc/support). In the page data, rows keyed `core_items_N`,
+     `boots_N`, `starter_items_N` hold `"metaType":"item","metaId":ID ... "alt":"Item name"`. Keep core_items_0/1 (first
+     3 items), boots_0 and starter_items_0 -> `data/opgg_builds.json` {role: {champ: {c0, c1, b0, s0: [[id, name]]}}}.
+     Pages are ~700 KB, so 248 of them take about 15 minutes; run it in the background and poll. In `patch.json`
+     `item_changes` = {item: [buff|nerf|adjust, short line, core|starter]} from the notes' Summoner's Rift item section.
+     The site names a changed item only when it is in a champion's core builds or boots, never starter items.
    - Reading OP.GG: NEVER use the visible table. It stops at 55 rows ranked by OP.GG's own tier order, which silently
      drops losing champions (in 26.22 that hid K'Sante top, Jayce jungle and 9 others). Read the page data instead:
      open any op.gg champions page in the browser, then in page JS `fetch('/lol/champions?region=kr&tier=master_plus&

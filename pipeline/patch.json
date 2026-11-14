@@ -183,5 +183,17 @@
    "buff",
    "Q cooldown down"
   ]
+ },
+ "item_changes": {
+  "Doran's Bow": [
+   "nerf",
+   "7 attack damage instead of 8",
+   "starter"
+  ],
+  "Overlord's Bloodmail": [
+   "adjust",
+   "40 attack damage instead of 30, but Retribution gives up to 10% instead of 12%",
+   "core"
+  ]
  }
 }

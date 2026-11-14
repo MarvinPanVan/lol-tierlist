@@ -86,6 +86,8 @@ MOBA = json.load(open('data2/moba_highelo.json'))
 CTR = json.load(open('data/opgg_counters.json')) if os.path.exists('data/opgg_counters.json') else {'e': {}, 'd': {}}
 # entries: [opponent, games, wins of this champion]; stored as [opponent, win rate, games]
 CTR = {rk: {r: {nm(c): [[nm(x[0]), round(100 * x[2] / x[1], 1), x[1]] for x in cs] for c, cs in v.items()} for r, v in CTR.get(rk, {}).items()} for rk in ['e', 'd']}
+# OP.GG Emerald+ builds per champion and role: {role: {champ: {c0, c1: core builds, b0: boots, s0: starter, as [[item id, name], ...]}}}
+BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.exists('data/opgg_builds.json') else {}
 
 # tiers: fixed rules, the same for every view, no hand edits
 def tier(v, pk, allpos, zcheck):
@@ -203,6 +205,10 @@ for role in ROLES:
         # facts behind a move, no guessing: this patch's change from the patch notes, last patch's pick rate,
         # and how big the raw change is against normal sampling noise (z; under 1.64 it could be chance)
         e['ch'] = P.get('changes', {}).get(c)
+        # changed items in the champion's most common OP.GG builds (Emerald+): two core builds and the boots, not starter items
+        bd = BUILDS.get(role, {}).get(c) or {}
+        own = {name for key in ['c0', 'c1', 'b0'] for _, name in bd.get(key, [])}
+        e['it'] = [[name, kind, text] for name, (kind, text, slot) in P.get('item_changes', {}).items() if slot != 'starter' and name in own] or None
         e['pk0'] = None if val('prev', c, 'pick') is None else round(val('prev', c, 'pick'), 2)
         rg, rp = val('g', c, 'raw'), val('prev', c, 'raw')
         e['trz'] = None if rg is None or rp is None else round((rg - rp) / math.sqrt(2500 / val('g', c, 'n') + 2500 / val('prev', c, 'n')), 1)

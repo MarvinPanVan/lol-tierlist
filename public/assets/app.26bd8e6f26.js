@@ -163,7 +163,7 @@ function renderPanel(){if(!DATA[role])return;
   <div class="kv"><div class="km" data-tip="Win rate points above the role average in ${VNM()}, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>${VNM()}</u></span><strong>${tt(vx.t)}${fmt(vx.s)}<small> ±${vx.se==null?'?':vx.se.toFixed(1)}</small></strong>${rngHTML(d)}</div><div><span>Win</span><strong>${sx.wr==null?'–':sx.wr.toFixed(1)+'%'}</strong></div><div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap">Every rank and region. Tap one to show that list.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
-  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.</p>`:''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.</p>`:''}
+  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.</p>`:''}
   ${ctrHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+:</span>${sites}</div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
@@ -201,6 +201,8 @@ const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};
 const chLine=d=>d.ch?`${CHW[d.ch[0]]||'Changed'}: ${d.ch[1]}`:'';
+const ITW={buff:'buffed',nerf:'nerfed'};
+const itLine=d=>d.it?`Core item ${ITW[d.it[0][1]]||'changed'}: ${d.it.map(x=>x[0]).join(', ')}`:'';
 const pkShift=d=>{if(d.pk0==null||!d.pick)return '';const r=d.pick/d.pk0;return (r>=1.5||r<=1/1.5)&&Math.max(d.pick,d.pk0)>=1?`pick rate ${d.pk0.toFixed(1)}% → ${d.pick.toFixed(1)}%`:'';};
 const chance=d=>d.trz!=null&&Math.abs(d.trz)<1.64;
 function share(c){const url=c?champURL(c):PAGE==='home'?SITE:SITE+role+'/',title=c?`${c} ${ROLES.find(r=>r[0]===role)[1]}, patch ${META.patch} | LoL Tier List`:document.title;
@@ -244,7 +246,7 @@ function renderSide(){if(!DATA[role])return;
   $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
   $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
   const mv=items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b[1].tr-a[1].tr);
-  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Could be chance':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
+  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Could be chance':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
   $('movh').textContent=`Moved most since ${META.prev_patch}`;
   $('movc').hidden=!!ARCH;
   // all roles: skip entries whose champions are already listed (the same change shows up in several roles), show the first six
