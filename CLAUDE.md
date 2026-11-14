@@ -26,7 +26,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
   build.py. The panel shows a small chart once 3 or more patches exist.
 - Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
-- Homepage = patch overview (data line, headline, role cards with each role's best pick, movers), then the Top list.
+- Homepage = patch overview (data line, headline, leader cards), then "Strongest this patch" (every Z and S pick
+  across roles, P left out), "Moved most" and "Best bans, all roles" (per champion: sum over its roles with a positive
+  score of score x pick, divided by 1 - ban/100; ban from its most-picked role), then the Top list. build.py writes
+  the Emerald+ version (`xr_lists`); the site redraws both for other ranks/regions with the same math (`renderXR`).
   `/` always opens like a first visit (the logo leads there); `/#adc` opens ADC, `/#xayah` finds Xayah's role. Champion pages: `/mid/ahri/` for every listed champion (static header with art,
   tiers, note; the list loads below). They embed no data and load `data/<patch>.json`.
 - Art: `public/img/tile/<slug>.webp` (square face crops) and `public/img/splash/<slug>.webp` (960x540), downloaded by

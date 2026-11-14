@@ -516,6 +516,24 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .mvs>span:first-child{min-width:112px}
 .home h1{max-width:17ch}
 @media(max-width:640px){.bpr{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:14px}.bpr>*{flex:none}.mvs>span:first-child{min-width:0}}
+/* across all roles (homepage) */
+.xr{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:16px;margin-top:28px;align-items:start}
+.xr .ich h3{font-size:16px}
+.xs{display:flex;flex-wrap:wrap;gap:6px;padding:2px 6px 4px}
+.xs:not(.all)>.xchip:nth-child(n+13){display:none}
+.xchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);border-radius:999px;padding:3px 10px 3px 3px;font:600 13px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:border-color .15s}
+.xchip:hover{border-color:var(--faint)}
+.xchip .ri{width:22px;height:22px;border-radius:50%;border:0;display:inline-grid;place-items:center;color:light-dark(color-mix(in srgb,var(--R) 65%,#000),var(--R));background:color-mix(in srgb,var(--R) 18%,transparent)}.xchip .ri svg{width:12px;height:12px}
+.xchip .pic{width:22px;height:22px;border-radius:50%;margin-left:-3px}
+.xchip .tg.sm{margin-left:2px}
+.xchip b{font-weight:600;color:var(--mut);font-variant-numeric:tabular-nums}
+.xmore{align-self:flex-start;margin:8px 6px 4px;border:0;background:none;padding:0;font:600 13px Inter,sans-serif;color:var(--acc);cursor:pointer}
+.xmore:hover{text-decoration:underline;text-underline-offset:3px}
+.xr .ilist{margin-bottom:2px}
+.xcol{display:grid;gap:16px}
+.mvs.mvc{margin:0;padding:2px 6px 6px;flex-wrap:wrap;overflow:visible}
+@media(max-width:980px){.xr{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){.xs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:2px 4px 4px}.xchip{min-width:0;padding-right:8px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xcol{gap:12px}.mvs.mvc{flex-wrap:wrap}.xr{margin-top:18px;gap:12px}.xs:not(.all)>.xchip:nth-child(n+9){display:none}}
 /* rank x region views */
 .pin{position:relative}
 .pin>.acts{position:absolute;top:12px;right:-8px;margin:0;z-index:2;gap:6px;flex-wrap:nowrap}
@@ -907,6 +925,28 @@ function renderSide(){if(!DATA[role])return;
     return `<li>${one?`<button type="button" class="irow" data-c="${names[0]}">${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
 }
+// homepage: every Z and S pick across roles, and the best bans across roles, for the chosen rank and region.
+// Same math as xr_lists in build.py, which writes the Emerald+ version into the page.
+let xrKey='E';
+function renderXR(){if(PAGE!=='home'||!$('xs'))return;
+  const vk=VK(rank,reg),sk=STK(rank,reg);if(vk===xrKey)return;
+  if(CUR._meta.part){ensureFull().then(()=>{if(!CUR._meta.part)renderXR();});return;}
+  const RNm=Object.fromEntries(ROLES),TRK={Z:0,S:1},strong=[],by=new Map(),bans=[];
+  for(const [r] of ROLES)for(const e of CUR[r]){const x=e.v&&e.v[vk],st=e.st&&e.st[sk];
+    if(x&&(x[2]==='Z'||x[2]==='S'))strong.push([r,e,x]);
+    if(x&&st){if(!by.has(e.c))by.set(e.c,[]);by.get(e.c).push([r,x,st]);}}
+  strong.sort((a,b)=>TRK[a[2][2]]-TRK[b[2][2]]||b[2][0]-a[2][0]);
+  for(const [c,L] of by){const main=L.reduce((m,x)=>x[2][1]>m[2][1]?x:m),ban=main[2][2]||0;
+    const pos=L.filter(x=>x[1][0]>0).sort((a,b)=>b[1][0]*b[2][1]-a[1][0]*a[2][1]);if(!pos.length)continue;
+    bans.push([pos.reduce((t,x)=>t+x[1][0]*x[2][1],0)/(1-ban/100),c,pos,ban]);}
+  bans.sort((a,b)=>b[0]-a[0]);
+  $('xs').innerHTML=strong.map(([r,e,x])=>`<button type="button" class="xchip" data-jr="${r}" data-jc="${e.c}" style="--R:var(--R${r})" title="${e.c}, ${RNm[r]}: ${x[2]} tier, ${fmt(x[0])}"><span class="ri">${RICON[r]}</span>${pic(e.c)}<span class="xn">${e.c}</span><span class="tg sm" style="background:var(--${x[2]})">${x[2]}</span><b>${fmt(x[0])}</b></button>`).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+  const bsub=(pos,ban)=>{const rl=pos.slice(0,2).map(([r,x])=>RNm[r]+' '+x[2]).join(', ');return pos.length===1?`${rl} · ${pos[0][2][1].toFixed(1)}% pick · ${ban.toFixed(0)}% ban`:`${rl} · ${ban.toFixed(0)}% ban`;};
+  $('xb').innerHTML=bans.slice(0,6).map(([v,c,pos,ban])=>`<li><button type="button" class="irow" data-jr="${pos[0][0]}" data-jc="${c}">${pic(c)}<span class="in"><b>${c}</b><small>${bsub(pos,ban)}</small></span><span class="pill pos">${fmt(pos[0][1][0])}</span></button></li>`).join('');
+  const mb=$('xmore');if(mb){mb.hidden=strong.length<=(matchMedia('(max-width:640px)').matches?8:12);const all=$('xs').classList.contains('all');mb.textContent=all?'Show fewer':`Show all ${strong.length}`;}
+  document.querySelectorAll('.xvn').forEach(el=>el.textContent=VNM(rank,reg));
+  xrKey=vk;
+}
 function drawMap(){if(!DATA[role])return;
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const P=d=>(stat(d)||{}).pick,Y=d=>SV(d);
@@ -947,7 +987,7 @@ function render(){
   if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])render();});return;}
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
-  renderControls();renderBoard();renderPanel();renderSide();drawMap();
+  renderControls();renderBoard();renderPanel();renderSide();drawMap();renderXR();
   $('nexth').textContent='Changing next patch';
   $('nextc').hidden=!!ARCH||!NEXT[role].length;
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
@@ -975,6 +1015,7 @@ document.addEventListener('click',e=>{
   if(j){$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
   if(r){navRole(r.dataset.r);return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
+  if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${x.children.length}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
   if(md){mode=md.dataset.mode;try{localStorage.setItem('tl-mode',mode);}catch(e){}renderControls();renderBoard();return;}

@@ -232,6 +232,28 @@ function renderSide(){if(!DATA[role])return;
     return `<li>${one?`<button type="button" class="irow" data-c="${names[0]}">${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
   $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
 }
+// homepage: every Z and S pick across roles, and the best bans across roles, for the chosen rank and region.
+// Same math as xr_lists in build.py, which writes the Emerald+ version into the page.
+let xrKey='E';
+function renderXR(){if(PAGE!=='home'||!$('xs'))return;
+  const vk=VK(rank,reg),sk=STK(rank,reg);if(vk===xrKey)return;
+  if(CUR._meta.part){ensureFull().then(()=>{if(!CUR._meta.part)renderXR();});return;}
+  const RNm=Object.fromEntries(ROLES),TRK={Z:0,S:1},strong=[],by=new Map(),bans=[];
+  for(const [r] of ROLES)for(const e of CUR[r]){const x=e.v&&e.v[vk],st=e.st&&e.st[sk];
+    if(x&&(x[2]==='Z'||x[2]==='S'))strong.push([r,e,x]);
+    if(x&&st){if(!by.has(e.c))by.set(e.c,[]);by.get(e.c).push([r,x,st]);}}
+  strong.sort((a,b)=>TRK[a[2][2]]-TRK[b[2][2]]||b[2][0]-a[2][0]);
+  for(const [c,L] of by){const main=L.reduce((m,x)=>x[2][1]>m[2][1]?x:m),ban=main[2][2]||0;
+    const pos=L.filter(x=>x[1][0]>0).sort((a,b)=>b[1][0]*b[2][1]-a[1][0]*a[2][1]);if(!pos.length)continue;
+    bans.push([pos.reduce((t,x)=>t+x[1][0]*x[2][1],0)/(1-ban/100),c,pos,ban]);}
+  bans.sort((a,b)=>b[0]-a[0]);
+  $('xs').innerHTML=strong.map(([r,e,x])=>`<button type="button" class="xchip" data-jr="${r}" data-jc="${e.c}" style="--R:var(--R${r})" title="${e.c}, ${RNm[r]}: ${x[2]} tier, ${fmt(x[0])}"><span class="ri">${RICON[r]}</span>${pic(e.c)}<span class="xn">${e.c}</span><span class="tg sm" style="background:var(--${x[2]})">${x[2]}</span><b>${fmt(x[0])}</b></button>`).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+  const bsub=(pos,ban)=>{const rl=pos.slice(0,2).map(([r,x])=>RNm[r]+' '+x[2]).join(', ');return pos.length===1?`${rl} · ${pos[0][2][1].toFixed(1)}% pick · ${ban.toFixed(0)}% ban`:`${rl} · ${ban.toFixed(0)}% ban`;};
+  $('xb').innerHTML=bans.slice(0,6).map(([v,c,pos,ban])=>`<li><button type="button" class="irow" data-jr="${pos[0][0]}" data-jc="${c}">${pic(c)}<span class="in"><b>${c}</b><small>${bsub(pos,ban)}</small></span><span class="pill pos">${fmt(pos[0][1][0])}</span></button></li>`).join('');
+  const mb=$('xmore');if(mb){mb.hidden=strong.length<=(matchMedia('(max-width:640px)').matches?8:12);const all=$('xs').classList.contains('all');mb.textContent=all?'Show fewer':`Show all ${strong.length}`;}
+  document.querySelectorAll('.xvn').forEach(el=>el.textContent=VNM(rank,reg));
+  xrKey=vk;
+}
 function drawMap(){if(!DATA[role])return;
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const P=d=>(stat(d)||{}).pick,Y=d=>SV(d);
@@ -272,7 +294,7 @@ function render(){
   if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])render();});return;}
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
-  renderControls();renderBoard();renderPanel();renderSide();drawMap();
+  renderControls();renderBoard();renderPanel();renderSide();drawMap();renderXR();
   $('nexth').textContent='Changing next patch';
   $('nextc').hidden=!!ARCH||!NEXT[role].length;
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
@@ -300,6 +322,7 @@ document.addEventListener('click',e=>{
   if(j){$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
   if(r){navRole(r.dataset.r);return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
+  if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${x.children.length}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
   if(md){mode=md.dataset.mode;try{localStorage.setItem('tl-mode',mode);}catch(e){}renderControls();renderBoard();return;}
