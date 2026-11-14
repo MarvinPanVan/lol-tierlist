@@ -1,6 +1,7 @@
 """Download champion portraits from Riot's Data Dragon into public/img/champ/<slug>.webp (64x64).
 Runs in GitHub Actions (the build sandbox can't reach Riot). Also writes pipeline/data/ddragon_champions.json,
-and item icons to public/img/item/<id>.webp plus pipeline/data/ddragon_items.json."""
+item icons to public/img/item/<id>.webp plus pipeline/data/ddragon_items.json, and ability icons to
+public/img/spell/<champion slug>_<p|q|w|e|r>.webp."""
 import os, re, json, io, urllib.request
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); PIPE = os.path.dirname(HERE); PUB = os.path.join(os.path.dirname(PIPE), 'public')
@@ -52,4 +53,21 @@ for iid, it in items.items():
         print('miss item', iid, e)
 json.dump({'version': ver, 'by_name': by_name}, open(os.path.join(PIPE, 'data', 'ddragon_items.json'), 'w'), ensure_ascii=False, indent=0)
 print(f'{got} new item icons')
+# ability icons for the patch notes pages: public/img/spell/<champion slug>_<p|q|w|e|r>.webp, 48x48 (only missing files)
+os.makedirs(os.path.join(PUB, 'img', 'spell'), exist_ok=True); sp = 0
+DD = 'https://ddragon.leagueoflegends.com/cdn'
+for cid, c in champs.items():
+    s_ = slug(c['name']); path = lambda k: os.path.join(PUB, 'img', 'spell', f'{s_}_{k}.webp')
+    if all(os.path.exists(path(k)) for k in 'pqwer'): continue
+    try:
+        d = json.loads(get(f'{DD}/{ver}/data/en_US/champion/{cid}.json'))['data'][cid]
+    except Exception as e:
+        print('miss champion data', cid, e); continue
+    for k, u in [('p', f'{DD}/{ver}/img/passive/{d["passive"]["image"]["full"]}')] + [(k, f'{DD}/{ver}/img/spell/{x["image"]["full"]}') for k, x in zip('qwer', d['spells'])]:
+        if os.path.exists(path(k)): continue
+        try:
+            Image.open(io.BytesIO(get(u))).convert('RGB').resize((48, 48), Image.LANCZOS).save(path(k), 'WEBP', quality=82, method=6); sp += 1
+        except Exception as e:
+            print('miss spell', cid, k, e)
+print(f'{sp} new ability icons')
 print(f'{len(champs)} portraits from Data Dragon {ver}')

@@ -253,6 +253,7 @@ def _diff(old, new):   # "(+105% AD) → (+100% AD)" marks only 105 and 100; a l
             for x, y in zip(A[i1:i2], B[j1:j2]): o, n = _pair(x, y); ho.append(o); hn.append(n)
         else: ho += [_wrap(x) for x in A[i1:i2]]; hn += [_wrap(y) for y in B[j1:j2]]
     return ''.join(ho), ''.join(hn)
+ROOTP = ''
 KEYN = {'P': 'Passive', 'Q': 'Q', 'W': 'W', 'E': 'E', 'R': 'R (ultimate)', 'Base': 'Base stats'}
 KORD = {'Base': 0, 'P': 1, 'Q': 2, 'W': 3, 'E': 4, 'R': 5}
 def _line(stat, old, new, d):
@@ -268,7 +269,8 @@ def _lines(x, item=False):   # grouped by ability like Riot's notes (base stats 
     ab, out = x.get('ab', {}), []
     for k in sorted(dict.fromkeys(l[0] for l in x['lines']), key=lambda k: KORD.get(k, 9)):
         nm = 'Base stats' if k == 'Base' else ab.get(k, 'Passive' if k == 'P' else '')
-        out.append(f'<div class="pn-ab"><p class="pn-abh">' + (f'<span class="pn-k" title="{KEYN.get(k, k)}">{E(k)}</span>' if k != 'Base' else '')
+        icon = f'<img class="pn-sp" src="{ROOTP}img/spell/{slug(x["c"])}_{k.lower()}.webp" alt="" width="28" height="28" loading="lazy" onerror="this.remove()">' if k in KEYN and k != 'Base' else ''
+        out.append(f'<div class="pn-ab"><p class="pn-abh">{icon}' + (f'<span class="pn-k" title="{KEYN.get(k, k)}">{E(k)}</span>' if k != 'Base' else '')
                    + f'{E(nm)}</p><ul class="pn-ls">{"".join(_line(l[1], l[2], l[3], l[5]) for l in x["lines"] if l[0] == k)}</ul></div>')
     return f'<div class="pn-abs">{"".join(out)}</div>'
 def _main_role(c):
@@ -345,6 +347,7 @@ def _ipic(x, root):   # item icon, self-hosted from Data Dragon; the sword place
     iid = ITEM_ID.get(x['c'])
     return f'<span class="pw">{f"""<img class="pic" src="{root}img/item/{iid}.webp" alt="" width="40" height="40" loading="lazy" onerror="this.remove()">""" if iid else ""}</span>'
 def notes_body(p, root):
+    global ROOTP; ROOTP = root
     n = NOTES[p]; live = n['status'] == 'live'; moves = live and p == PATCH
     order = sorted(NOTES, key=lambda q: [int(v) for v in q.split('.')], reverse=True)
     sw = ''.join(f'<a href="{root}patch/{q}/"{" aria-current=\"page\"" if q == p else ""}>{q}{" preview" if NOTES[q]["status"] != "live" else ""}</a>' for q in order)
