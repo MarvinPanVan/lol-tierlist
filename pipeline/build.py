@@ -95,13 +95,14 @@ def head_home(root):
     return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt">{hdl}'
             f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div><div class="mvs bpr"><span>Best per role:</span>{cards}</div>'
             f'<div class="mvs"><span>Moved most since {E(P.get("prev_patch", ""))}:</span>{chips}</div></div></header>')
+RKN = [('E', 'Emerald+'), ('D', 'Diamond+'), ('M', 'Master+')]
 def head_champ(r, e, root):
     s_ = slug(e['c']); tc = lambda t: f'var(--{t})' if t else 'var(--E)'
-    hi = f'<span style="background:{tc(e.get("ht"))}">High elo {e.get("ht") or "–"} {f1(e["hi"])}</span>' if e.get('hi') is not None else ''
+    tiers = ''.join(f'<span style="background:{tc(e["v"][k][2])}">{n} {e["v"][k][2]} {f1(e["v"][k][0])}</span>' for k, n in RKN if k in e.get('v', {}))
     return (f'<header class="band head champ-head" style="--art:url(/img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
             f'<div class="ch"><img class="pic big" src="{root}img/champ/{s_}.webp" alt="" width="72" height="72"><div><h1>{E(e["c"])}</h1>'
             f'<p class="dl">{RNAME[r]} · patch <b>{PATCH}</b> · {e["games"]:,} games in Global Emerald+ · updated {E(UPD)}</p></div></div>'
-            f'<div class="ctiers"><span style="background:{tc(e["t"])}">Overall {e["t"]} {f1(e["score"])}</span>{hi}</div>'
+            f'<div class="ctiers">{tiers}</div>'
             f'<p class="take">{E(e.get("note") or "")}</p><div class="hacts">{SHARE}</div></div></header>')
 
 def page(rel, keep, root, page_kind, role, title, ogtitle, desc, url, ogimg, champ='', head=''):
@@ -116,6 +117,12 @@ def top_line(role):
     parts = [f"{e['c']} ({e['t']})" for e in L]
     return ', '.join(parts[:-1]) + (' and ' + parts[-1] if len(parts) > 1 else (parts[0] if parts else ''))
 
+def cdesc(e, name, tiers):   # champion page description: tiers, then whole note sentences while it stays under 160 characters
+    d = f"{e['c']} {name} in patch {PATCH}: {tiers}."
+    for sn in re.split(r'(?<=\.) ', e.get('note') or ''):
+        if sn and len(d) + 1 + len(sn) <= 160: d += ' ' + sn
+        else: break
+    return d
 base_desc = f'LoL tier list for patch {PATCH}, every role. Nine stat sites combined, corrected for small samples and one-tricks. No ads.'
 z = [c for r, _, _ in ROLES for c in D['_meta']['facts']['z'][r]]
 page('index.html', 'B', '', 'home', 'top', f'LoL Tier List: patch {PATCH}, every role', f'LoL Tier List {PATCH}' + (f": {', '.join(z[:-1])} and {z[-1]} lead" if len(z) > 1 else ''), base_desc, SITE, SITE + 'og.png', head=head_home(''))
@@ -124,9 +131,9 @@ for r, name, plural in ROLES:
          f'Best {plural} in patch {PATCH}: {top_line(r)}. Nine stat sites combined, no ads.'[:160],
          SITE + r + '/', SITE + f'og-{r}.png', head=head_role(r))
     for e in D[r]:   # one page per champion and role
-        sl = slug(e['c']); tiers = f"Overall {e['t']}" + (f", high elo {e['ht']}" if e.get('ht') else '')
+        sl = slug(e['c']); tiers = ', '.join(f"{n} {e['v'][k][2]}" for k, n in RKN if k in e['v'])
         page(f'{r}/{sl}/index.html', 'B', '../../', 'champ', r, f"{e['c']} {name}, patch {PATCH}: {e['t']} tier | LoL Tier List",
-             f"{e['c']} {name}, patch {PATCH}: {tiers}", f"{e['c']} {name} in patch {PATCH}: {tiers}. {e.get('note') or ''}".strip(),
+             f"{e['c']} {name}, patch {PATCH}: {tiers}", cdesc(e, name, tiers),
              SITE + f'{r}/{sl}/', SITE + f'img/splash/{sl}.webp', champ=e['c'], head=head_champ(r, e, '../../'))
 page('method/index.html', 'M', '../', 'method', 'top', 'How the tier list is made | LoL Tier List', 'How the LoL tier list is made',
      'Where the numbers come from, how nine stat sites are combined into one score and tier, how far each site can be trusted, and what a tier list cannot tell you.',

@@ -135,10 +135,10 @@
  "headline": "Ekko, Xayah and Kog'Maw lead patch 26.22",
  "lede": "More than half of the most-picked champions lose: <b>36 of the 65</b> picked in 5% or more of their role's games win less than half of them. Built on <b>nine stat sites</b> from Korea, Europe and North America, corrected for small samples and one-tricks.",
  "takes": {
-  "top": "Singed is the outlier, with Kayle, Malphite and Shen behind him. In Diamond and up Kayle, Fiora and Singed lead and Malphite drops to A. Jayce and Yone are picked a lot and still lose, and Yasuo dropped more than anyone since last patch.",
-  "jungle": "Zyra, Lillia and Nunu lead. In high elo Nunu and Zyra are outliers, and Rek'Sai scores even higher but is picked in under 2% of Diamond+ games, too rarely to count as one. Lee Sin is in 13% of games and loses, and Qiyana is the worst popular pick in the role.",
-  "mid": "Ekko is the outlier at every rank, with Vex, Katarina and Vladimir behind him. Mel and Viktor gained the most since last patch, but Viktor is still a trap at 7.7% pick.",
-  "adc": "Kog'Maw and Xayah are ahead of everyone, and Corki gained more than any champion since last patch. Ezreal is in 15% of games and has the worst score of any popular ADC.",
-  "support": "Ten supports are S, so pick what fits your bot laner: Rell and Zilean score highest, and Rell is the outlier in high elo. Yuumi, Karma and Lux are popular and lose, and Thresh dropped the most since last patch."
+  "top": "Singed is the outlier, with Kayle, Malphite and Shen behind him. Higher up Kayle and Singed lead Diamond+, Fiora leads Master+, and Malphite drops to A in both. Jayce and Yone are picked a lot and still lose, and Yasuo dropped more than anyone since last patch.",
+  "jungle": "Zyra, Wukong and Lillia lead, and Zyra is the outlier in Diamond+ and Master+. Rek'Sai scores even higher in Diamond+ but is picked in under 2% of those games, too rarely to count as one. Lee Sin is in 13% of games and loses, and Qiyana is the worst popular pick in the role.",
+  "mid": "Ekko is the outlier at every rank. Vex and Vladimir follow in Emerald+, Katarina and Zoe in Diamond+ and Master+. Mel gained the most since last patch and Viktor is up too, but Viktor is still a trap at 7.7% pick.",
+  "adc": "Kog'Maw and Xayah are ahead of everyone, and of the usual ADCs Corki gained the most since last patch. Ezreal is in 15% of games and has the worst score of any popular ADC.",
+  "support": "Rell, Zilean and Leona score highest in Emerald+, so pick what fits your bot laner. Rell is the outlier in Master+. Yuumi, Karma and Lux are popular and lose, and Thresh dropped the most since last patch."
  }
 }

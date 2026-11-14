@@ -69,16 +69,23 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Shrinkage: empirical Bayes per dataset and role. tau^2 = mean(delta^2) - mean(2500/n) over champions with
      n >= 300 (floor 0.35^2); shrunk = delta * tau^2 / (tau^2 + 2500/n).
    - One-trick penalty 0.4*ln(2/pick) when pick < 2%.
-   - Consensus = Global .30, EUW .20, KR .20, Master+ .20 (OP.GG and U.GG), NA .10. ± = 1.64 x combined sd.
-   - High elo = Diamond+ (OP.GG, U.GG, Blitz, dpm.lol at 1, League of Graphs at 0.5) 40%, Master+ (OP.GG, U.GG) 35%,
-     EUW Diamond+ and Master+ 25%.
-   - Tiers, same rules for both views, no hand edits: Z score>=1.8, every dataset >=1.5, pick>=2; P pick<1.5 and
-     >=.6; S>=1.15 and above average in every region; A>=.6; B>=.15; C>=-.45; else D.
+   - Views (Marvin chose this in 26.22): every list is one rank (Emerald+, Diamond+, Master+) x one region (All, EUW,
+     KR, NA), 12 views, all scored the same way with the same tier rules. Site controls: Rank and Region buttons, the
+     panel grid (tap a cell to switch), stored in localStorage `tl-view` as `rank|region`.
+     - All regions = Global block .50, EUW .20, KR .20, NA .10, all at that rank, each shrunk. Global block: Emerald+ =
+       OP.GG Global; Diamond+ = OP.GG, U.GG, Blitz, dpm.lol at 1 and League of Graphs at 0.5; Master+ = OP.GG and U.GG.
+     - One region = that OP.GG dataset alone, shrunk. Pick rate for the one-trick penalty and Z/P = the view's OP.GG
+       dataset (Global at that rank for All). ± = 1.64 x combined sd.
+     - tiers.json: `e.v = {E, D, M, euw, kr, na, euwd, krd, nad, euwm, krm, nam: [score, ±, tier]}`; `score/se/t` =
+       Emerald+ all regions (homepage, link previews, takes); `st` = games, pick, ban, win per OP.GG dataset.
+   - Tiers, same rules for every view, no hand edits: Z score>=1.8, every dataset of the view >=1.5 raw, pick>=2;
+     P pick<1.5 and >=.6; S>=1.15 and every dataset of the view above average; A>=.6; B>=.15; C>=-.45; else D.
+   - Check after scoring: `python3 pipeline/scripts/verify_views.py` (independent recompute, must print 0 mismatches) and
+     that the takes in patch.json still match the Emerald+ list and what they say about Diamond+/Master+.
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
    - Also collect OP.GG EUW, KR and NA Diamond+ and Master+ (`opgg_{euw,kr,na}_{d,m}_{role}.csv`), the previous patch
      Global Emerald+ (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
-     KR and NA Diamond+/Master+ are view-only: Raw data menu and the region by rank grid in the panel, not in Overall
-     or High elo. Notes count all 12 datasets for "above/below average in all N".
+     Every one of these is a view of its own (see Views above).
    - OP.GG counters: `positionCounters` from the same page data for Global Emerald+ and Diamond+, every role ->
      `data/opgg_counters.json` (`{"e": {role: {champ: [[opponent, games, wins], ...]}}, "d": ...}`). The site only
      shows matchups with 150+ games (about a third of Emerald+ and two thirds of Diamond+ ones have fewer). Stopgap

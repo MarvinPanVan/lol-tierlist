@@ -1,15 +1,14 @@
 """One run from raw files to tiers.json.  python3 pipeline/update.py
 
 Inputs (pipeline/):
-  data/opgg_{global,euw,kr,na}_e_{role}.csv   OP.GG Emerald+ (champion,win,pick,ban)
-  data/opgg_global_{m,d}_{role}.csv           OP.GG Master+ / Diamond+ (global)
-  data/opgg_euw_{d,m}_{role}.csv              OP.GG EUW Diamond+ / Master+
+  data/opgg_{global,euw,kr,na}_{e,d,m}_{role}.csv   OP.GG Emerald+ / Diamond+ / Master+ per region (champion,win,pick,ban)
   data/prev/opgg_global_e_{role}_<prev>.csv   OP.GG Global Emerald+ of the previous patch
   data/samples.json                           OP.GG 'Total analyzed samples' per dataset (= 10 x matches)
   data/lolalytics_global_e_{role}.csv         Lolalytics Emerald+ (letters only)
   data2/ugg_{d,m}.txt  data2/blitz_d.txt  data2/dpm_d.txt  data2/log_d.csv  data2/ms_d_{role}.txt  data2/moba_highelo.json
   patch.json                                  patch numbers, next patch preview, champions changed this patch
-Output: tiers.json (roles + _meta), printed summary incl. backtest.
+Output: tiers.json (roles + _meta) with a score, ± and tier for every rank x region view, printed summary incl. backtest.
+Check: python3 pipeline/scripts/verify_views.py
 """
 import os, re, json, glob, math
 import numpy as np, pandas as pd
@@ -23,8 +22,11 @@ P = json.load(open('patch.json', encoding='utf-8'))
 SAMPLES = json.load(open('data/samples.json'))
 SPEC = 0.4          # one-trick correction: points per ln-unit of pick rate below 2%
 TAU_FLOOR = 0.35    # never assume the true spread between champions is below 0.35 points
-CONS_W = {'g': .30, 'euw': .20, 'kr': .20, 'na': .10, 'm': .20}
-HI_W = {'D': .40, 'M': .35, 'E': .25}
+VIEW_W = {'glob': .50, 'euw': .20, 'kr': .20, 'na': .10}   # weights of an 'All regions' view, same for every rank
+# Global block per rank: OP.GG Emerald+; Diamond+ from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs (half weight); Master+ from OP.GG and U.GG
+GBLK = {'e': [('g', 1)], 'd': [('d_op', 1), ('U.GG|D', 1), ('Blitz|D', 1), ('dpm.lol|D', 1), ('League of Graphs|D', .5)], 'm': [('m_op', 1), ('U.GG|M', 1)]}
+REGK = {'e': {'euw': 'euw', 'kr': 'kr', 'na': 'na'}, 'd': {'euw': 'euwd', 'kr': 'krd', 'na': 'nad'}, 'm': {'euw': 'euwm', 'kr': 'krm', 'na': 'nam'}}
+PICKK = {'e': 'g', 'd': 'd_op', 'm': 'm_op'}   # pick rate used for the one-trick correction and the Z/P rules
 
 def slug(s): return re.sub(r'[^a-z0-9]', '', s.lower())
 SPECIAL = {'monkeyking': 'Wukong', 'nunu': 'Nunu & Willump', 'nunuwillump': 'Nunu & Willump', 'renata': 'Renata Glasc'}
@@ -85,6 +87,17 @@ CTR = json.load(open('data/opgg_counters.json')) if os.path.exists('data/opgg_co
 # entries: [opponent, games, wins of this champion]; stored as [opponent, win rate, games]
 CTR = {rk: {r: {nm(c): [[nm(x[0]), round(100 * x[2] / x[1], 1), x[1]] for x in cs] for c, cs in v.items()} for r, v in CTR.get(rk, {}).items()} for rk in ['e', 'd']}
 
+# tiers: fixed rules, the same for every view, no hand edits
+def tier(v, pk, allpos, zcheck):
+    if v is None: return None
+    if zcheck and pk >= 2: return 'Z'
+    if pk < 1.5 and v >= .6: return 'P'
+    if v >= 1.15 and allpos: return 'S'
+    if v >= .6: return 'A'
+    if v >= .15: return 'B'
+    if v >= -.45: return 'C'
+    return 'D'
+
 out, meta_tau, prev_cmp = {}, {}, []
 for role in ROLES:
     base = opgg('opgg_global_e', role)
@@ -98,7 +111,6 @@ for role in ROLES:
     add('kr', opgg('opgg_kr_e', role), 'OP.GG KR E+'); add('na', opgg('opgg_na_e', role), 'OP.GG NA E+')
     add('m_op', opgg('opgg_global_m', role), 'OP.GG Master+'); add('d_op', opgg('opgg_global_d', role), 'OP.GG Diamond+')
     add('euwd', opgg('opgg_euw_d', role), 'OP.GG EUW Diamond+'); add('euwm', opgg('opgg_euw_m', role), 'OP.GG EUW Master+')
-    # view-only datasets (raw data menu and the panel grid, not part of Overall or High elo)
     for rg in ['kr', 'na']:
         add(f'{rg}d', opgg(f'opgg_{rg}_d', role), f'OP.GG {rg.upper()} Diamond+'); add(f'{rg}m', opgg(f'opgg_{rg}_m', role), f'OP.GG {rg.upper()} Master+')
     add('prev', opgg('opgg_global_e', role, P['prev_patch_code']), 'OP.GG Global E+ prev')
@@ -148,31 +160,34 @@ for role in ROLES:
         pick = float(base.loc[c, 'pick']); ban = float(base.loc[c, 'ban'])
         e['pick'] = round(pick, 2); e['ban'] = round(ban, 2)
         e['wr'] = round(float(base.loc[c, 'win']), 2); e['games'] = int(base.loc[c, 'n'])
-        e['games_d'] = int(dref.loc[c, 'n']) if c in dref.index else None
         # Lolalytics: best players on the champion (last 7 days) vs the Emerald+ average on it
         if best is not None and c in best.index and best.loc[c, 'best_games'] >= 1500:
             e['mx'] = round(float(best.loc[c, 'best_delta']), 1); e['mxw'] = round(float(best.loc[c, 'best_win']), 1)
         else: e['mx'] = e['mxw'] = None
-        # consensus parts (shrunk) and display (raw)
-        m_sh = avg([(val('m_op', c), 1), (val('U.GG|M', c), 1)]); m_raw = avg([(val('m_op', c, 'raw'), 1), (val('U.GG|M', c, 'raw'), 1)])
-        m_sd = avg([(val('m_op', c, 'sd'), 1), (val('U.GG|M', c, 'sd'), 1)])
-        parts = {'g': (val('g', c), val('g', c, 'sd')), 'euw': (val('euw', c), val('euw', c, 'sd')), 'kr': (val('kr', c), val('kr', c, 'sd')),
-                 'na': (val('na', c), val('na', c, 'sd')), 'm': (m_sh, m_sd)}
-        ws = sum(CONS_W[k] for k, (v, _) in parts.items() if v is not None)
-        cons = sum(CONS_W[k] * v for k, (v, _) in parts.items() if v is not None) / ws
-        se = sum(CONS_W[k] * s for k, (v, s) in parts.items() if v is not None) / ws   # errors treated as fully correlated (datasets overlap)
-        e['score'] = round(cons - spec(pick), 2)
-        e['se'] = round(1.64 * se, 2)
-        for k in ['g', 'euw', 'kr', 'na']:
-            v = val(k, c, 'raw'); e[k] = None if v is None else round(v, 2)
-        e['m'] = None if m_raw is None else round(m_raw, 2)
-        # Diamond+ block: OP.GG, U.GG, Blitz, dpm.lol at 1, League of Graphs at 0.5
-        dsrc = [('d_op', 1), ('U.GG|D', 1), ('Blitz|D', 1), ('dpm.lol|D', 1), ('League of Graphs|D', .5)]
-        D_sh = avg([(val(k, c), w) for k, w in dsrc]); D_raw = avg([(val(k, c, 'raw'), w) for k, w in dsrc])
-        e['ndia'] = sum(1 for k, _ in dsrc if val(k, c) is not None); e['nm'] = sum(1 for k in ['m_op', 'U.GG|M'] if val(k, c) is not None)
-        e['dia'] = None if D_raw is None else round(D_raw, 2)
-        for k in ['euwd', 'euwm', 'krd', 'krm', 'nad', 'nam']:
-            v = val(k, c, 'raw'); e[k] = None if v is None else round(v, 2)
+        # every rank x region view, all scored the same way:
+        #   All regions = Global block 50%, EUW 20%, KR 20%, NA 10% (all at that rank, each shrunk), minus the one-trick correction
+        #   one region  = that OP.GG dataset alone, shrunk, minus the one-trick correction
+        V = {}
+        for rk in 'edm':
+            blk = GBLK[rk]
+            parts = {'glob': (avg([(val(k, c), w) for k, w in blk]), avg([(val(k, c, 'sd'), w) for k, w in blk]), avg([(val(k, c, 'raw'), w) for k, w in blk]))}
+            for rg, k in REGK[rk].items(): parts[rg] = (val(k, c), val(k, c, 'sd'), val(k, c, 'raw'))
+            pk = val(PICKK[rk], c, 'pick'); pk = pick if pk is None else pk
+            av = {k: p for k, p in parts.items() if p[0] is not None}
+            if not av: continue
+            ws = sum(VIEW_W[k] for k in av)
+            s_ = round(sum(VIEW_W[k] * p[0] for k, p in av.items()) / ws - spec(pk), 2)
+            se_ = round(1.64 * sum(VIEW_W[k] * p[1] for k, p in av.items()) / ws, 2)   # errors treated as fully correlated (datasets overlap)
+            raws = [p[2] for p in av.values()]
+            V[rk.upper()] = [s_, se_, tier(s_, pk, all(x > 0 for x in raws), s_ >= 1.8 and min(raws) >= 1.5)]
+            for rg, k in REGK[rk].items():
+                if val(k, c) is None: continue
+                pk2 = val(k, c, 'pick'); raw = val(k, c, 'raw')
+                s2 = round(val(k, c) - spec(pk2), 2)
+                V[k] = [s2, round(1.64 * val(k, c, 'sd'), 2), tier(s2, pk2, raw > 0, s2 >= 1.8 and raw >= 1.5)]
+        e['v'] = V
+        e['score'], e['se'], e['t'] = V['E']   # Emerald+, all regions: the default view (homepage, link previews, history)
+        e['g'] = None if val('g', c, 'raw') is None else round(val('g', c, 'raw'), 2)   # raw Global Emerald+, for the history chart
         # games, pick, ban and win rate per dataset, so the site can show the numbers of the view you are in
         st = {}
         for k, ck in [('g', 'g'), ('euw', 'euw'), ('kr', 'kr'), ('na', 'na'), ('dia', 'd_op'), ('m', 'm_op'), ('euwd', 'euwd'), ('euwm', 'euwm'),
@@ -182,14 +197,6 @@ for role in ROLES:
                 r = dd.loc[c]
                 st[k] = [int(r.n), round(float(r.pick), 2), None if pd.isna(r.ban) else round(float(r.ban), 1), round(float(r.win), 2)]
         e['st'] = st
-        E_sh = avg([(val('euwd', c), 1), (val('euwm', c), 1)])
-        e['_gsh'] = None if val('g', c) is None else val('g', c) - spec(pick)   # shrunk, same footing as score and hi
-        e['_esh'] = E_sh   # shrunk EUW Diamond+/Master+ block
-        pick_d = float(dref.loc[c, 'pick']) if c in dref.index else None
-        e['pick_d'] = None if pick_d is None else round(pick_d, 2)
-        hi = avg([(D_sh, HI_W['D']), (m_sh, HI_W['M']), (E_sh, HI_W['E'])])
-        e['hi'] = None if hi is None else round(hi - spec(pick_d if pick_d else pick), 2)
-        e['_hib'] = hi   # high elo blend before the one-trick correction, to compare with the EUW block
         # previous patch (Global Emerald+), both shrunk
         pv, gv = val('prev', c), val('g', c)
         e['tr'] = None if pv is None or gv is None else round(gv - pv, 2)
@@ -210,23 +217,6 @@ for role in ROLES:
         res.append(e)
     out[role] = res
 
-# ---------- tiers (fixed rules, same cutoffs for consensus and high elo) ----------
-def tier(v, pk, allpos, zcheck):
-    if v is None: return None
-    if zcheck and pk >= 2: return 'Z'
-    if pk < 1.5 and v >= .6: return 'P'
-    if v >= 1.15 and allpos: return 'S'
-    if v >= .6: return 'A'
-    if v >= .15: return 'B'
-    if v >= -.45: return 'C'
-    return 'D'
-for role, L in out.items():
-    for e in L:
-        reg = [e[k] for k in ['g', 'euw', 'kr', 'na', 'm'] if e[k] is not None]
-        e['t'] = tier(e['score'], e['pick'], all(x > 0 for x in reg), e['score'] >= 1.8 and min(reg) >= 1.5)
-        hreg = [e[k] for k in ['dia', 'm', 'euwd', 'euwm'] if e[k] is not None]
-        e['ht'] = tier(e['hi'], e['pick_d'] or e['pick'], all(x > 0 for x in hreg), e['hi'] is not None and e['hi'] >= 1.8 and min(hreg) >= 1.5)
-
 # ---------- next patch flags ----------
 for role, L in out.items():
     flags = {}
@@ -235,53 +225,53 @@ for role, L in out.items():
     for e in L:
         f = flags.get(e['c']); e['nx'] = f[0] if f else None; e['nxt'] = f[1] if f else None
 
-# ---------- notes, written from the numbers ----------
-DSN = {'g': 'Global', 'euw': 'EUW', 'kr': 'KR', 'na': 'NA', 'm': 'Master+', 'dia': 'Diamond+', 'euwd': 'EUW Diamond+', 'euwm': 'EUW Master+'}
+# ---------- notes, written from the numbers (the same view scores the site shows) ----------
 from decimal import Decimal, ROUND_HALF_UP
 def fx(v, nd=1):  # same as JavaScript's toFixed, which the site uses for pick rates
     return str(Decimal(v).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP)) if nd else str(Decimal(v).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 def f1(v):  # same rounding as the site (Math.round), so notes and numbers match
     r = math.floor(v * 10 + .5) / 10; return ('+' if r > 0 else '−' if r < 0 else '') + f'{abs(r):.1f}'
 LV = {'S+': 6, 'S': 5, 'S-': 4.5, 'A+': 4.3, 'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3, 'B-': 2.7, 'C': 2, 'D': 1}
-ALLDS = dict(DSN, krd='KR Diamond+', krm='KR Master+', nad='NA Diamond+', nam='NA Master+')   # everything the panel grid shows
+RKN = {'e': 'Emerald+', 'd': 'Diamond+', 'm': 'Master+'}
+VN = {rk.upper(): RKN[rk] for rk in RKN} | {k: f'{rg.upper()} {RKN[rk]}' for rk in REGK for rg, k in REGK[rk].items()}
 def note(e):
-    vals = {k: e[k] for k in DSN if e.get(k) is not None}   # datasets in the score, used for 'Mixed'
-    lo_k, hi_k = min(vals, key=vals.get), max(vals, key=vals.get)
-    lo, hi = vals[lo_k], vals[hi_k]
-    va = [e[k] for k in ALLDS if e.get(k) is not None]; alo, ahi = min(va), max(va)
+    v = {k: x[0] for k, x in e['v'].items()}; ts = [x[2] for x in e['v'].values()]
+    lo, hi = min(v.values()), max(v.values())
+    sure = {k: x[0] for k, x in e['v'].items() if x[1] <= 1}   # 'Mixed' only compares views with enough games
+    lo_k, hi_k = (min(sure, key=sure.get), max(sure, key=sure.get)) if sure else (None, None)
     out = []
-    if e['t'] == 'Z': out.append((10, f'Clear outlier: {f1(alo)} to {f1(ahi)} across every dataset.'))
-    elif alo >= .5: out.append((7, f'Above average in all {len(va)} datasets ({f1(alo)} to {f1(ahi)}).'))
-    elif ahi <= -.5: out.append((7, f'Below average in all {len(va)} datasets.'))
-    elif hi - lo >= 1.8 and hi > .3 and lo < -.3: out.append((8, f'Mixed: {f1(hi)} in {DSN[hi_k]}, {f1(lo)} in {DSN[lo_k]}.'))
-    low_elo, high = e.get('_gsh'), e.get('hi')   # both shrunk and one-trick corrected
-    if low_elo is not None and high is not None:
-        if high - low_elo >= .8:
-            out.append((7, f'Less bad in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if high < 0 else f'Gets better with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
-        elif high - low_elo <= -.8:
-            out.append((7, f'Even worse in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if low_elo < 0 else f'Falls off with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
+    ev_ = [v[k] for k in ['euw', 'kr', 'na'] if k in v]
+    if all(t in 'ZS' for t in ts) and 'Z' in ts: out.append((10, f'Clear outlier: Z or S in all {len(ts)} rank and region views.'))
+    elif all(e['v'].get(k, [0, 0, ''])[2] == 'Z' for k in 'EDM'): out.append((10, f'Outlier at every rank: {f1(v["E"])} in Emerald+, {f1(v["D"])} in Diamond+, {f1(v["M"])} in Master+.'))
+    elif e['t'] == 'Z' and ev_: out.append((10, f'Outlier in Emerald+, ahead in every region there ({f1(min(ev_))} to {f1(max(ev_))}).'))
+    elif lo >= .5: out.append((7, f'Above average in every rank and region ({f1(lo)} to {f1(hi)}).'))
+    elif hi <= -.5: out.append((7, f'Below average in every rank and region ({f1(lo)} to {f1(hi)}).'))
+    elif sure and sure[hi_k] - sure[lo_k] >= 1.8 and sure[hi_k] > .3 and sure[lo_k] < -.3: out.append((8, f'Mixed: {f1(sure[hi_k])} in {VN[hi_k]}, {f1(sure[lo_k])} in {VN[lo_k]}.'))
+    E, D, M = v.get('E'), v.get('D'), v.get('M')
+    if E is not None and D is not None and M is not None and not any(t.startswith('Outlier at every rank') for _, t in out):
+        ranks = f'{f1(E)} in Emerald+, {f1(D)} in Diamond+, {f1(M)} in Master+.'
+        if M - E >= .8: out.append((7, (('Less bad the higher the rank: ' if max(D, M) < 0 else 'Gets better with rank: ') if D >= E else 'Best in Master+: ') + ranks))
+        elif E - M >= .8: out.append((7, (('Even worse the higher the rank: ' if E < 0 else 'Falls off with rank: ') if D <= E else 'Drops in Master+: ') + ranks))
     if e['pick'] >= 8 and e['score'] <= -.3: out.append((9, f'Very popular ({fx(e["pick"])}% pick in Emerald+) and still losing.'))
     elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular ({fx(e["pick"])}% pick in Emerald+) and still winning.'))
     elif e['pick'] < 1.5: out.append((8, f'Rarely picked ({fx(e["pick"])}% in Emerald+), mostly by mains. Expect less if you are new to it.'))
-    ev, hb = e.get('_esh'), e.get('_hib')   # both shrunk, before the one-trick correction
-    if ev is not None and hb is not None:
-        if ev - hb >= 1: out.append((6, f'Even better on EUW high elo ({f1(ev)}).'))
-        elif ev - hb <= -1: out.append((6, f'Worse on EUW high elo ({f1(ev)}).'))
-    sl = {k: v for k, v in e['sites'].items() if v in LV}
+    # EUW Diamond+ and Master+ against all regions at the same ranks (EUW is the site's home server)
+    if all(k in v for k in ['euwd', 'euwm', 'D', 'M']):
+        ev, hb = (v['euwd'] + v['euwm']) / 2, (v['D'] + v['M']) / 2
+        if abs(ev - hb) >= 1: out.append((6, f'{"Better" if ev > hb else "Worse"} on EUW in Diamond+ and Master+ ({f1(ev)} vs {f1(hb)} in all regions).'))
+    sl = {k: x for k, x in e['sites'].items() if x in LV}
     if len(sl) >= 3:
         a, b = max(sl, key=lambda k: LV[sl[k]]), min(sl, key=lambda k: LV[sl[k]])
         if LV[sl[a]] - LV[sl[b]] >= 3: out.append((5, f'Sites disagree: {a} gives {sl[a]}, {b} gives {sl[b]}.'))
     if e.get('tr') is not None and abs(e['tr']) >= 1:
-        out.append((6, f'{"Up" if e["tr"] > 0 else "Down"} {f1(e["tr"]).lstrip("+−")} points in Global since {P["prev_patch"]}.'))
+        out.append((6, f'{"Up" if e["tr"] > 0 else "Down"} {f1(e["tr"]).lstrip("+−")} points in Global Emerald+ since {P["prev_patch"]}.'))
     if e.get('mx') is not None and e['mx'] >= 6:
         out.append((7, f'Rewards mastery: the best players on it win {fx(e["mxw"], 0)}%, {fx(e["mx"])} points above the Emerald+ average on it.'))
     if e['se'] >= .8: out.append((4, 'Small sample, so treat the tier as rough.'))
     out.sort(key=lambda x: -x[0])
     return ' '.join(t for _, t in out[:2])
 for L in out.values():
-    for e in L:
-        e['note'] = note(e)
-        for k in ['_gsh', '_esh', '_hib']: e.pop(k, None)
+    for e in L: e['note'] = note(e)
 
 # ---------- site grading (rank correlation of letters with win rate vs popularity, Diamond+) ----------
 grade = []
@@ -325,7 +315,7 @@ for r, e in pop:
 facts = {'n5': len(pop), 'n5_lose': n_lose, 'z': {r: [e['c'] for e in out[r] if e['t'] == 'Z'] for r in ROLES}}
 
 out['_meta'] = {'patch': P['patch'], 'prev_patch': P['prev_patch'], 'next': P['next'], 'grade': grade, 'backtest': backtest,
-                'tau': meta_tau, 'facts': facts, 'weights': {'consensus': CONS_W, 'high_elo': HI_W}}
+                'tau': meta_tau, 'facts': facts, 'weights': {'all_regions': VIEW_W}}
 json.dump(out, open('tiers.json', 'w', encoding='utf-8'), ensure_ascii=False)
 
 # ---------- summary ----------
