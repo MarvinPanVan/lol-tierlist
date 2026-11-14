@@ -9,7 +9,7 @@ mark=open('assets/mark.svg').read()
 shutil.copy('assets/mark.svg',f'{PUB}/favicon.svg')
 tpl=open('template.html',encoding='utf-8').read()
 patch=re.search(r'class="pill">Patch ([\d.]+)</span>',tpl).group(1)
-upd=re.search(r'class="pill">Updated ([^<]+)</span>',tpl).group(1)
+upd=re.search(r">Updated ([^<]+)</span>",tpl).group(1)
 data=json.load(open('tiers.json',encoding='utf-8'))
 TR={'Z':0,'S':1,'A':2,'B':3,'C':4,'D':5,'P':6}
 COL={'Z':'#ff4fbf','S':'#ff6b6b','A':'#ff9f43','B':'#ffd23f','C':'#a6dc5c','D':'#6db3ff','P':'#b99dff'}

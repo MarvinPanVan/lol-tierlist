@@ -59,13 +59,13 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
    - Also collect OP.GG EUW Diamond+ and Master+ (`opgg_euw_{d,m}_{role}.csv`), the previous patch Global Emerald+
      (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
-4. Update the texts in `pipeline/template.html`: title and meta tags, top bar pill "Patch xx.xx", hero pills
+4. Update the texts in `pipeline/template.html`: title and meta tags, top bar pill "Patch xx.xx", hero meta line
    ("Updated ...", "Next patch ..."), headline, lede counts, the NEXT list ("Changing on ..."), method and limits
    bullets that name champions, footer line, patch info links. Notes per champion live in tiers.json.
    Rewrite notes that no longer match the numbers.
    Writing rules from Marvin: blunt, no em dashes, must not sound AI-written, explain jargon.
 5. `python3 pipeline/build.py`, then `python3 pipeline/scripts/assets.py` (favicon, apple-touch-icon, og.png and
-   og-<role>.png link previews with portraits; it reads the patch and date from the template pills). Then check with playwright over a local server (`cd public && python3 -m http.server`; role paths and the
+   og-<role>.png link previews with portraits; it reads the patch from the top bar pill and the date from "Updated ..." in the template). Then check with playwright over a local server (`cd public && python3 -m http.server`; role paths and the
    patch archive need http, not file://): no JS errors,
    no horizontal overflow at 390px, look at desktop, dark mode and the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.

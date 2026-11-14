@@ -227,7 +227,7 @@ def note(e):
     if e['t'] == 'Z': out.append((10, f'Clear outlier: {f1(lo)} to {f1(hi)} in every dataset.'))
     elif lo >= .5: out.append((7, f'Above average in all {len(vals)} datasets ({f1(lo)} to {f1(hi)}).'))
     elif hi <= -.5: out.append((7, f'Below average in all {len(vals)} datasets.'))
-    elif hi - lo >= 1.8 and hi > .3 and lo < -.3: out.append((8, f'Split verdict: {f1(hi)} in {DSN[hi_k]}, {f1(lo)} in {DSN[lo_k]}.'))
+    elif hi - lo >= 1.8 and hi > .3 and lo < -.3: out.append((8, f'Mixed: {f1(hi)} in {DSN[hi_k]}, {f1(lo)} in {DSN[lo_k]}.'))
     low_elo, high = e.get('g'), e.get('hi')
     if low_elo is not None and high is not None:
         if high - low_elo >= .8:
@@ -235,7 +235,7 @@ def note(e):
         elif high - low_elo <= -.8:
             out.append((7, f'Even worse in high elo: {f1(low_elo)} in Emerald+, {f1(high)} higher up.' if low_elo < 0 else f'Falls off with rank: {f1(low_elo)} in Emerald+, {f1(high)} in high elo.'))
     if e['pick'] >= 8 and e['score'] <= -.3: out.append((9, f'Very popular ({e["pick"]:.1f}% pick) and still losing.'))
-    elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular and winning ({e["pick"]:.1f}% pick), a rare combo.'))
+    elif e['pick'] >= 5 and e['score'] >= 1: out.append((8, f'Popular ({e["pick"]:.1f}% pick) and still winning.'))
     elif e['pick'] < 1.5: out.append((8, f'Rarely picked ({e["pick"]:.1f}%), mostly by mains. Expect less if you are new to it.'))
     eu = [e[k] for k in ['euwd', 'euwm'] if e.get(k) is not None]
     if eu and high is not None:
