@@ -154,8 +154,8 @@ function renderPanel(){if(!DATA[role])return;
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site">${k}<b style="background:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site">Lolalytics, Emerald+<b style="background:var(${colT(d.ll)})">${d.ll}</b></span>`:'');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}</p>`;
   const tt=t=>t?`<span class="tg sm" style="background:var(${colT(t)})">${t}</span>`:'';
-  $('panel').innerHTML=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
-  <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a><button type="button" class="ext" data-share="${d.c}">Share</button>${!ARCH&&PAGE!=='champ'?`<a class="ext" href="${champURL(d.c)}">Full page</a>`:''}</div>
+  $('panel').innerHTML=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSN[SK()]}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}${!ARCH&&PAGE!=='champ'?` · <a class="fp" href="${champURL(d.c)}">Full page</a>`:''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
+  <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}">${isMine(d.c)?'★ In my champs':'☆ Add to my champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener">Build on OP.GG ↗</a><button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="kv"><div data-tip="Win rate points above the role average, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>Overall</u>${tt(d.t)}</span><strong>${fmt(d.score)}<small> ±${d.se.toFixed(1)}</small></strong>${rngHTML(d)}</div>${d.hi!=null?`<div data-tip="Same score using only Diamond+ and Master+ games, with extra weight on EUW."><span><u>High elo</u>${tt(ht)}</span><strong>${fmt(d.hi)}</strong></div>`:''}<div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
   ${LIM()?`<p class="cap">Win rate vs role average, Global Emerald+ only</p><div class="rows">${rows}</div>`:`<p class="cap">Win rate vs role average in points, by region and rank. Tap a cell to rank everyone by it.</p>${grid}`}
   ${d.note?`<p class="note">${d.note}</p>`:''}
@@ -194,24 +194,30 @@ function renderSide(){if(!DATA[role])return;
   const list=DATA[role];
   const k=keyOf(),VN=lens==='score'?'Overall':lens==='hi'?'High elo':DSN[lens];
   const sx=d=>stat(d)||{},vv=d=>d[k];
-  $('traps').innerHTML=list.filter(d=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a)-vv(b)).map(d=>`<li><button type="button" data-c="${d.c}">${pic(d.c,'pic xs')}${d.c}</button><span>${sx(d).pick.toFixed(1)}% pick, ${fmt(vv(d))}</span></li>`).join('')||'<li><span>None in this view</span><span></span></li>';
-  $('bans').innerHTML=list.filter(d=>vv(d)!=null&&vv(d)>0&&(sx(d).pick||0)>=1.5).map(d=>[d,vv(d)*sx(d).pick/(100-(sx(d).ban||0))]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([d])=>`<li><button type="button" data-c="${d.c}">${pic(d.c,'pic xs')}${d.c}</button><span>${fmt(vv(d))}, ${sx(d).pick.toFixed(1)}% pick, ${sx(d).ban==null?'?':sx(d).ban.toFixed(0)}% ban</span></li>`).join('')||'<li><span>None in this view</span><span></span></li>';
+  const row=(d,sub,pill,cls)=>`<li><button type="button" class="irow" data-c="${d.c}">${pic(d.c)}<span class="in"><b>${d.c}</b><small>${sub}</small></span><span class="pill ${cls}">${pill}</span></button></li>`;
+  const none='<li class="none">None in this view.</li>';
+  $('traps').innerHTML=list.filter(d=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a)-vv(b)).slice(0,6).map(d=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
+  $('bans').innerHTML=list.filter(d=>vv(d)!=null&&vv(d)>0&&(sx(d).pick||0)>=1.5).map(d=>[d,vv(d)*sx(d).pick/(100-(sx(d).ban||0))]).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([d])=>row(d,`${sx(d).pick.toFixed(1)}% pick · ${sx(d).ban==null?'?':sx(d).ban.toFixed(0)}% ban`,fmt(vv(d)),'pos')).join('')||none;
   $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
   const mv=list.filter(d=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4).sort((a,b)=>b.tr-a.tr);
-  const mrow=d=>`<li><button type="button" data-c="${d.c}">${pic(d.c,'pic xs')}${d.c}</button><span class="mv ${d.tr>0?'up':'dn'}">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</span></li>`;
-  $('movers').innerHTML=[...mv.filter(d=>d.tr>0).slice(0,4),...mv.filter(d=>d.tr<0).slice(-4)].map(mrow).join('');
+  $('movers').innerHTML=[...mv.filter(d=>d.tr>0).slice(0,3),...mv.filter(d=>d.tr<0).slice(-3)].map(d=>row(d,`now ${d.t} tier · ${fmt(d.score)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
   $('movh').textContent=`Moved most since ${META.prev_patch}`;
-  $('movc').hidden=!!ARCH||!mv.length;
-  $('next').innerHTML=NEXT[role].map(([c,t,k])=>`<li><span>${c}</span><span style="color:var(${k==='buff'?'--pos':'--neg'})">${t}</span></li>`).join('');
+  $('movc').hidden=!!ARCH;
+  const inRole=n=>list.find(d=>d.c===n);
+  $('next').innerHTML=NEXT[role].map(([c,t,kd])=>{const names=c.split(',').map(x=>x.trim()),one=inRole(names[0])&&names.length===1;
+    const icon=names.length>1?`<span class="stack">${names.slice(0,3).map(n=>pic(n)).join('')}</span>`:`<span class="pw">${pic(names[0])}</span>`;
+    const inner=`${icon}<span class="in"><b>${c}</b><small>${t}</small></span><span class="pill ${kd==='buff'?'pos':'neg'}">${kd}</span>`;
+    return `<li>${one?`<button type="button" class="irow" data-c="${names[0]}">${inner}</button>`:`<div class="irow">${inner}</div>`}</li>`;}).join('');
+  $('nextcap').textContent=`Patch ${META.next.patch} on ${META.next.date}, from the patch preview.`;
 }
 function drawMap(){if(!DATA[role])return;
   const s=$('sv'),W=s.clientWidth,H=s.clientHeight;if(!W)return;
   const k=lens==='score'||DSP.some(([x])=>x===lens)?(lens==='score'?'score':lens):'hi';
   const P=d=>(stat(d)||d).pick;
   const list=DATA[role].filter(d=>d[k]!=null&&P(d)>0);
-  const m={l:58,r:16,t:18,b:40},small=W<520;
+  const m={l:58,r:24,t:40,b:42},small=W<520;
   const x=p=>m.l+(Math.log(Math.max(.4,Math.min(26,p)))-Math.log(.4))/(Math.log(26)-Math.log(.4))*(W-m.l-m.r);
-  const ymin=-4,ymax=3.5,y=v=>m.t+(ymax-Math.max(ymin,Math.min(ymax,v)))/(ymax-ymin)*(H-m.t-m.b);
+  const ymin=-4.6,ymax=4.2,y=v=>m.t+(ymax-Math.max(ymin,Math.min(ymax,v)))/(ymax-ymin)*(H-m.t-m.b);
   let g='';
   g+=`<rect x="${x(5)}" y="${y(0)}" width="${W-m.r-x(5)}" height="${y(ymin)-y(0)}" fill="var(--neg)" opacity=".07"/>`;
   g+=`<rect x="${x(5)}" y="${y(ymax)}" width="${W-m.r-x(5)}" height="${y(0)-y(ymax)}" fill="var(--pos)" opacity=".07"/>`;
@@ -219,17 +225,19 @@ function drawMap(){if(!DATA[role])return;
   (small?[1,5,20]:[.5,1,2,5,10,20]).forEach(p=>{g+=`<line x1="${x(p)}" x2="${x(p)}" y1="${m.t}" y2="${H-m.b}" stroke="var(--line)" ${p===5?'stroke-dasharray="4 4" stroke="var(--mut)"':''}/><text class="ax" x="${x(p)}" y="${H-m.b+18}" text-anchor="middle">${p}%</text>`;});
   g+=`<text class="ax" x="${W-m.r}" y="${H-6}" text-anchor="end">Pick rate (log scale)</text>`;
   g+=`<text class="ax" transform="translate(14 ${(m.t+H-m.b)/2}) rotate(-90)" text-anchor="middle">Score vs role average</text>`;
-  g+=`<text class="q" x="${W-m.r-8}" y="${y(ymax)+18}" text-anchor="end">Strong and popular</text>`;
-  g+=`<text class="q" x="${W-m.r-8}" y="${y(0)+20}" text-anchor="end">Popular, losing</text>`;
-  g+=`<text class="q" x="${m.l+8}" y="${y(ymax)+18}">Strong, rarely picked</text>`;
+  g+=`<text class="q" x="${W-m.r}" y="${m.t-14}" text-anchor="end">↗ Strong and popular</text>`;
+  g+=`<text class="q" x="${W-m.r}" y="${y(ymin)-8}" text-anchor="end">↘ Popular, losing</text>`;
+  g+=`<text class="q" x="${m.l}" y="${m.t-14}">↖ Strong, rarely picked</text>`;
   const boxes=[],lab=[];
   const pri=list.slice().sort((a,b)=>(b.c===pick)-(a.c===pick)||Math.abs(b[k])*Math.sqrt(P(b))-Math.abs(a[k])*Math.sqrt(P(a)));
-  pri.forEach((d,i)=>{const cx=x(P(d)),cy=y(d[k]);const w=d.c.length*7+6;const bx=cx+8,by=cy-8;
-    if(cx+8+w>W-m.r)return;const lim=small?6:16;if(d.c!==pick&&lab.length>=lim)return;
+  pri.forEach((d,i)=>{const cx=x(P(d)),cy=y(d[k]);const w=d.c.length*7+6;const bx=cx+18,by=cy-8;
+    if(cx+18+w>W-m.r)return;const lim=small?5:10;if(d.c!==pick&&lab.length>=lim)return;
     if(boxes.some(b=>bx<b[0]+b[2]&&bx+w>b[0]&&by<b[1]+16&&by+16>b[1]))return;boxes.push([bx,by,w]);lab.push(d.c);});
-  list.forEach(d=>{const t=tierOf(d)||'E',cx=x(P(d)),cy=y(d[k]),on=d.c===pick;
-    g+=`<circle cx="${cx}" cy="${cy}" r="${on?9:6}" fill="var(${colT(t)})" stroke="${on?'var(--ink)':'var(--card)'}" stroke-width="${on?2.5:1.5}" data-c="${d.c}"><title>${d.c} ${fmt(d[k])}, ${P(d).toFixed(1)}% pick</title></circle>`;});
-  list.filter(d=>lab.includes(d.c)).forEach(d=>{g+=`<text x="${x(P(d))+10}" y="${y(d[k])+4}" style="font-weight:${d.c===pick?700:500}">${d.c}</text>`;});
+  const R=small?9:12;
+  g+=`<defs><clipPath id="cc" clipPathUnits="objectBoundingBox"><circle cx=".5" cy=".5" r=".5"/></clipPath></defs>`;
+  list.slice().sort((a,b)=>(a.c===pick)-(b.c===pick)||P(a)-P(b)).forEach(d=>{const t=tierOf(d)||'E',cx=x(P(d)),cy=y(d[k]),on=d.c===pick,r=on?R+5:R;
+    g+=`<g class="dot${on?' on':''}" data-c="${d.c}" transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)})"><title>${d.c} ${fmt(d[k])}, ${P(d).toFixed(1)}% pick</title><circle r="${r+2.5}" fill="var(${on?'--acc':colT(t)})"/><image href="${IMGBASE}${slug(d.c)}.webp" x="${-r}" y="${-r}" width="${2*r}" height="${2*r}" clip-path="url(#cc)" preserveAspectRatio="xMidYMid slice"/></g>`;});
+  list.filter(d=>lab.includes(d.c)).forEach(d=>{const on=d.c===pick,r=(on?R+5:R)+6;g+=`<text x="${(x(P(d))+r).toFixed(1)}" y="${(y(d[k])+4).toFixed(1)}" style="font-weight:${on?700:600}">${d.c}</text>`;});
   s.innerHTML=g;
 }
 function renderGrade(){
@@ -246,7 +254,7 @@ function render(){
   const list=DATA[role];
   if(!list.some(d=>d.c===pick&&tierOf(d)))pick=(list.find(d=>tierOf(d)==='Z')||list.find(d=>tierOf(d)==='S')||list[0]).c;
   renderControls();renderBoard();renderPanel();renderSide();drawMap();
-  $('nexth').textContent=`Changing on ${META.next.date} (${META.next.patch} preview)`;
+  $('nexth').textContent='Changing next patch';
   $('nextc').hidden=!!ARCH||!NEXT[role].length;
   $('maph').textContent=ROLES.find(r=>r[0]===role)[1]+': picked a lot is not the same as winning';
 }

@@ -79,7 +79,7 @@ def head_home(root):
         cards += (f'<a class="rcd" href="{root}{r}/" style="--R:var(--R{r});--art:url(/img/tile/{slug(c)}.webp)"><span class="rn"><span class="ri">{RICON[r]}</span>{n}</span>'
                   f'<span class="bp"><small>Best pick</small><b>{E(c)} <span class="tg" style="background:var(--{t})">{t}</span></b><small>{f1(sc)} vs role average</small></span></a>')
     mv = sorted([(e['tr'], r, e['c']) for r, _, _ in ROLES for e in D[r] if e.get('tr') is not None and e['pick'] >= 1 and abs(e['tr']) >= .4], reverse=True)
-    pick = mv[:4] + [x for x in mv[::-1][:4] if x[0] < 0]
+    pick = mv[:3] + [x for x in mv[::-1][:3] if x[0] < 0]
     chips = ''.join(f'<a href="{root}{r}/{slug(c)}/"><img class="pic" src="{root}img/champ/{slug(c)}.webp" alt="" width="22" height="22" loading="lazy">{E(c)} <span class="mu">{RNAME[r]}</span><em class="{"up" if t > 0 else "dn"}">{"↑" if t > 0 else "↓"} {f1(t)}</em></a>' for t, r, c in pick)
     nx = P.get('next', {}); nxt = f" · next patch {E(nx.get('patch', ''))} on {E(nx.get('date', ''))}" if nx else ''
     return (f'<header class="band head home"><div class="wrap">{dline(nxt)}'
@@ -106,12 +106,12 @@ def top_line(role):
     parts = [f"{e['c']} ({e['t']})" for e in L]
     return ', '.join(parts[:-1]) + (' and ' + parts[-1] if len(parts) > 1 else (parts[0] if parts else ''))
 
-base_desc = f'League of Legends tier list for patch {PATCH}, every role, built from nine stat sites (OP.GG, U.GG, Blitz, dpm.lol, League of Graphs and more) and corrected for sample size and one-trick inflation.'
+base_desc = f'LoL tier list for patch {PATCH}, every role. Nine stat sites combined, corrected for small samples and one-tricks. No ads.'
 z = [c for r, _, _ in ROLES for c in D['_meta']['facts']['z'][r]]
 page('index.html', 'B', '', 'home', 'top', f'LoL Tier List: patch {PATCH}, every role', f'LoL Tier List {PATCH}' + (f": {', '.join(z[:-1])} and {z[-1]} lead" if len(z) > 1 else ''), base_desc, SITE, SITE + 'og.png', head=head_home(''))
 for r, name, plural in ROLES:
     page(f'{r}/index.html', 'B', '../', 'board', r, f'{name} tier list, patch {PATCH} | LoL Tier List', f'{name} tier list for patch {PATCH}',
-         f'Best {plural} in patch {PATCH}: {top_line(r)}. Win rate above the role average from nine stat sites, corrected for sample size and one-tricks.',
+         f'Best {plural} in patch {PATCH}: {top_line(r)}. Nine stat sites combined, no ads.'[:160],
          SITE + r + '/', SITE + f'og-{r}.png', head=head_role(r))
     for e in D[r]:   # one page per champion and role
         sl = slug(e['c']); tiers = f"Overall {e['t']}" + (f", high elo {e['ht']}" if e.get('ht') else '')

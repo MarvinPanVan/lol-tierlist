@@ -16,7 +16,7 @@ for cid, c in champs.items():
     im.save(os.path.join(PUB, 'img', 'champ', slug(c['name']) + '.webp'), 'WEBP', quality=82, method=6)
     # art for the redesign: square face crop (tile) and wide centered splash. Art does not change between patches,
     # so only missing files are fetched (delete a file to refresh it).
-    for kind, size, q in [('tile', (192, 192), 76), ('splash', (960, 540), 70)]:
+    for kind, size, q in [('splash', (960, 540), 70), ('tile', (192, 192), 76)]:
         out = os.path.join(PUB, 'img', kind, slug(c['name']) + '.webp')
         if os.path.exists(out): continue
         os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -31,5 +31,9 @@ for cid, c in champs.items():
                 w, h = a.size; th = int(w * 9 / 16)
                 if th <= h: a = a.crop((0, (h - th) // 2, w, (h - th) // 2 + th))
             a = a.resize(size, Image.LANCZOS); a.save(out, 'WEBP', quality=q, method=6); break
+        if kind == 'tile' and not os.path.exists(out):   # no tile on Data Dragon (e.g. Fiddlesticks): crop the splash
+            sp = os.path.join(PUB, 'img', 'splash', slug(c['name']) + '.webp')
+            if os.path.exists(sp):
+                a = Image.open(sp); w, h = a.size; a.crop(((w - h) // 2, 0, (w - h) // 2 + h, h)).resize(size, Image.LANCZOS).save(out, 'WEBP', quality=q, method=6)
 json.dump({'version': ver, 'by_key': by_key}, open(os.path.join(PIPE, 'data', 'ddragon_champions.json'), 'w'), ensure_ascii=False, indent=0)
 print(f'{len(champs)} portraits from Data Dragon {ver}')
