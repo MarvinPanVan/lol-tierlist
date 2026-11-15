@@ -86,7 +86,7 @@ function renderTable(){if(!DATA[role])return;
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:c.startsWith('r_')?SV(d,VK(c[2])):d[c];
   const rows=list.filter(d=>tierOf(d)).slice().sort((a,b)=>{const x=val(a,sk),y=val(b,sk);if(typeof x==='string')return sortD*(x<y?-1:x>y?1:0);return sortD*((x??-999)-(y??-999));});
   const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="--T:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
-    switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxFlag(d):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
+    switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxTag(d,' tbl'):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
     case 't':{const t=tierOf(d);return `<td><span class="tg" style="--T:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
@@ -238,7 +238,7 @@ const CMIN=150;
 const LK=()=>META.lk||{i:{},s:{},r:{}};
 const bimg=(kind,id,cl='')=>{const L=LK(),nm=kind==='item'?L.i[id]:kind==='sum'?(L.s[id]||[])[0]:(L.r[id]||[])[0];return `<img class="${cl}" src="${SITE}img/${kind}/${id}.webp" alt="${nm||''}" title="${nm||''}" width="28" height="28" loading="lazy">`;};
 // win rate by game length (OP.GG trends, Global Emerald+): each bucket against the champion's own win rate. Bucket sizes
-// are estimates (OP.GG gives none), so a value is dotted when its gap could be luck. The sentence only speaks when short
+// are estimates (OP.GG gives none), so a value is grey when its gap could be luck. The sentence only speaks when short
 // and long games clearly differ (update.py: 2+ points and beyond sampling noise).
 function glHTML(d){const g=d.gl;if(!g||ARCH)return '';
   const W=340,H=112,L=14,R=14,T=22,Bm=24,xs=i=>L+i*(W-L-R)/4;
@@ -256,7 +256,7 @@ function glHTML(d){const g=d.gl;if(!g||ARCH)return '';
   const v=g.v==='late'?`Wins more the longer the game goes: <b>+${g.d.toFixed(1)}</b> points over 35 minutes compared with under 25.`:g.v==='early'?`Wins more in short games: <b>${Math.abs(g.d).toFixed(1)}</b> points better under 25 minutes than over 35.`:'About the same at every game length.';
   return `<div class="caph"><p class="cap">Win rate by game length <span class="mu">OP.GG Emerald+, minutes</span></p></div><div class="glw">${svg}<p class="glk"><span class="glkm"></span>${d.c}'s usual ${g.w.toFixed(1)}% <span class="glkh"></span>too few games to be sure</p></div><p class="glt">${v}</p>`;}
 // build card: one short row per part (spells, runes, skills, start, core, boots) with OP.GG's most common pick and its share
-// of games. Tapping a row opens the other options: share, win rate (dotted when within sampling noise of the usual pick),
+// of games. Tapping a row opens the other options: share, win rate (grey when within sampling noise of the usual pick),
 // and the matchups where players switch to that option (OP.GG matchup builds, d.bd.vs). Nothing here says what to do;
 // it shows what players actually do, and against whom.
 const pct=v=>v<10?v.toFixed(1)+'%':Math.round(v)+'%';
@@ -302,7 +302,7 @@ function ctrHTML(d){
     return inRole(c)?`<button type="button" class="${cl2}" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="${cl2}" title="${tip}">${inner}</span>`;};
   const grid=(L,good)=>`<div class="ctr">${L.map(x=>card(x,good)).join('')}</div>`;
   const more=cs.length>3||gs.length>3;
-  const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
+  const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><b class="lowdemo">Grey</b> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
   return `${head}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
     +(more?`<details class="pmore sm-d"><summary>More matchups</summary><div class="dc">${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</div></details>`:'')+foot
     +(META.cpf&&!ARCH?`<button type="button" class="cpgo" data-cpgo="${d.c}">Who beats ${d.c}? <span>See every pick ranked</span></button>`:'');
@@ -323,15 +323,15 @@ function renderCounter(){
   if(CPE){const rows=((D.r||{})[role]||{})[CPE]||[];
     const item=([i,wr,n,cl])=>{const c=D.names[i],d=list.find(x=>x.c===c),tt=d?tierOf(d):null,w=wr/10;
       return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="--T:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
-    const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,12);
+    const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,matchMedia('(min-width:981px)').matches?24:12);
     res=`<div class="cph"><div class="cpsel">${pic(CPE)}<div><h3>Best picks into ${CPE}</h3><p class="cap">${RN}, OP.GG ${rk==='e'?'Emerald+':'Diamond+'}: win rate against ${CPE} in lane. Ranked with the number of games in mind, so 52% over 2,000 games beats 55% over 250.</p></div><button type="button" class="cpchg" id="cpchange">Change enemy</button></div></div>`
       +(mine.length?`<p class="mlab">Your champions</p><div class="cpl">${mine.map(item).join('')}</div><p class="mlab">Everyone</p>`:'')
-      +(rows.length?`<div class="cpl">${shown.map(item).join('')}</div>${rows.length>12?`<button type="button" class="xmore" id="cpmore" aria-expanded="${CPall}">${CPall?'Show fewer':`Show all ${rows.length}`}</button>`:''}<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure it differs from an average pick. Only matchups with 150+ games. Tap a champion for its build and more.</p>`:`<p class="empty">No matchup against ${CPE} has 150+ games yet.</p>`);}
+      +(rows.length?`<div class="cpl">${shown.map(item).join('')}</div>${rows.length>shown.length||CPall?`<button type="button" class="xmore" id="cpmore" aria-expanded="${CPall}">${CPall?'Show fewer':`Show all ${rows.length}`}</button>`:''}<p class="bnote"><b class="lowdemo">Grey</b> = too few games to be sure it differs from an average pick. Only matchups with 150+ games. Tap a champion for its build and more.</p>`:`<p class="empty">No matchup against ${CPE} has 150+ games yet.</p>`);}
   $('board').innerHTML=`<div class="cp"><button type="button" class="cpback" data-mode="tiers">← Back to the tier list</button>${CPE?`<div id="cpres">${res}</div>`:`<div class="cph"><h3>Counter pick</h3><p class="cap">Tap the enemy ${RN} laner to see who wins most against them. Most played first.</p></div><input type="search" class="cpq" id="cpq" placeholder="Find the enemy champion" autocomplete="off">${grid}`}</div>`;
 }
 document.addEventListener('input',e=>{if(e.target.id!=='cpq')return;const v=e.target.value.trim().toLowerCase();document.querySelectorAll('#cpg .cpe').forEach(b=>{b.hidden=!!v&&!b.dataset.n.includes(v);});});
 // bot lane duos (panel, ADCs and supports): the champion's 10 most played partners from OP.GG, each against the champion's
-// own win rate, pulled toward it by sample size (update.py); dotted when the gap could be luck. Links to the partner's page.
+// own win rate, pulled toward it by sample size (update.py); grey when the gap could be luck. Links to the partner's page.
 function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const pr=role==='adc'?'support':'adc',pn=role==='adc'?'supports':'ADCs';
   const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
   const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
@@ -362,7 +362,7 @@ function renderSide(){if(!DATA[role])return;
   $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
   $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
   const mv=Object.values(items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4&&!chance(d)).reduce((o,x)=>{const k=x[1].c;if(!o[k]||Math.abs(x[1].tr)>Math.abs(o[k][1].tr))o[k]=x;return o;},{})).sort((a,b)=>b[1].tr-a[1].tr);
-  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
+  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')+(mv.length&&mv.length<4?`<li class="none">Everyone else moved too little since ${META.prev_patch} to be sure it isn't luck.</li>`:'')||'<li class="none">No big moves this patch.</li>';
   $('movh').textContent=`Moved most since ${META.prev_patch}`;
   $('movc').hidden=!!ARCH;
   // all roles: skip entries whose champions are already listed (the same change shows up in several roles), show the first six
@@ -415,7 +415,7 @@ function drawMap(){if(!DATA[role]||!$('sv'))return;
 }
 function renderGrade(){
   const sx=v=>(Math.max(-.2,Math.min(1,v))+.2)/1.2*100;
-  $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Win rates vs OP.GG</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));const s=(v<0?"−":"")+Math.abs(v).toFixed(2);return e>78?`<em class="in" style="right:${100-e}%">${s}</em>`:`<em style="left:${e}%">${s}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--A')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
+  $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Win rates vs OP.GG</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));const s=(v<0?"−":"")+Math.abs(v).toFixed(2);return e>78?`<em class="in" style="right:${100-e}%">${s}</em>`:`<em style="left:${e}%">${s}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--faint')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
 }
 function openPanel(o){$('panel').classList.toggle('open',o&&narrow());$('scrim').classList.toggle('open',o&&narrow());}
 function render(){

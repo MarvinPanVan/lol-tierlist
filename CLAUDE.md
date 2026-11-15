@@ -20,7 +20,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   splash art at full strength on the right of the big cards with the score in a white pill. A buff/nerf coming next patch is a
   green/red tag with the patch number ("▲26.23") on the bottom edge of the portrait, so it can't be read as last patch's
   change; "trap" is a small "!" on the portrait's top corner; the ↑↓ by the score = score moved since last patch; a low-sample score is plain grey on the chips
-  (panel lists still use dotted = could be luck).
+  (panel lists, counter finder and builds use the same grey = could be luck; no dotted underlines anywhere).
   Strip under the controls (`.hintline`): view chip on the left (`#vwn` view name, `#hint` short source, full sources in
   its title; click opens the rank/region guide), a short key with real samples (`#legend`), patch picker on the right. Page headers are plain HTML made by build.py.
   Tier list CSS is one block near the end of the stylesheet ("the tier list, one system"): every tier row uses the same

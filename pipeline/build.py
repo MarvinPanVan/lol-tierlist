@@ -146,7 +146,7 @@ def head_home(root):
 RKN = [('E', 'Emerald+'), ('D', 'Diamond+'), ('M', 'Master+')]
 def head_champ(r, e, root):
     s_ = slug(e['c']); tc = lambda t: f'var(--{t})' if t else 'var(--E)'
-    tiers = ''.join(f'<span style="background:{tc(e["v"][k][2])}">{n} {e["v"][k][2]} {f1(e["v"][k][0])}</span>' for k, n in RKN if k in e.get('v', {}))
+    tiers = ''.join(f'<span><b class="tg" style="--T:{tc(e["v"][k][2])}">{e["v"][k][2]}</b>{n} {f1(e["v"][k][0])}</span>' for k, n in RKN if k in e.get('v', {}))
     return (f'<header class="band head champ-head" style="--art:url(/img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
             f'<div class="ch"><img class="pic big" src="{root}img/champ/{s_}.webp" alt="" width="72" height="72"><div><h1>{E(e["c"])}</h1>'
             f'<p class="dl">{RNAME[r]}, patch {PATCH}: {e["games"]:,} games in Global Emerald+, updated {E(UPD)}.</p></div></div>'
@@ -413,7 +413,7 @@ def notes_body(p, root):
     st = ''.join(f'<div class="{c}"><b>{v}</b><span>{lab}</span></div>' for c, v, lab in
                   [('pos', ks.count('buff'), 'buffs' if ks.count('buff') != 1 else 'buff'), ('neg', ks.count('nerf'), 'nerfs' if ks.count('nerf') != 1 else 'nerf'),
                    ('', nadj, 'adjusted'), ('', len(n.get('items', [])), 'items' if len(n.get('items', [])) != 1 else 'item')] if v)
-    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh" class="sr">Short version</h2><div class="pn-st">{st}</div><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n)[1:])}</ul>'
+    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh" class="sr">Short version</h2><div class="pn-num">{st}</div><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n)[1:])}</ul>'
           f'<p class="pn-mine" id="pnmine" hidden></p></section>')
     groups = [(k, lab, [x for x in n['champs'] if (x['kind'] if x['kind'] in ('buff', 'nerf') else 'adjust') == k]) for k, lab in GROUPS]
     groups = [(k, lab, sorted(xs, key=lambda x: x['c'])) for k, lab, xs in groups if xs]

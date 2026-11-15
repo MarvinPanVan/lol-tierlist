@@ -147,7 +147,7 @@ button.gopt:hover{border-color:var(--faint)}
 .flag.nerf{background:color-mix(in srgb,var(--neg) 14%,transparent);color:var(--neg)}
 .flag.mx{background:color-mix(in srgb,var(--acc) 12%,transparent);color:var(--acc)}
 .tv .se{font-size:12px;font-weight:500}
-.lowdemo{color:var(--faint);text-decoration:underline dotted 1.5px;text-underline-offset:3px}
+.lowdemo{color:var(--faint);text-decoration:none}
 .empty{color:var(--mut);font-size:13.5px;align-self:center;padding:6px 6px;grid-column:1/-1}
 .pic{width:34px;height:34px;border-radius:10px;flex:none;object-fit:cover;background:var(--surf2)}
 .pic.big{width:60px;height:60px;border-radius:14px}
@@ -371,7 +371,8 @@ body{background:var(--bg)}
 .ch{display:flex;align-items:center;gap:16px}
 .ch .pic.big{width:72px;height:72px;border-radius:16px}
 .ctiers{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 10px}
-.ctiers span{font:700 13px/1 Inter,sans-serif;padding:8px 12px;border-radius:999px;color:#14151a}
+.ctiers span{display:inline-flex;align-items:center;gap:7px;font:600 13px/1 Inter,sans-serif;padding:6px 12px 6px 6px;border-radius:999px;color:var(--ink);background:color-mix(in srgb,var(--card) 70%,transparent);box-shadow:inset 0 0 0 1px var(--line);backdrop-filter:blur(6px)}
+.ctiers .tg{font-size:13px;padding:4px 7px}
 /* role tabs with icons */
 #roles button{display:inline-flex;align-items:center;gap:7px}
 #roles button svg{width:16px;height:16px;flex:none}
@@ -462,7 +463,7 @@ body{background:var(--bg)}
 button.irow{cursor:pointer;transition:background .15s}button.irow:hover{background:var(--surf)}
 .irow .pic{width:34px;height:34px;border-radius:10px}
 .irow .in b{display:block;font:650 14px/1.25 Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.irow .in small{display:block;font:500 12px/1.35 Inter,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.irow .in small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font:500 12px/1.35 Inter,sans-serif;color:var(--mut);overflow:hidden}
 .pw{display:block;width:34px;height:34px;border-radius:10px;background:var(--surf2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 4l-1.5 4.5-9 9-3-3 9-9zM5 13l6 6M7.5 16.5 4 20' fill='none' stroke='%23999' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
 .pw .pic{display:block}
 .pstack{display:flex;width:34px;height:34px;align-items:center}.pstack .pic{width:22px;height:22px;border-radius:50%;margin-right:-10px;box-shadow:0 0 0 2px var(--card)}
@@ -518,7 +519,10 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .xchip b{font-weight:600;color:var(--mut);font-variant-numeric:tabular-nums}
 .xmore{align-self:flex-start;margin:12px 6px 4px;border:0;background:none;padding:0;font:600 13px Inter,sans-serif;color:var(--acc);cursor:pointer}
 .xmore:hover{text-decoration:underline;text-underline-offset:3px}
-.ins4.all{grid-template-columns:repeat(3,minmax(0,1fr))}.ins4.all>.xsc{grid-column:span 2}
+/* homepage: Strongest picks spans the full width on its own row, the four lists share the row below.
+   Cards only stretch within a row of lists, never to match the chip card. */
+.ins4.all{grid-template-columns:repeat(4,minmax(0,1fr))}.ins4.all>.xsc{grid-column:1/-1}
+.xsl{display:flex;flex-wrap:wrap;gap:8px}
 @media(max-width:1180px){.ins4.all{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.ins4.all{grid-template-columns:minmax(0,1fr)}.ins4.all>.xsc{grid-column:auto}
 .xsl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.xchip{min-width:0;padding-right:7px;gap:5px;font-size:12.5px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xsl:not(.all)>.xchip:nth-child(n+9){display:none}
@@ -607,7 +611,7 @@ details.brow{display:block}
 .balt{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center;padding:7px 0;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
 .balt .bic{grid-row:span 2}.balt .bnm{align-self:end;font-size:13px}.balt .bst{align-self:start}
 .bst{color:var(--mut);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.bst .wk{color:var(--faint);text-decoration:underline dotted 1.5px;text-underline-offset:3px}
+.bst .wk{color:var(--faint)}
 .bsw{grid-column:1/-1;display:block;margin-top:5px;font-size:12px;line-height:24px;color:var(--mut)}
 .bvs{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;background:var(--surf);border-radius:999px;padding:2px 8px 2px 2px;margin:0 4px 2px 0;line-height:1.2;color:var(--ink);font-weight:600}
 .bvs .pic.xs{width:18px;height:18px;margin:0;border-radius:50%}.bvs b{color:var(--acc);font-weight:700}.bty{color:var(--ink);font-weight:600}
@@ -633,10 +637,10 @@ details.brow{display:block}
 .gr3 button{font:600 13px Inter,sans-serif;color:var(--ink);background:var(--surf);border:1px solid var(--line);border-radius:9px;padding:6px 14px;cursor:pointer}
 .gr3 button:hover{border-color:var(--faint)}.gr3 button[aria-pressed=true]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}.gr3 button:disabled{opacity:.45;cursor:not-allowed}
 .guide .gnote{grid-column:1/-1;margin:2px 0 0;font-size:12.5px;color:var(--mut)}
-.hm td{background:color-mix(in srgb,var(--T,var(--E)) 13%,var(--surf));background-image:none}
+.hm td{background:var(--surf);background-image:none}
 .hm td button{display:flex;align-items:center;justify-content:center;gap:7px}
 .hm td b{font-weight:650}
-.hm td i{font:800 12.5px/1 'Barlow Condensed',sans-serif;font-style:normal;min-width:19px;padding:3px 0;border-radius:5px;color:color-mix(in srgb,var(--T) 78%,var(--ink));background:color-mix(in srgb,var(--T) 17%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T) 30%,transparent);text-align:center;letter-spacing:.02em}
+.hm td i{font:800 12.5px/1 'Barlow Condensed',sans-serif;font-style:normal;min-width:19px;padding:3px 0;border-radius:5px;color:color-mix(in srgb,var(--T) 85%,var(--ink));background:color-mix(in srgb,var(--T) 22%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--T) 38%,transparent);text-align:center;letter-spacing:.02em}
 .hm td.on{box-shadow:inset 0 0 0 2px var(--acc)}
 .tv th.cur button{color:var(--ink)}.tv td.cur{background:color-mix(in srgb,var(--acc) 5%,transparent)}
 @media(max-width:640px){.bar.open .more>#ranks button,.bar.open .more>#regs button{flex:1 1 0;padding:0 6px}.gopt.reg{grid-column:auto}.guide{grid-template-columns:minmax(0,1fr)}}
@@ -790,20 +794,27 @@ details.brow{display:block}
 .legend .smp.lowsc{color:var(--faint)}
 .legend .tri{margin:0}
 .links a[aria-current=page]{color:var(--ink)}
+@media(min-width:981px){.cols>.card:last-child{position:sticky;top:20px}}
+@media(max-width:640px){.home .dl>span:first-child{display:none}}
+.caph .cap{color:var(--ink);font-weight:650;font-size:13.5px}
+.caph .cap .mu{font-weight:500;font-size:12px;color:var(--faint);margin-left:5px}
+.tv .nxp.tbl{margin-left:8px}
+.hintline .legend[hidden]+#patchsel{margin-left:auto}
+:root[data-theme=light] .pban{background:linear-gradient(180deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.55) 52%,var(--card) 80%),var(--art) center 22%/cover no-repeat}
 .home .dl{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
 .home .dl>*{display:inline-flex;align-items:center;gap:7px;min-height:28px;padding:0 11px;border-radius:999px;background:var(--surf);box-shadow:inset 0 0 0 1px var(--line);font:500 12.5px/1 Inter,sans-serif;color:var(--mut);text-decoration:none}
 .home .dl a{color:var(--ink)}.home .dl a:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 50%,var(--line))}
 .home .dl .nx::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
 .pn-tl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 34px;align-items:center}
-.pn-st{display:flex;gap:10px}
-.pn-st div{display:grid;justify-items:start;gap:4px;min-width:84px;padding:12px 16px;border-radius:12px;background:var(--surf)}
-.pn-st b{font:700 30px/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;color:var(--ink)}
-.pn-st span{font:500 12.5px/1 Inter,sans-serif;color:var(--mut)}
-.pn-st .pos b{color:var(--pos)}.pn-st .neg b{color:var(--neg)}
+.pn-num{display:flex;gap:10px}
+.pn-num div{display:grid;justify-items:start;gap:4px;min-width:84px;padding:12px 16px;border-radius:12px;background:var(--surf)}
+.pn-num b{font:700 30px/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;color:var(--ink)}
+.pn-num span{font:500 12.5px/1 Inter,sans-serif;color:var(--mut)}
+.pn-num .pos b{color:var(--pos)}.pn-num .neg b{color:var(--neg)}
 .pn-tl ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
 .pn-tl li{padding-left:14px;position:relative}.pn-tl li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--faint)}
 .pn-tl .pn-mine{grid-column:1/-1;margin:0}
-@media(max-width:760px){.pn-tl{grid-template-columns:minmax(0,1fr)}.pn-st div{min-width:0;flex:1}}
+@media(max-width:760px){.pn-tl{grid-template-columns:minmax(0,1fr)}.pn-num div{min-width:0;flex:1}}
 @media(max-width:1340px){.legend .k:first-child{display:none}}
 @media(max-width:1180px){.hintline{flex-wrap:wrap}.legend{margin-left:0;flex-wrap:wrap}}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
@@ -871,7 +882,7 @@ details.brow{display:block}
 <p class="gh">Rank: pick the one you play in</p>
 <button type="button" class="gopt" data-rk="e"><b>Emerald+ <span class="rec">Most players</span></b><span class="who">Iron to Emerald.</span><span>The most games, so the least noise. Emerald+ also counts every game above it.</span></button>
 <button type="button" class="gopt" data-rk="d"><b>Diamond+</b><span class="who">Diamond and up.</span><span>Champions that need mechanics or teamwork move up. About 40% as many games as Emerald+.</span></button>
-<button type="button" class="gopt" data-rk="m"><b>Master+</b><span class="who">Master and up.</span><span>Fewest games, so scores get pulled toward the middle and more of them are dotted.</span></button>
+<button type="button" class="gopt" data-rk="m"><b>Master+</b><span class="who">Master and up.</span><span>Fewest games, so scores get pulled toward the middle and more of them are grey.</span></button>
 <p class="gh">Region</p>
 <button type="button" class="gopt" data-rg="all"><b>All regions <span class="rec">Recommended</span></b><span class="who">Every server together.</span><span>Global 50%, EUW 20%, KR 20%, NA 10%. The most games, so the least noise.</span></button>
 <div class="gopt reg"><b>EUW, KR or NA</b><span class="who">One server on its own.</span><span>To see what that server wins with. Fewer games, so expect more noise.</span><span class="gr3"><button type="button" data-rg="euw">EUW</button><button type="button" data-rg="kr">KR</button><button type="button" data-rg="na">NA</button></span></div>
@@ -930,7 +941,7 @@ details.brow{display:block}
 <li>Last patch is the starting point for champions the new patch did not touch, so early-patch numbers don't jump around. That only works for Global Emerald+, the one dataset kept from last patch. How far a champion can move between patches is fitted from the data (about 0.2 points).</li>
 <li>The ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch. For champions the patch did not touch that change is damped on purpose, because last patch is their starting point.</li>
 <li>A move only gets a reason when there is a fact for it: the change in the patch notes (Summoner's Rift only, not the Classic mode or ARAM), a changed item in its most common OP.GG builds (core items and boots, not starter items), a big shift in pick rate, or a note that the move is too small to be sure. No guessed explanations.</li>
-<li>Matchups come from OP.GG's full matchup lists (Emerald+, and Diamond+ for the Diamond+ and Master+ lists). Each one is compared with the champion's own win rate and pulled toward it by sample size, the same way as the scores, so a lucky 150-game matchup can't top the list. Dotted means the gap could still be luck. Only about a quarter of matchups with 150+ games differ clearly.</li><li>The build card shows what OP.GG players actually take and how often. Tapping a row shows the other options and the matchups where players switch to them (OP.GG's builds per matchup). Item win rates run high because whoever finishes items is usually ahead, so options are only compared with each other.</li><li>Win rate by game length is OP.GG's, per 5-minute bucket. OP.GG gives no game counts per bucket, so they are estimated from the game lengths in our own Riot match sample, and the card only says a champion wins more in short or long games when the gap is 2+ points and bigger than that noise.</li>
+<li>Matchups come from OP.GG's full matchup lists (Emerald+, and Diamond+ for the Diamond+ and Master+ lists). Each one is compared with the champion's own win rate and pulled toward it by sample size, the same way as the scores, so a lucky 150-game matchup can't top the list. Grey means the gap could still be luck. Only about a quarter of matchups with 150+ games differ clearly.</li><li>The build card shows what OP.GG players actually take and how often. Tapping a row shows the other options and the matchups where players switch to them (OP.GG's builds per matchup). Item win rates run high because whoever finishes items is usually ahead, so options are only compared with each other.</li><li>Win rate by game length is OP.GG's, per 5-minute bucket. OP.GG gives no game counts per bucket, so they are estimated from the game lengths in our own Riot match sample, and the card only says a champion wins more in short or long games when the gap is 2+ points and bigger than that noise.</li>
 <li id="btline"></li>
 </ul>
 </div>
@@ -1052,7 +1063,7 @@ function renderTable(){if(!DATA[role])return;
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:c.startsWith('r_')?SV(d,VK(c[2])):d[c];
   const rows=list.filter(d=>tierOf(d)).slice().sort((a,b)=>{const x=val(a,sk),y=val(b,sk);if(typeof x==='string')return sortD*(x<y?-1:x>y?1:0);return sortD*((x??-999)-(y??-999));});
   const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="--T:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
-    switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxFlag(d):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
+    switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxTag(d,' tbl'):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
     case 't':{const t=tierOf(d);return `<td><span class="tg" style="--T:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
@@ -1204,7 +1215,7 @@ const CMIN=150;
 const LK=()=>META.lk||{i:{},s:{},r:{}};
 const bimg=(kind,id,cl='')=>{const L=LK(),nm=kind==='item'?L.i[id]:kind==='sum'?(L.s[id]||[])[0]:(L.r[id]||[])[0];return `<img class="${cl}" src="${SITE}img/${kind}/${id}.webp" alt="${nm||''}" title="${nm||''}" width="28" height="28" loading="lazy">`;};
 // win rate by game length (OP.GG trends, Global Emerald+): each bucket against the champion's own win rate. Bucket sizes
-// are estimates (OP.GG gives none), so a value is dotted when its gap could be luck. The sentence only speaks when short
+// are estimates (OP.GG gives none), so a value is grey when its gap could be luck. The sentence only speaks when short
 // and long games clearly differ (update.py: 2+ points and beyond sampling noise).
 function glHTML(d){const g=d.gl;if(!g||ARCH)return '';
   const W=340,H=112,L=14,R=14,T=22,Bm=24,xs=i=>L+i*(W-L-R)/4;
@@ -1222,7 +1233,7 @@ function glHTML(d){const g=d.gl;if(!g||ARCH)return '';
   const v=g.v==='late'?`Wins more the longer the game goes: <b>+${g.d.toFixed(1)}</b> points over 35 minutes compared with under 25.`:g.v==='early'?`Wins more in short games: <b>${Math.abs(g.d).toFixed(1)}</b> points better under 25 minutes than over 35.`:'About the same at every game length.';
   return `<div class="caph"><p class="cap">Win rate by game length <span class="mu">OP.GG Emerald+, minutes</span></p></div><div class="glw">${svg}<p class="glk"><span class="glkm"></span>${d.c}'s usual ${g.w.toFixed(1)}% <span class="glkh"></span>too few games to be sure</p></div><p class="glt">${v}</p>`;}
 // build card: one short row per part (spells, runes, skills, start, core, boots) with OP.GG's most common pick and its share
-// of games. Tapping a row opens the other options: share, win rate (dotted when within sampling noise of the usual pick),
+// of games. Tapping a row opens the other options: share, win rate (grey when within sampling noise of the usual pick),
 // and the matchups where players switch to that option (OP.GG matchup builds, d.bd.vs). Nothing here says what to do;
 // it shows what players actually do, and against whom.
 const pct=v=>v<10?v.toFixed(1)+'%':Math.round(v)+'%';
@@ -1268,7 +1279,7 @@ function ctrHTML(d){
     return inRole(c)?`<button type="button" class="${cl2}" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="${cl2}" title="${tip}">${inner}</span>`;};
   const grid=(L,good)=>`<div class="ctr">${L.map(x=>card(x,good)).join('')}</div>`;
   const more=cs.length>3||gs.length>3;
-  const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
+  const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><b class="lowdemo">Grey</b> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
   return `${head}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
     +(more?`<details class="pmore sm-d"><summary>More matchups</summary><div class="dc">${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</div></details>`:'')+foot
     +(META.cpf&&!ARCH?`<button type="button" class="cpgo" data-cpgo="${d.c}">Who beats ${d.c}? <span>See every pick ranked</span></button>`:'');
@@ -1289,15 +1300,15 @@ function renderCounter(){
   if(CPE){const rows=((D.r||{})[role]||{})[CPE]||[];
     const item=([i,wr,n,cl])=>{const c=D.names[i],d=list.find(x=>x.c===c),tt=d?tierOf(d):null,w=wr/10;
       return `<button type="button" class="cpr${isMine(c)?' mine':''}" data-c="${c}" title="${c} wins ${w.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${CPE}${cl?'':', too few to be sure it differs'}">${pic(c)}<span class="cpn">${isMine(c)?'<span class="mst">★</span>':''}${c}${tt?`<span class="tg sm" style="--T:var(${colT(tt)})">${tt}</span>`:''}</span><span class="cpgm">${kfmt(n)} games</span><span class="cpw${cl?(w>=50?' good':' bad'):' lowdemo'}">${w.toFixed(1)}%</span></button>`;};
-    const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,12);
+    const mine=rows.filter(r=>isMine(D.names[r[0]])),shown=CPall?rows:rows.slice(0,matchMedia('(min-width:981px)').matches?24:12);
     res=`<div class="cph"><div class="cpsel">${pic(CPE)}<div><h3>Best picks into ${CPE}</h3><p class="cap">${RN}, OP.GG ${rk==='e'?'Emerald+':'Diamond+'}: win rate against ${CPE} in lane. Ranked with the number of games in mind, so 52% over 2,000 games beats 55% over 250.</p></div><button type="button" class="cpchg" id="cpchange">Change enemy</button></div></div>`
       +(mine.length?`<p class="mlab">Your champions</p><div class="cpl">${mine.map(item).join('')}</div><p class="mlab">Everyone</p>`:'')
-      +(rows.length?`<div class="cpl">${shown.map(item).join('')}</div>${rows.length>12?`<button type="button" class="xmore" id="cpmore" aria-expanded="${CPall}">${CPall?'Show fewer':`Show all ${rows.length}`}</button>`:''}<p class="bnote"><u class="lowdemo">Dotted</u> = too few games to be sure it differs from an average pick. Only matchups with 150+ games. Tap a champion for its build and more.</p>`:`<p class="empty">No matchup against ${CPE} has 150+ games yet.</p>`);}
+      +(rows.length?`<div class="cpl">${shown.map(item).join('')}</div>${rows.length>shown.length||CPall?`<button type="button" class="xmore" id="cpmore" aria-expanded="${CPall}">${CPall?'Show fewer':`Show all ${rows.length}`}</button>`:''}<p class="bnote"><b class="lowdemo">Grey</b> = too few games to be sure it differs from an average pick. Only matchups with 150+ games. Tap a champion for its build and more.</p>`:`<p class="empty">No matchup against ${CPE} has 150+ games yet.</p>`);}
   $('board').innerHTML=`<div class="cp"><button type="button" class="cpback" data-mode="tiers">← Back to the tier list</button>${CPE?`<div id="cpres">${res}</div>`:`<div class="cph"><h3>Counter pick</h3><p class="cap">Tap the enemy ${RN} laner to see who wins most against them. Most played first.</p></div><input type="search" class="cpq" id="cpq" placeholder="Find the enemy champion" autocomplete="off">${grid}`}</div>`;
 }
 document.addEventListener('input',e=>{if(e.target.id!=='cpq')return;const v=e.target.value.trim().toLowerCase();document.querySelectorAll('#cpg .cpe').forEach(b=>{b.hidden=!!v&&!b.dataset.n.includes(v);});});
 // bot lane duos (panel, ADCs and supports): the champion's 10 most played partners from OP.GG, each against the champion's
-// own win rate, pulled toward it by sample size (update.py); dotted when the gap could be luck. Links to the partner's page.
+// own win rate, pulled toward it by sample size (update.py); grey when the gap could be luck. Links to the partner's page.
 function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const pr=role==='adc'?'support':'adc',pn=role==='adc'?'supports':'ADCs';
   const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
   const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
@@ -1328,7 +1339,7 @@ function renderSide(){if(!DATA[role])return;
   $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
   $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
   const mv=Object.values(items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4&&!chance(d)).reduce((o,x)=>{const k=x[1].c;if(!o[k]||Math.abs(x[1].tr)>Math.abs(o[k][1].tr))o[k]=x;return o;},{})).sort((a,b)=>b[1].tr-a[1].tr);
-  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')||'<li class="none">No big moves this patch.</li>';
+  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')+(mv.length&&mv.length<4?`<li class="none">Everyone else moved too little since ${META.prev_patch} to be sure it isn't luck.</li>`:'')||'<li class="none">No big moves this patch.</li>';
   $('movh').textContent=`Moved most since ${META.prev_patch}`;
   $('movc').hidden=!!ARCH;
   // all roles: skip entries whose champions are already listed (the same change shows up in several roles), show the first six
@@ -1381,7 +1392,7 @@ function drawMap(){if(!DATA[role]||!$('sv'))return;
 }
 function renderGrade(){
   const sx=v=>(Math.max(-.2,Math.min(1,v))+.2)/1.2*100;
-  $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Win rates vs OP.GG</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));const s=(v<0?"−":"")+Math.abs(v).toFixed(2);return e>78?`<em class="in" style="right:${100-e}%">${s}</em>`:`<em style="left:${e}%">${s}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--A')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
+  $('grade').innerHTML=`<div class="gr h"><span></span><span>Grades follow win rate</span><span>Grades follow popularity</span><span class="cv">Win rates vs OP.GG</span></div>`+GRADE.map(([n,w,p,c])=>{const bar=(v,col)=>`<div class="gb"><span class="z" style="left:${sx(0)}%"></span><i style="left:${v<0?sx(v):sx(0)}%;width:${Math.abs(sx(v)-sx(0))}%;background:var(${col})"></i>${(()=>{const e=Math.max(sx(v),sx(0));const s=(v<0?"−":"")+Math.abs(v).toFixed(2);return e>78?`<em class="in" style="right:${100-e}%">${s}</em>`:`<em style="left:${e}%">${s}</em>`})()}</div>`;return `<div class="gr"><b>${n}</b>${bar(w,'--pos')}${bar(p,'--faint')}<span class="cv" style="text-align:right;font-variant-numeric:tabular-nums">${c==null?'n/a':c.toFixed(2)}</span></div>`;}).join('');
 }
 function openPanel(o){$('panel').classList.toggle('open',o&&narrow());$('scrim').classList.toggle('open',o&&narrow());}
 function render(){
