@@ -767,6 +767,9 @@ details.brow{display:block}
 .legend .smp.lowsc{color:var(--faint)}
 .legend .tri{margin:0}
 .links a[aria-current=page]{color:var(--ink)}
+/* the side card never runs past the bottom of the list (--bh = list height, set by JS); on tall screens and short lists it
+   scrolls inside instead of leaving an empty column next to it */
+@media(min-width:981px){.panel{max-height:min(calc(100svh - var(--barh,98px) - 32px),var(--bh,100svh))}}
 @media(min-width:981px){.cols>.card:last-child{position:sticky;top:20px}}
 @media(max-width:640px){.home .dl>span:first-child{display:none}}
 .caph .cap{color:var(--ink);font-weight:650;font-size:13.5px}

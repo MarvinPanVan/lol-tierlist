@@ -527,6 +527,7 @@ renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
 $('legend').innerHTML=`<span class="k" title="Win rate points above the role average"><b class="smp">+1.2</b>win rate vs role average</span><span class="k" title="Few games, so the score could be off"><b class="smp lowsc">+0.4</b>few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="smp"><b class="tri up">↑</b><b class="tri dn">↓</b></b>since ${META.prev_patch}</span>${META.next?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span>coming ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span>trap</span>`;
+{const bd=$('board');if(bd)new ResizeObserver(()=>document.documentElement.style.setProperty('--bh',Math.max(bd.offsetHeight,400)+'px')).observe(bd);}
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.
