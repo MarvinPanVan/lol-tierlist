@@ -9,7 +9,7 @@ adc:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M17 17H6l3.5-3.5h4v-4L
 support:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.2 16.5 5v4.6c0 4-2.7 6.9-6.5 8.2-3.8-1.3-6.5-4.2-6.5-8.2V5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 6.2v7.6M6.4 9.6h7.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'};
 const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['support','Support']];
 const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D','']];
-let RX=false;   // the Rarely played row shows its strongest four until opened
+let RX=false;   // the off-role row (R) shows its strongest four until opened
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
 const META=CUR._meta;let ARCH=null;const DOC=PAGE==="method"||PAGE==="patch";
@@ -48,7 +48,7 @@ const stat=(d,k=STK())=>{const x=d.st&&d.st[k];return x?{n:x[0],pick:x[1],ban:x[
 const vw=(d,k=VK())=>{const x=d.v&&d.v[k];return x?{s:x[0],se:x[1],t:x[2],r:x[3]||(x[2]==='P'||x[2]==='R'?1:0)}:k==='E'?{s:d.score,se:d.se,t:d.t,r:d.rare||(d.t==='P'?1:0)}:null;};
 const SV=(d,k)=>{const x=vw(d,k);return x?x.s:null;};
 const tierOf=(d,k)=>{const x=vw(d,k);return x?x.t:null;};
-const isRare=(d,k)=>{const x=vw(d,k);return !!(x&&x.r);};   // under 1.5% pick in this view: listed in the Rarely played row
+const isRare=(d,k)=>{const x=vw(d,k);return !!(x&&x.r);};   // under 1.5% pick in this view and not the champion's main role: listed in the off-role row
 const isLow=d=>{const x=vw(d);return !!x&&x.se>=.8;};
 const LOWN=1500;
 const slug=c=>c.toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -106,7 +106,7 @@ function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classL
   for(const k of ['ctr','games','ban']){if(t.scrollWidth<=t.clientWidth+1)break;const i=hs.findIndex(h=>h.dataset.k===k);if(i<0)continue;
     tb.querySelectorAll(`tr>:nth-child(${i+1})`).forEach(c=>{c.hidden=true;c.dataset.drop='1';});}
   if(t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
-const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',R:'Picked in under 1.5% of games: mostly mains or off-role players. Each gets its letter by the same lines as the rest, but with few games and mostly experienced players, take the numbers with care.'};
+const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',R:'Off-role picks: under 1.5% of games, and the champion is picked more in another role. Each gets its letter by the same lines as the rest, but few games stand behind the numbers.',M:'Picked in under 1.5% of games, but this is its main role, so it stays in the list. Few players pick it, so take the score with some care.'};
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
@@ -154,10 +154,10 @@ function renderBoard(){if(!DATA[role])return;
     const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
     return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}><span class="lt">${t}</span>${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
-  }).join('')+(()=>{   // every pick under 1.5%: one row, best first, each with its letter by the same lines
+  }).join('')+(()=>{   // off-role picks under 1.5%: one row, best first, each with its letter by the same lines (main roles stay above)
     const rs=list.filter(d=>isRare(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));if(!rs.length)return '';
     const open=RX||rs.length<=5||rs.slice(4).some(d=>d.c===pick||(q&&hit(d.c))),shown=open?rs:rs.slice(0,4);
-    return `<div class="row t-R" style="--T:var(--E)"><div class="lab" title="${LABT.R}"><span class="lt">R</span><small>Rarely played</small></div><div class="chips smalls">${shown.map(d=>chipHTML(d,true,'sm')).join('')}${rs.length>5?`<button type="button" class="ropen" data-ropen="1" aria-expanded="${open}">${open?'Show fewer':`Show all ${rs.length}`} <span>under 1.5% pick</span></button>`:''}</div></div>`;})();
+    return `<div class="row t-R" style="--T:var(--E)"><div class="lab" title="${LABT.R}"><span class="lt">R</span><small>Off-role picks</small></div><div class="chips smalls">${shown.map(d=>chipHTML(d,true,'sm')).join('')}${rs.length>5?`<button type="button" class="ropen" data-ropen="1" aria-expanded="${open}">${open?'Show fewer':`Show all ${rs.length}`} <span>under 1.5% pick</span></button>`:''}</div></div>`;})();
   const mine=list.filter(d=>isMine(d.c)&&tierOf(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
   if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only"><span class="lt">★</span><small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
 }
@@ -230,7 +230,7 @@ function histHTML(d,tr=''){
 }
 // tier lines in units of the role's spread in this view (update.py TIER_Z); archived patches used fixed lines
 const cutT=v=>{const sd=((META.spread||{})[role]||{})[VK()];if(!sd)return v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D';const z=v/sd;return z>=1?'S':z>=.45?'A':z>=0?'B':z>=-.6?'C':'D';},TRANK={S:4,A:3,B:2,C:1,D:0};
-function rngHTML(d){const x=vw(d);if(x&&x.r)return `<small class="rng" title="${LABT.R}">rare pick, under 1.5%</small>`;if(!x||!'SABCD'.includes(x.t)||x.se==null)return '';const lo=cutT(x.s-x.se),hi=cutT(x.s+x.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===x.t?hi:hi===x.t?lo:lo+' to '+hi}</small>`;}
+function rngHTML(d){const x=vw(d);if(x&&x.r)return `<small class="rng" title="${LABT.R}">off-role, under 1.5% pick</small>`;const sx=stat(d);if(x&&d.main&&sx&&sx.pick<1.5)return `<small class="rng" title="${LABT.M}">rare pick, under 1.5%</small>`;if(!x||!'SABCD'.includes(x.t)||x.se==null)return '';const lo=cutT(x.s-x.se),hi=cutT(x.s+x.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===x.t?hi:hi===x.t?lo:lo+' to '+hi}</small>`;}
 const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};

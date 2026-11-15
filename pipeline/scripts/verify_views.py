@@ -22,9 +22,9 @@ def fit(rows, wkey='p', nkey='n'):
         v = 2500/x[nkey]; out[c] = dict(raw=d[c], sh=d[c]*t2/(t2+v), sd=math.sqrt(t2*v/(t2+v)), p=x[wkey], n=x[nkey])
     return out
 def spec(p): return .4*math.log(max(1, 2/p)) if p and p > 0 else .4*math.log(2/.3)
-def tier(v, pk, allpos, z, sd):   # -> [letter, rare]; S to D in steps of the role's spread (all-regions list of that rank)
+def tier(v, pk, allpos, z, sd, main):   # -> [letter, rare]; S to D in steps of the role's spread (all-regions list of that rank)
     if z and pk >= 2: return ['Z', 0]
-    q = v / sd; rare = int(pk < 1.5)
+    q = v / sd; rare = int(pk < 1.5 and not main)   # a champion's main role never goes to the rare row
     if q >= 1 and allpos: return ['S', rare]
     return ['A' if q >= .45 else 'B' if q >= 0 else 'C' if q >= -.6 else 'D', rare]
 def spread(xs):   # xs: [(score, pick)] -> pick-weighted standard deviation over picks of 1.5% and more
@@ -49,6 +49,10 @@ for line in open('data2/blitz_d.txt'):
     for it in rest.split(): c, r, w = it.split('/'); add('Blitz','D',r,c,float(w),None,None)
 for i, line in enumerate(open('data2/log_d.csv')):
     if i: c, r, t, pop, w, b = line.strip().split(';'); add('League of Graphs','D',r,c,float(w),float(pop),None)
+MAINR = {}   # champion -> role with its highest Global Emerald+ pick rate
+for r in ['top','jungle','mid','adc','support']:
+    for c, x in readop('opgg_global_e', r).items():
+        if c not in MAINR or x['p'] > MAINR[c][1]: MAINR[c] = (r, x['p'])
 bad = 0; checked = 0
 for role in ['top','jungle','mid','adc','support']:
     D = {k: fit(readop(f'opgg_{k}', role)) for k in ['global_e','euw_e','kr_e','na_e','global_d','euw_d','kr_d','na_d','global_m','euw_m','kr_m','na_m']}
@@ -97,6 +101,6 @@ for role in ['top','jungle','mid','adc','support']:
         for k in e['v']:
             if (e['c'], k) not in W: bad += 1; print('EXTRA', role, e['c'], k); continue
     for (c, k), (s, se, pk, ap, z) in W.items():
-        e = next(x for x in T[role] if x['c'] == c); got = e['v'].get(k); want = [s, se] + tier(s, pk, ap, z, SD[rank(k)]); checked += 1
+        e = next(x for x in T[role] if x['c'] == c); got = e['v'].get(k); want = [s, se] + tier(s, pk, ap, z, SD[rank(k)], MAINR[c][0] == role); checked += 1
         if got != want and not (got and abs(got[0]-want[0]) <= .011 and abs(got[1]-want[1]) <= .011 and got[2:] == want[2:]): bad += 1; print('MISMATCH', role, c, k, got, want)
 print(f'checked {checked} view values, {bad} mismatches')

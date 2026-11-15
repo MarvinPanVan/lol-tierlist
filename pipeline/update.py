@@ -264,11 +264,13 @@ BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.e
 # the scores of the regular picks, pick >= 1.5%), because roles differ a lot: support runs from +2 to -7, top only from +2
 # to -3. The lines come from the all-regions list of each rank (the most games) and are used for its single-region lists
 # too, so small noisy lists don't get tighter lines. Picks under 1.5% get their letter by the same lines plus a rare flag;
-# the site lists them in their own "Rarely played" row.
+# the site lists them in their own "Rarely played" row. Exception (Marvin, 15 Nov 2026): a champion's main role (the role
+# where it is picked most in Global Emerald+, the same for every view) always stays in the main list, so Taric support or
+# Rek'Sai jungle are listed like any other pick and only off-role picks go to the rare row.
 TIER_Z = [('S', 1.0), ('A', .45), ('B', 0), ('C', -.6)]
-def tier(v, pk, allpos, zcheck, sd):   # -> (letter, rare)
+def tier(v, pk, allpos, zcheck, sd, main=False):   # -> (letter, rare)
     if v is None: return None, 0
-    rare = 1 if pk < 1.5 else 0
+    rare = 1 if pk < 1.5 and not main else 0
     if zcheck and pk >= 2: return 'Z', 0
     z = v / sd
     for t, cut in TIER_Z:
@@ -280,6 +282,11 @@ def role_spread(rows):   # rows: [(score, pick)]; pick-weighted sd of the regula
     return math.sqrt(sum(p * (v - m) ** 2 for v, p in W) / w)
 
 out, meta_tau, prev_cmp, SPREAD = {}, {}, [], {}
+MAIN = {}   # champion -> its main role: highest pick rate in Global Emerald+
+for _r in ROLES:
+    for _c, _p in opgg('opgg_global_e', _r).pick.items():
+        if _c not in MAIN or _p > MAIN[_c][1]: MAIN[_c] = (_r, float(_p))
+MAIN = {c: r for c, (r, _) in MAIN.items()}
 RANK_OF = {'E': 'E', 'D': 'D', 'M': 'M'} | {k: rk.upper() for rk in 'edm' for k in REGK[rk].values()}
 for role in ROLES:
     base = opgg('opgg_global_e', role)
@@ -418,7 +425,8 @@ for role in ROLES:
         SPREAD.setdefault(role, {})[K] = round(role_spread([(e['v'][K][0], AUX[(e['c'], K)][0]) for e in res if K in e['v']]), 3)
     for e in res:
         for k in e['v']:
-            e['v'][k][2:] = list(tier(e['v'][k][0], *AUX[(e['c'], k)], SPREAD[role][RANK_OF[k]]))
+            e['v'][k][2:] = list(tier(e['v'][k][0], *AUX[(e['c'], k)], SPREAD[role][RANK_OF[k]], MAIN.get(e['c']) == role))
+        if MAIN.get(e['c']) == role: e['main'] = 1   # its main role: never in the rare row, even under 1.5% pick
         e['t'], e['rare'] = e['v']['E'][2], e['v']['E'][3]
     out[role] = res
 

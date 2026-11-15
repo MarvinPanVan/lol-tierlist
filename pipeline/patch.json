@@ -68,7 +68,31 @@
      "E costs more, longer early cooldown",
      "nerf"
     ],
-    ["Mel", "Q and W up", "buff"], ["Azir", "More range, W on-hit up", "buff"], ["Galio", "W shield up", "buff"], ["Annie", "Tibbers stronger", "buff"], ["Akshan", "Numbers not out yet", "buff"],
+    [
+     "Mel",
+     "Q and W up",
+     "buff"
+    ],
+    [
+     "Azir",
+     "More range, W on-hit up",
+     "buff"
+    ],
+    [
+     "Galio",
+     "W shield up",
+     "buff"
+    ],
+    [
+     "Annie",
+     "Tibbers stronger",
+     "buff"
+    ],
+    [
+     "Akshan",
+     "Numbers not out yet",
+     "buff"
+    ],
     [
      "Voltaic Cyclosword",
      "Current-health damage down",
@@ -117,10 +141,10 @@
  "lede": "<b>36 of the 65</b> most-picked champions (5% or more of their role's games) win less than half of them. Built on <b>1.9 million Emerald+ games</b> from OP.GG, plus four more stat sites at Diamond+, corrected for small samples and one-tricks.",
  "takes": {
   "top": "Singed is the outlier, with Kayle, Malphite and Shen behind him. Higher up Kayle and Singed lead Diamond+, Fiora leads Master+, and Malphite drops to A in Master+. Jayce and Yone are picked a lot and still lose, and Yasuo dropped more than anyone since last patch.",
-  "jungle": "Zyra, Wukong and Lillia lead. Zyra is the outlier in Diamond+ and Master+, but at 1.9% pick she just misses the 2% an outlier needs in Emerald+, where Lillia is one. Rek'Sai scores even higher in Diamond+ but is picked too rarely there to count. Lee Sin is in 13% of games and loses, and Qiyana is the worst popular pick in the role.",
+  "jungle": "Zyra, Wukong, Lillia and Rek'Sai lead Emerald+. Lillia is the only outlier there, Zyra misses the 2% pick an outlier needs by a hair (1.9%). Higher up Zyra is the outlier in Diamond+ and Master+, Rek'Sai too in Master+, and Rek'Sai scores highest of all in Diamond+. Lee Sin is in 13% of games and loses, and Qiyana is the worst popular pick in the role.",
   "mid": "Ekko is the outlier at every rank. Vex and Vladimir follow in Emerald+, Katarina and Zoe in Diamond+, Taliyah and Zoe in Master+. Mel gained the most since last patch and Viktor is up too, but Viktor is still a trap at 7.7% pick.",
-  "adc": "Kog'Maw and Xayah are ahead of every regular pick, and of the usual ADCs Corki gained the most since last patch. Ezreal is in 15% of games and has the worst score of any popular ADC.",
-  "support": "Rell, Leona and Braum score highest in Emerald+ with Zilean right behind, so pick what fits your bot laner. Rell is the outlier in Master+. Yuumi, Karma and Lux are popular and lose, and Thresh dropped the most since last patch."
+  "adc": "Kog'Maw and Xayah are the outliers in Emerald+ and Diamond+. Nilah scores about as high as Xayah, but she is in only 1% of games. Of the usual ADCs Corki gained the most since last patch. Ezreal is in 15% of games and has the worst score of any popular ADC.",
+  "support": "Taric and Rell score highest in Emerald+ with Leona, Braum and Zilean right behind, so pick what fits your bot laner. Taric is in only 1.2% of games, so his number is less certain. Rell is the outlier in Master+, where Taric scores even higher but is picked too rarely to be one. Yuumi, Karma and Lux are popular and lose, and Thresh dropped the most since last patch."
  },
  "changes": {
   "Aurelion Sol": [

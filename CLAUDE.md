@@ -174,8 +174,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      standard deviation of the scores of the role's picks with 1.5%+ pick in the all-regions list of that rank (`role_spread`,
      `_meta.spread[role][E|D|M]`; single-region lists use their rank's lines): S z>=1 and every dataset of the view above
      average, A z>=.45, B z>=0, C z>=-.6, else D. Picks under 1.5% get their letter the same way plus a rare flag
-     (`v[view] = [score, ±, tier, rare]`, `e.rare` for Emerald+); the site shows them in one "Rarely played" row, best first,
-     strongest four visible. The old P tier is gone (archives still have it). The "could be A" hint uses the same lines (`cutT`).
+     (`v[view] = [score, ±, tier, rare]`, `e.rare` for Emerald+); the site shows them in one "Off-role picks" row, best first,
+     strongest four visible. Exception (Marvin, 15 Nov 2026): a champion's main role (highest pick in Global Emerald+, same
+     for every view, `MAIN` in update.py, `e.main`) never gets the rare flag, so Taric support, Rek'Sai jungle or Nilah ADC are
+     listed like any other pick; the side card says "rare pick, under 1.5%" for them. The spread still uses only 1.5%+ picks. The old P tier is gone (archives still have it). The "could be A" hint uses the same lines (`cutT`).
      Why 1.5% (checked with Marvin on 15 Nov 2026): no natural break in pick rates; 1.5% keeps 89-95% of each role's games
      in the main list. Going to 1% barely moves the lines (sd +0.00 to +0.09) but puts niche specialist picks with inflated
      scores into S/A (Swain/Vel'Koz/Hwei bot +3 to +4, Taric, Rek'Sai, Rammus). Off-role picks above 1.5% (Yasuo, Viktor
