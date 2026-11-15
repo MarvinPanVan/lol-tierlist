@@ -176,6 +176,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      average, A z>=.45, B z>=0, C z>=-.6, else D. Picks under 1.5% get their letter the same way plus a rare flag
      (`v[view] = [score, ±, tier, rare]`, `e.rare` for Emerald+); the site shows them in one "Rarely played" row, best first,
      strongest four visible. The old P tier is gone (archives still have it). The "could be A" hint uses the same lines (`cutT`).
+     Why 1.5% (checked with Marvin on 15 Nov 2026): no natural break in pick rates; 1.5% keeps 89-95% of each role's games
+     in the main list. Going to 1% barely moves the lines (sd +0.00 to +0.09) but puts niche specialist picks with inflated
+     scores into S/A (Swain/Vel'Koz/Hwei bot +3 to +4, Taric, Rek'Sai, Rammus). Off-role picks above 1.5% (Yasuo, Viktor
+     ADC) stay in the main list on purpose: Marvin sees them as normal, just rare-ish picks.
    - Check after scoring: `python3 pipeline/scripts/verify_views.py` (independent recompute, must print 0 mismatches) and
      that the takes in patch.json still match the Emerald+ list and what they say about Diamond+/Master+.
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
