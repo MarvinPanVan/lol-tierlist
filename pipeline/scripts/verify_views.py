@@ -22,11 +22,15 @@ def fit(rows, wkey='p', nkey='n'):
         v = 2500/x[nkey]; out[c] = dict(raw=d[c], sh=d[c]*t2/(t2+v), sd=math.sqrt(t2*v/(t2+v)), p=x[wkey], n=x[nkey])
     return out
 def spec(p): return .4*math.log(max(1, 2/p)) if p and p > 0 else .4*math.log(2/.3)
-def tier(v, pk, allpos, z):
+def tier(v, pk, allpos, z, sd):   # S to D in steps of the role's spread in that view; R = weak and under 1.5% pick
     if z and pk >= 2: return 'Z'
-    if pk < 1.5 and v >= .6: return 'P'
-    if v >= 1.15 and allpos: return 'S'
-    return 'A' if v >= .6 else 'B' if v >= .15 else 'C' if v >= -.45 else 'D'
+    if pk < 1.5: return 'P' if v >= .6 else 'R'
+    q = v / sd
+    if q >= 1 and allpos: return 'S'
+    return 'A' if q >= .45 else 'B' if q >= 0 else 'C' if q >= -.6 else 'D'
+def spread(xs):   # xs: [(score, pick)] -> pick-weighted standard deviation over picks of 1.5% and more
+    xs = [(v, p) for v, p in xs if p >= 1.5]; w = sum(p for _, p in xs); m = sum(v*p for v, p in xs)/w
+    return math.sqrt(sum(p*(v-m)**2 for v, p in xs)/w)
 # third-party Diamond+/Master+ files -> {(site,rank,role): {champ: dict(w,p,n or None)}}
 alias = {}
 for f in os.listdir('data'):
@@ -66,6 +70,7 @@ for role in ['top','jungle','mid','adc','support']:
             x['n'] = max(50, x['n'])
         tps[(site, rk)] = fit(rows)
     GB = {'e': [(g, 1)], 'd': [(D['global_d'], 1), (tps[('U.GG','D')], 1), (tps[('Blitz','D')], 1), (tps[('dpm.lol','D')], 1), (tps[('League of Graphs','D')], .5)], 'm': [(D['global_m'], 1), (tps[('U.GG','M')], 1)]}
+    W = {}   # (champ, view) -> (score, ±, pick, all datasets above average, Z check); tiers once the spread is known
     for e in T[role]:
         c = e['c']
         for rk in 'edm':
@@ -79,16 +84,19 @@ for role in ['top','jungle','mid','adc','support']:
             pk = D[f'global_{rk}'][c]['p'] if c in D[f'global_{rk}'] else g[c]['p']
             s = round(sum(p[0]*p[3] for p in av)/sum(p[3] for p in av) - spec(pk), 2)
             se = round(1.64*sum(p[1]*p[3] for p in av)/sum(p[3] for p in av), 2)
-            want = [s, se, tier(s, pk, all(p[2] > 0 for p in av), s >= 1.8 and min(p[2] for p in av) >= 1.5)]
-            got = e['v'].get(rk.upper()); checked += 1
-            if got != want and not (got and abs(got[0]-want[0]) <= .011 and abs(got[1]-want[1]) <= .011 and got[2] == want[2]): bad += 1; print('MISMATCH', role, c, rk.upper(), got, want)
+            W[(c, rk.upper())] = (s, se, pk, all(p[2] > 0 for p in av), s >= 1.8 and min(p[2] for p in av) >= 1.5)
             for rg in ['euw','kr','na']:
                 x = D[f'{rg}_{rk}'].get(c); k = rg + ('' if rk == 'e' else rk)
                 if not x:
                     if k in e['v']: bad += 1; print('EXTRA', role, c, k)
                     continue
-                s2 = round(x['sh']-spec(x['p']), 2); want = [s2, round(1.64*x['sd'], 2), tier(s2, x['p'], x['raw'] > 0, s2 >= 1.8 and x['raw'] >= 1.5)]
-                got = e['v'].get(k); checked += 1
-                if got != want and not (got and abs(got[0]-want[0]) <= .011 and abs(got[1]-want[1]) <= .011 and got[2] == want[2]): bad += 1; print('MISMATCH', role, c, k, got, want)
+                s2 = round(x['sh']-spec(x['p']), 2); W[(c, k)] = (s2, round(1.64*x['sd'], 2), x['p'], x['raw'] > 0, s2 >= 1.8 and x['raw'] >= 1.5)
         if [e['score'], e['se'], e['t']] != e['v']['E']: bad += 1; print('E fields differ', role, c)
+    SD = {k: spread([(w[0], w[2]) for (c, k2), w in W.items() if k2 == k]) for k in {k for _, k in W}}
+    for e in T[role]:
+        for k in e['v']:
+            if (e['c'], k) not in W: bad += 1; print('EXTRA', role, e['c'], k); continue
+    for (c, k), (s, se, pk, ap, z) in W.items():
+        e = next(x for x in T[role] if x['c'] == c); got = e['v'].get(k); want = [s, se, tier(s, pk, ap, z, SD[k])]; checked += 1
+        if got != want and not (got and abs(got[0]-want[0]) <= .011 and abs(got[1]-want[1]) <= .011 and got[2] == want[2]): bad += 1; print('MISMATCH', role, c, k, got, want)
 print(f'checked {checked} view values, {bad} mismatches')

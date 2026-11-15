@@ -23,7 +23,8 @@ def _asset(ext, body):
     open(os.path.join(d, name), 'w', encoding='utf-8').write(body); return name
 CSS_NAME, JS_NAME = _asset('css', CSS), _asset('js', JS)
 T = T.replace(_css_block, '<link rel="stylesheet" href="__ROOT__assets/' + CSS_NAME + '">').replace(_js_block, '<script src="__ROOT__assets/' + JS_NAME + '" defer></script>')
-TR = {'Z': 0, 'S': 1, 'A': 2, 'B': 3, 'C': 4, 'D': 5, 'P': 6}
+TR = {'Z': 0, 'S': 1, 'A': 2, 'B': 3, 'C': 4, 'D': 5, 'P': 6, 'R': 7}
+TV = lambda t: 'var(--E)' if t in (None, 'R') else f'var(--{t})'   # tier colour; R has none (and --R is the role colour)
 
 def strip(h, keep):   # template blocks: B = tier list pages, M = method page, N = patch notes pages
     for b in 'BMN':
@@ -141,7 +142,7 @@ def head_home(root):
     top3 = sorted(strong[:3], key=lambda t: (hl.find(t[1]['c']) if t[1]['c'] in hl else 999))
     lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
                  f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="--T:var(--{e["t"]})">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in top3)
+                 f'<span><span class="tg" style="--T:{TV(e["t"])}">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in top3)
     nx = P.get('next', {})
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
@@ -151,7 +152,7 @@ def head_home(root):
             f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div></div></header>')
 RKN = [('E', 'Emerald+'), ('D', 'Diamond+'), ('M', 'Master+')]
 def head_champ(r, e, root):
-    s_ = slug(e['c']); tc = lambda t: f'var(--{t})' if t else 'var(--E)'
+    s_ = slug(e['c']); tc = TV
     tiers = ''.join(f'<span><b class="tg" style="--T:{tc(e["v"][k][2])}">{e["v"][k][2]}</b>{n} {f1(e["v"][k][0])}</span>' for k, n in RKN if k in e.get('v', {}))
     return (f'<header class="band head champ-head" style="--art:url(/img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
             f'<div class="ch"><img class="pic big" src="{root}img/champ/{s_}.webp" alt="" width="72" height="72"><div><h1>{E(e["c"])}</h1>'
@@ -345,7 +346,7 @@ def _roles(c, root, moves):   # where the champion stands now, every role it is 
                   f'{"↑" if e["tr"] > 0 else "↓"}{f1(abs(e["tr"])).lstrip("+")}</span>')
         off = e['pick'] < 1
         ch.append(f'<a class="pn-r{" pn-off" if off else ""}" href="{root}{r}/{slug(c)}/" style="--R:var(--R{r})" title="{RNAME[r]}: {e["t"]} tier, score {f1(e["score"])}, {fx(e["pick"])}% pick">'
-                  f'<span class="ri">{RICON[r]}</span>{RNAME[r]} <span class="tg sm" style="--T:var(--{e["t"]})">{e["t"]}</span> <b>{f1(e["score"])}</b>{mv}</a>')
+                  f'<span class="ri">{RICON[r]}</span>{RNAME[r]} <span class="tg sm" style="--T:{TV(e["t"])}">{e["t"]}</span> <b>{f1(e["score"])}</b>{mv}</a>')
     return f'<div class="pn-rs">{"".join(ch)}</div>'
 def _effect(c):   # what happened since last patch in the champion's most played role, Global Emerald+ (live patch only)
     r, e = _main_role(c)
@@ -427,7 +428,7 @@ def notes_body(p, root):
     def ix(x, item=False):
         if item: return f'<li><a class="pn-ix" href="{root}patch/{p}/i-{slug(x["c"])}/">{_ipic(x, root)}<span class="pn-ixn">{E(x["c"])}</span></a></li>'
         r, e = _main_role(x['c'])
-        tg = f'<span class="tg sm" style="--T:var(--{e["t"]})" title="{RNAME[r]}, now">{e["t"]}</span>' if e else ''
+        tg = f'<span class="tg sm" style="--T:{TV(e["t"])}" title="{RNAME[r]}, now">{e["t"]}</span>' if e else ''
         return f'<li><a class="pn-ix" href="{root}patch/{p}/{slug(x["c"])}/" data-pc="{E(x["c"])}"><img class="pic" src="{root}img/champ/{slug(x["c"])}.webp" alt="" width="26" height="26"><span class="pn-ixn">{E(x["c"])}</span>{tg}</a></li>'
     idx = ''.join(f'<p class="pn-ih pn-{k}">{lab} <span>{len(xs)}</span></p><ul>{"".join(ix(x) for x in xs)}</ul>' for k, lab, xs in groups)
     if n.get('items'): idx += f'<p class="pn-ih">Items <span>{len(n["items"])}</span></p><ul>{"".join(ix(x, True) for x in n["items"])}</ul>'

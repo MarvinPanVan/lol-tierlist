@@ -164,8 +164,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
        dataset (Global at that rank for All). ± = 1.64 x combined sd.
      - tiers.json: `e.v = {E, D, M, euw, kr, na, euwd, krd, nad, euwm, krm, nam: [score, ±, tier]}`; `score/se/t` =
        Emerald+ all regions (homepage, link previews, takes); `st` = games, pick, ban, win per OP.GG dataset.
-   - Tiers, same rules for every view, no hand edits: Z score>=1.8, every dataset of the view >=1.5 raw, pick>=2;
-     P pick<1.5 and >=.6; S>=1.15 and every dataset of the view above average; A>=.6; B>=.15; C>=-.45; else D.
+   - Tiers, same rules for every view, no hand edits (Marvin chose role-scaled lines on 15 Nov 2026, because support's
+     spread is about twice top's and fixed lines put almost every support in S or D):
+     Z score>=1.8, every dataset of the view >=1.5 raw, pick>=2; under 1.5% pick: P when >=.6, else R ("Rarely played",
+     shown as a closed row); the rest in steps of z = score / sd, sd = pick-weighted standard deviation of the scores of
+     that role and view's picks with 1.5%+ pick (`role_spread`, saved in `_meta.spread`): S z>=1 and every dataset of the
+     view above average, A z>=.45, B z>=0, C z>=-.6, else D. The site's "could be A" hint uses the same lines (`cutT`).
    - Check after scoring: `python3 pipeline/scripts/verify_views.py` (independent recompute, must print 0 mismatches) and
      that the takes in patch.json still match the Emerald+ list and what they say about Diamond+/Master+.
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.

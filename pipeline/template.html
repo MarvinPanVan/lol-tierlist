@@ -23,7 +23,13 @@
 <link rel="apple-touch-icon" href="__ROOT__apple-touch-icon.png">
 <link rel="preload" href="__ROOT__fonts/inter-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="__ROOT__fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<style>@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(__ROOT__fonts/inter-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url(__ROOT__fonts/inter-latin-500-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(__ROOT__fonts/inter-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url(__ROOT__fonts/inter-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:800;font-display:swap;src:url(__ROOT__fonts/inter-latin-800-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(__ROOT__fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(__ROOT__fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:800;font-display:swap;src:url(__ROOT__fonts/barlow-condensed-latin-800-normal.woff2) format('woff2')}/* ---- side card, one system: header with icon buttons on the art, one stat strip, then tabs (Overview, Build, Matchups).
+<style>@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(__ROOT__fonts/inter-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url(__ROOT__fonts/inter-latin-500-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(__ROOT__fonts/inter-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url(__ROOT__fonts/inter-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Inter';font-style:normal;font-weight:800;font-display:swap;src:url(__ROOT__fonts/inter-latin-800-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(__ROOT__fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(__ROOT__fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:800;font-display:swap;src:url(__ROOT__fonts/barlow-condensed-latin-800-normal.woff2) format('woff2')}/* the Rarely played row (R): closed by default, one quiet button */
+.row.t-R.rclosed .chips{align-content:center}
+.row.t-R .lab .lt{color:var(--faint)}
+.ropen{grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:10px;min-height:38px;padding:0 14px;border:0;border-radius:10px;background:none;color:var(--mut);font:500 13px/1 Inter,sans-serif;cursor:pointer}
+.ropen span{color:var(--acc);font-weight:600}
+.ropen:hover{background:var(--surf);color:var(--ink)}
+/* ---- side card, one system: header with icon buttons on the art, one stat strip, then tabs (Overview, Build, Matchups).
    Fewer boxes: the stats share one strip, the note is plain text, each tab has at most one key line. ---- */
 #panel{--pp:20px}
 #panel .pin>.acts .star.ico{padding:0;width:31px;height:31px;justify-content:center}
@@ -982,7 +988,7 @@ details.brow{display:block}
 <li>Every list is one rank and one region. Ranks are Emerald+, Diamond+ and Master+, and each counts every game at that rank or higher. All 12 combinations are scored the same way and use the same tier cutoffs.</li>
 <li>All regions: Global 50%, EUW 20%, KR 20%, NA 10%, all at the chosen rank. Global is OP.GG at Emerald+; at Diamond+ it is OP.GG, U.GG, Blitz, dpm.lol and League of Graphs (half weight); at Master+ it is OP.GG and U.GG.</li>
 <li>One region: that region's OP.GG numbers on their own. Fewer games, so the sample size correction pulls the scores closer to zero and the ± ranges get wider. KR or NA Master+ can be a few hundred games per champion, so treat those lists as a rough look.</li>
-<li>Tiers follow fixed cutoffs, no hand edits: S from +1.15 and above average in every dataset of that list, A from +0.6, B from +0.15, C from −0.45. Z needs +1.8, +1.5 or better in every dataset of that list and a 2%+ pick rate. Under 1.5% pick and strong goes to P.</li>
+<li>Tiers follow the same rules for every list, no hand edits. Roles spread out very differently (support runs from about +2 to −7, top only from +2 to −3), so S to D are cut in steps of each role's own spread in that list: S from 1 spread above average and above average in every dataset of that list, A from 0.45, B from 0, C from −0.6, D below. The spread is the pick-weighted standard deviation of the regular picks (1.5%+ pick). Z needs +1.8, +1.5 or better in every dataset of that list and a 2%+ pick rate. Under 1.5% pick goes to P when strong (+0.6 or more) and to R, Rarely played, when not: mostly off-role picks whose numbers say little about the champion.</li>
 <li>Last patch is the starting point for champions the new patch did not touch, so early-patch numbers don't jump around. That only works for Global Emerald+, the one dataset kept from last patch. How far a champion can move between patches is fitted from the data (about 0.2 points).</li>
 <li>The ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch. For champions the patch did not touch that change is damped on purpose, because last patch is their starting point.</li>
 <li>A move only gets a reason when there is a fact for it: the change in the patch notes (Summoner's Rift only, not the Classic mode or ARAM), a changed item in its most common OP.GG builds (core items and boots, not starter items), a big shift in pick rate, or a note that the move is too small to be sure. No guessed explanations.</li>
@@ -1030,7 +1036,8 @@ mid:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4" stroke="cu
 adc:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M17 17H6l3.5-3.5h4v-4L17 6z" fill="currentColor"/><path d="M12.5 3H3v9.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".45"/></svg>',
 support:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.2 16.5 5v4.6c0 4-2.7 6.9-6.5 8.2-3.8-1.3-6.5-4.2-6.5-8.2V5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 6.2v7.6M6.4 9.6h7.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'};
 const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['support','Support']];
-const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only']];
+const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only'],['R','Rarely played']];
+let RX=false;   // the Rarely played row starts closed
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
 const META=CUR._meta;let ARCH=null;const DOC=PAGE==="method"||PAGE==="patch";
@@ -1126,7 +1133,7 @@ function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classL
   for(const k of ['ctr','games','ban']){if(t.scrollWidth<=t.clientWidth+1)break;const i=hs.findIndex(h=>h.dataset.k===k);if(i<0)continue;
     tb.querySelectorAll(`tr>:nth-child(${i+1})`).forEach(c=>{c.hidden=true;c.dataset.drop='1';});}
   if(t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
-const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P:'Strong but rarely picked (under 1.5%). Mostly played by mains, so expect less if you are new to it.'};
+const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P:'Strong but rarely picked (under 1.5%). Mostly played by mains, so expect less if you are new to it.',R:'Under 1.5% pick and not strong: mostly off-role or niche picks. Their numbers say little about the champion in its main role.'};
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
@@ -1170,7 +1177,8 @@ function renderBoard(){if(!DATA[role])return;
   const list=DATA[role];
   $('board').innerHTML=TIERS.map(([t,cap],ti)=>{
     const cs=list.filter(d=>tierOf(d)===t).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
-    if(!cs.length&&(t==='Z'||t==='P'))return '';
+    if(!cs.length&&(t==='Z'||t==='P'||t==='R'))return '';
+    if(t==='R'&&!RX&&!cs.some(d=>d.c===pick||(q&&hit(d.c))))return `<div class="row t-R rclosed" style="--T:var(--E)"><div class="lab" title="${LABT.R}"><span class="lt">R</span><small>${cap}</small></div><div class="chips"><button type="button" class="ropen" data-ropen="1">${cs.length} champions under 1.5% pick, mostly off-role <span>Show</span></button></div></div>`;
     const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
     return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}><span class="lt">${t}</span>${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
@@ -1245,7 +1253,8 @@ function histHTML(d,tr=''){
   <text x="${X(li)+8}" y="${Y(v[li])+4}" class="lv">${fmt(v[li])}</text>
   <text x="${X(fi)}" y="${H-4}" class="pt">${P[fi]}</text><text x="${X(li)}" y="${H-4}" class="pt" text-anchor="end">${P[li]}</text></svg>`;
 }
-const cutT=v=>v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D',TRANK={S:4,A:3,B:2,C:1,D:0};
+// tier lines in units of the role's spread in this view (update.py TIER_Z); archived patches used fixed lines
+const cutT=v=>{const sd=((META.spread||{})[role]||{})[VK()];if(!sd)return v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D';const z=v/sd;return z>=1?'S':z>=.45?'A':z>=0?'B':z>=-.6?'C':'D';},TRANK={S:4,A:3,B:2,C:1,D:0};
 function rngHTML(d){const x=vw(d);if(!x||!'SABCD'.includes(x.t)||x.se==null)return '';const lo=cutT(x.s-x.se),hi=cutT(x.s+x.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===x.t?hi:hi===x.t?lo:lo+' to '+hi}</small>`;}
 const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
@@ -1480,6 +1489,7 @@ document.addEventListener('click',e=>{
   const st=t.closest('[data-star]');if(st){toggleMine(st.dataset.star);return;}
   const ptb=t.closest('[data-ptab]');if(ptb){PTAB=ptb.dataset.ptab;const P0=$('panel');P0.querySelectorAll('[data-ptab]').forEach(b=>b.setAttribute('aria-selected',b===ptb));P0.querySelectorAll('.ptab').forEach(x=>x.hidden=x.dataset.pt!==PTAB);
     const tb=P0.querySelector('.ptabs');if(tb&&P0.scrollTop>tb.offsetTop-8)P0.scrollTop=tb.offsetTop-8;return;}
+  if(t.closest('[data-ropen]')){RX=true;renderBoard();return;}
   const sh=t.closest('[data-share]');if(sh){share(sh.dataset.share);return;}
   if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}

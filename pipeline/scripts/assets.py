@@ -12,8 +12,8 @@ tpl=open('template.html',encoding='utf-8').read()
 patch=re.search(r'class="pill">Patch ([\d.]+)</span>',tpl).group(1)
 upd=json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'patch.json')))['updated']
 data=json.load(open('tiers.json',encoding='utf-8'))
-TR={'Z':0,'S':1,'A':2,'B':3,'C':4,'D':5,'P':6}
-COL={'Z':'#fbcd68','S':'#fbaa71','A':'#beaa85','B':'#7fa48f','C':'#638c9a','D':'#5d7094','P':'#ac96c8'}
+TR={'Z':0,'S':1,'A':2,'B':3,'C':4,'D':5,'P':6,'R':7}
+COL={'Z':'#fbcd68','S':'#fbaa71','A':'#beaa85','B':'#7fa48f','C':'#638c9a','D':'#5d7094','P':'#ac96c8','R':'#8b939f'}
 ROLES=[('top','Top'),('jungle','Jungle'),('mid','Mid'),('adc','ADC'),('support','Support')]
 SL=lambda c: re.sub(r'[^a-z0-9]','',c.lower())
 IMG=lambda c: f"file://{PUB}/img/champ/{SL(c)}.webp"

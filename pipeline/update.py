@@ -224,18 +224,26 @@ def build(role, c):
 # OP.GG Emerald+ builds per champion and role: {role: {champ: {c0, c1: core builds, b0: boots, s0: starter, as [[item id, name], ...]}}}
 BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.exists('data/opgg_builds.json') else {}
 
-# tiers: fixed rules, the same for every view, no hand edits
-def tier(v, pk, allpos, zcheck):
+# tiers: the same rules for every role and view, no hand edits (Marvin chose this on 15 Nov 2026).
+# Z and P use fixed win rate points. S to D are cut in units of the role's own spread in that view (sd = pick-weighted
+# standard deviation of the scores of the regular picks, pick >= 1.5%), because roles differ a lot: support runs from
+# +2 to -7, top only from +2 to -3. Weak picks under 1.5% pick rate (mostly off-role) go to R, "Rarely played".
+TIER_Z = [('S', 1.0), ('A', .45), ('B', 0), ('C', -.6)]
+def tier(v, pk, allpos, zcheck, sd):
     if v is None: return None
     if zcheck and pk >= 2: return 'Z'
     if pk < 1.5 and v >= .6: return 'P'
-    if v >= 1.15 and allpos: return 'S'
-    if v >= .6: return 'A'
-    if v >= .15: return 'B'
-    if v >= -.45: return 'C'
+    if pk < 1.5: return 'R'
+    z = v / sd
+    for t, cut in TIER_Z:
+        if z >= cut and (t != 'S' or allpos): return t
     return 'D'
+def role_spread(rows):   # rows: [(score, pick)]; pick-weighted sd of the regular picks
+    W = [(v, p) for v, p in rows if v is not None and p is not None and p >= 1.5]
+    w = sum(p for _, p in W); m = sum(v * p for v, p in W) / w
+    return math.sqrt(sum(p * (v - m) ** 2 for v, p in W) / w)
 
-out, meta_tau, prev_cmp = {}, {}, []
+out, meta_tau, prev_cmp, SPREAD = {}, {}, [], {}
 for role in ROLES:
     base = opgg('opgg_global_e', role)
     comp = {}          # name -> dict(raw delta, shrunk, sd, n)
@@ -292,6 +300,7 @@ for role in ROLES:
     cov = lambda c: sum(c in comp[k].index for k in ['g', 'euw', 'kr', 'na', 'm_op'])
     champs = [c for c in base.index if base.loc[c, 'pick'] >= 0.6 and cov(c) >= 4]
     res = []
+    AUX = {}
     for c in champs:
         e = {'c': c}
         pick = float(base.loc[c, 'pick']); ban = float(base.loc[c, 'ban'])
@@ -316,12 +325,12 @@ for role in ROLES:
             s_ = round(sum(VIEW_W[k] * p[0] for k, p in av.items()) / ws - spec(pk), 2)
             se_ = round(1.64 * sum(VIEW_W[k] * p[1] for k, p in av.items()) / ws, 2)   # errors treated as fully correlated (datasets overlap)
             raws = [p[2] for p in av.values()]
-            V[rk.upper()] = [s_, se_, tier(s_, pk, all(x > 0 for x in raws), s_ >= 1.8 and min(raws) >= 1.5)]
+            V[rk.upper()] = [s_, se_, None]; AUX[(c, rk.upper())] = (pk, all(x > 0 for x in raws), s_ >= 1.8 and min(raws) >= 1.5)
             for rg, k in REGK[rk].items():
                 if val(k, c) is None: continue
                 pk2 = val(k, c, 'pick'); raw = val(k, c, 'raw')
                 s2 = round(val(k, c) - spec(pk2), 2)
-                V[k] = [s2, round(1.64 * val(k, c, 'sd'), 2), tier(s2, pk2, raw > 0, s2 >= 1.8 and raw >= 1.5)]
+                V[k] = [s2, round(1.64 * val(k, c, 'sd'), 2), None]; AUX[(c, k)] = (pk2, raw > 0, s2 >= 1.8 and raw >= 1.5)
         e['v'] = V
         e['score'], e['se'], e['t'] = V['E']   # Emerald+, all regions: the default view (homepage, link previews, history)
         e['g'] = None if val('g', c, 'raw') is None else round(val('g', c, 'raw'), 2)   # raw Global Emerald+, for the history chart
@@ -367,6 +376,13 @@ for role in ROLES:
         e['gl'] = game_length(role, c, val('g', c, 'n'), val('g', c, 'win'))
         e['duo'] = duos(role, c, val('g', c, 'win'))
         res.append(e)
+    # second pass: tiers per view, cut in units of this role's spread in that view
+    for k in {k for e in res for k in e['v']}:
+        sd = role_spread([(e['v'][k][0], AUX[(e['c'], k)][0]) for e in res if k in e['v']])
+        SPREAD.setdefault(role, {})[k] = round(sd, 3)
+        for e in res:
+            if k in e['v']: e['v'][k][2] = tier(e['v'][k][0], *AUX[(e['c'], k)], sd)
+    for e in res: e['t'] = e['v']['E'][2]
     out[role] = res
 
 # ---------- next patch flags ----------
@@ -472,7 +488,7 @@ for r, e in pop:
 facts = {'n5': len(pop), 'n5_lose': n_lose, 'z': {r: [e['c'] for e in out[r] if e['t'] == 'Z'] for r in ROLES}}
 
 out['_meta'] = {'patch': P['patch'], 'prev_patch': P['prev_patch'], 'next': P['next'], 'grade': grade, 'backtest': backtest,
-                'tau': meta_tau, 'facts': facts, 'weights': {'all_regions': VIEW_W}}
+                'tau': meta_tau, 'spread': SPREAD, 'facts': facts, 'weights': {'all_regions': VIEW_W}}
 json.dump(out, open('tiers.json', 'w', encoding='utf-8'), ensure_ascii=False)
 
 # ---------- counter-pick finder: for every champion X, who wins most against it in lane ----------
