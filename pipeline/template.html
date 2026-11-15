@@ -829,7 +829,9 @@ details.brow{display:block}
 .vchip:hover,.vchip[aria-expanded=true]{color:var(--ink);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 45%,var(--line))}
 .vchip .qi{width:15px;height:15px;color:var(--acc);flex:none}
 .legend{gap:6px 18px;margin-left:auto;flex-wrap:nowrap}
-.legend .k{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend .k{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.legend .kt{color:var(--mut)}
+.legend .lowsc{font-weight:600}
 .legend .smp{display:inline-flex;align-items:center;gap:1px;min-height:20px;padding:0 6px;border-radius:6px;background:var(--surf);color:var(--ink);font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px var(--line)}
 .legend .smp.lowsc{color:var(--faint)}
 .legend .tri{margin:0}
@@ -1572,7 +1574,7 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span class="k" title="Win rate points above the role average"><b class="smp">+1.2</b>win rate vs role average</span><span class="k" title="Few games, so the score could be off"><b class="smp lowsc">+0.4</b>few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="smp"><b class="tri up">↑</b><b class="tri dn">↓</b></b>since ${META.prev_patch}</span>${META.next?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span>coming ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span>trap</span>`;
+$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${META.prev_patch}</span>${META.next?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> = buff or nerf on ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;
 {const bd=$('board');if(bd)new ResizeObserver(()=>document.documentElement.style.setProperty('--bh',Math.max(bd.offsetHeight,400)+'px')).observe(bd);}
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;

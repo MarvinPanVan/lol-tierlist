@@ -32,7 +32,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   Side card (desktop): never taller than the list (`--bh` = list height from a ResizeObserver, min 400px), it scrolls
   inside. Check layouts at tall screens too (1920x1080, 2560x1440), not only 1440x900.
   Strip under the controls (`.hintline`): view chip on the left (`#vwn` view name, `#hint` short source, full sources in
-  its title; click opens the rank/region guide), a short key with real samples (`#legend`), patch picker on the right. Page headers are plain HTML made by build.py.
+  its title; click opens the rank/region guide), a short key in plain words, no sample numbers (`#legend`; it never changes, so it must not look like data), patch picker on the right. Page headers are plain HTML made by build.py.
   Tier list CSS is one block near the end of the stylesheet ("the tier list, one system"): every tier row uses the same
   column grid (auto-fill, min 190px; phones 2 columns) so columns line up; Z/S cards span 2 columns with splash art.
   Change it there, not with new overrides elsewhere. The Chart layout is never remembered between visits (only Tiers and
