@@ -26,6 +26,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   matchups, who beats X, duos for bot lane, one colour key). `PTAB` keeps the tab while clicking through champions; the
   tab bar sticks while the card scrolls. CSS in one block at the end of the stylesheet ("side card, one system").
   Avoid new short class names: three clashes happened on 15 Nov (.pw, .pn-st, .nx, .tbl). grep the template first.
+  Scrolling on click (`showPick`): picking a champion from outside the list (header cards, lists below, search) leaves the
+  page alone when the chip is already on screen, otherwise centres the chip. Patch notes: index links scroll to the card
+  (centred if it fits, short gold ring) and pushState the change's own URL, no reload; links are made absolute first.
   Side card (desktop): never taller than the list (`--bh` = list height from a ResizeObserver, min 400px), it scrolls
   inside. Check layouts at tall screens too (1920x1080, 2560x1440), not only 1440x900.
   Strip under the controls (`.hintline`): view chip on the left (`#vwn` view name, `#hint` short source, full sources in

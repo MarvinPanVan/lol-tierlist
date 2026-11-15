@@ -716,7 +716,9 @@ details.brow{display:block}
 .pn-gh span{font:600 13px Inter,sans-serif;color:var(--faint)}
 .pn-gh.pn-buff{color:var(--pos)}.pn-gh.pn-nerf{color:var(--neg)}
 .pn-grid{columns:2 380px;column-gap:14px}
-.pn-c{display:block;break-inside:avoid;margin:0 0 14px;padding:16px;min-width:0;scroll-margin-top:16px}
+.pn-c{display:block;break-inside:avoid;margin:0 0 14px;padding:16px;min-width:0;scroll-margin-top:72px}
+.pn-c.pn-hit{animation:pnhit 1.6s var(--ease)}
+@keyframes pnhit{0%,35%{box-shadow:0 0 0 2px var(--acc)}100%{box-shadow:0 0 0 2px transparent}}
 .pn-c:target{outline:2px solid var(--acc);outline-offset:2px}
 .pn-h{display:flex;align-items:center;gap:12px}
 .pn-c.pn-focus{box-shadow:0 0 0 2px var(--acc)}
@@ -1177,7 +1179,15 @@ function renderBoard(){if(!DATA[role])return;
 const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=(c,pg='build')=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/${pg}/${role}`;
 const HIGHV=()=>R()!=='e';
-let PTAB='ov';   // side card tab, kept while you click through champions
+let PTAB='ov';
+// after picking a champion from outside the list: leave the page alone if its chip is already on screen, otherwise bring the
+// chip to the middle of the screen (the side card sits next to it). Never slam it against the top edge.
+function showPick(tries=0){if(narrow())return;
+  const ch=pick&&document.querySelector(`#board .chip[data-c="${CSS.escape(pick)}"],#board tr[data-c="${CSS.escape(pick)}"]`);
+  if(!ch){if(tries<6)setTimeout(()=>showPick(tries+1),80);else{const b=$('board').getBoundingClientRect();if(b.top>innerHeight*.6||b.bottom<0)$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}return;}
+  const r=ch.getBoundingClientRect(),top=$('bar').getBoundingClientRect().bottom+8;
+  if(r.top>=top&&r.bottom<=innerHeight-8)return;
+  ch.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});}   // side card tab, kept while you click through champions
 function renderPanel(){if(!DATA[role])return;
   const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';$('panel').dataset.key='';return;}
   const rn=ROLES.find(r=>r[0]===role)[1],sx=stat(d)||{},vx=vw(d)||{},lim=LIM();
@@ -1472,7 +1482,7 @@ document.addEventListener('click',e=>{
   if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
-  if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);if(!narrow())$('board').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
+  if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);showPick();return;}
   if(r){navRole(r.dataset.r);return;}
   if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
@@ -1486,7 +1496,7 @@ document.addEventListener('click',e=>{
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
   if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
-  if(c){select(c.dataset.c,true);return;}
+  if(c){select(c.dataset.c,true);if(!c.closest('#board,#panel'))showPick();return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
   if(t.id==='sincex'){$('since').hidden=true;return;}
   if(!t.closest('.search'))$('res').style.display='none';
@@ -1525,7 +1535,7 @@ function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h
     const want=decodeURIComponent(h).toLowerCase(),r=ROLES.map(([k])=>k).find(k=>(DATA[k]||[]).some(x=>slug(x.c)===want));if(r){role=r;c=champFromHash();}}
   pick=c||(PAGE==='champ'&&INIT_CHAMP?INIT_CHAMP:pick);
   render();}
-addEventListener('popstate',fromURL);
+addEventListener('popstate',()=>{if($('board'))fromURL();});
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
 // smooth open and close for expandable parts (details.sm-d, content in one .dc box); instant with reduced motion
@@ -1539,9 +1549,18 @@ const mine=[...document.querySelectorAll('.pn-ix[data-pc]')].filter(a=>MINE.some
 mine.forEach(a=>a.classList.add('mine'));
 // the address bar always holds a link that previews right in chats: index entries open the change's own page, and
 // in-page jumps (#champions, #items) scroll without adding #something to the address
-document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.ctrlKey||e.metaKey)return;const el=document.getElementById(a.getAttribute('href').slice(1));if(!el)return;e.preventDefault();el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
+const goCard=(el,smooth=true)=>{const fits=el.offsetHeight<innerHeight*.75;el.scrollIntoView({behavior:smooth&&!matchMedia('(prefers-reduced-motion: reduce)').matches?'smooth':'auto',block:fits?'center':'start'});
+  if(el.classList.contains('pn-c')){el.classList.remove('pn-hit');void el.offsetWidth;el.classList.add('pn-hit');}};
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.ctrlKey||e.metaKey)return;const el=document.getElementById(a.getAttribute('href').slice(1));if(!el)return;e.preventDefault();goCard(el);});
+// index links point at each change's own page (/patch/<p>/<id>/, shareable). On this page they just scroll to the card and
+// put that link in the address bar, no reload; Back walks through the cards you jumped to.
+// relative links and images would resolve against the new address after pushState, so make them absolute once first
+let absDone=false;const absUrls=()=>{if(absDone)return;absDone=true;document.querySelectorAll('a[href]').forEach(x=>{if(!x.getAttribute('href').startsWith('#'))x.setAttribute('href',x.href);});document.querySelectorAll('img[src]').forEach(x=>x.setAttribute('src',x.src));};
+const cardOf=u=>{try{const x=new URL(u,location.href),m=x.pathname.match(/\/patch\/([\d.]+)\/([^/]+)\/?$/);return m&&x.pathname.includes('/patch/'+(document.body.dataset.np||m[1])+'/')?document.getElementById(m[2]):null;}catch(e){return null;}};
+document.addEventListener('click',e=>{const a=e.target.closest('a.pn-ix');if(!a||e.ctrlKey||e.metaKey||e.shiftKey)return;const el=cardOf(a.href);if(!el)return;e.preventDefault();absUrls();try{history.pushState(null,'',a.href);}catch(x){}goCard(el);});
+addEventListener('popstate',()=>{const el=cardOf(location.href);if(el)goCard(el);else scrollTo({top:0,behavior:'smooth'});});
 // a change's own page (/patch/<p>/<champion>/) opens at its card
-if(INIT_CHAMP&&!location.hash){const el=document.getElementById(INIT_CHAMP);if(el){el.classList.add('pn-focus');requestAnimationFrame(()=>el.scrollIntoView({block:'start'}));}}
+if(INIT_CHAMP&&!location.hash){const el=document.getElementById(INIT_CHAMP);if(el){el.classList.add('pn-focus');requestAnimationFrame(()=>goCard(el,false));}}
 // "Copy link" on each card: the change's own page, so chats show that change. Phones get the share sheet.
 document.addEventListener('click',e=>{const b=e.target.closest('.pn-share');if(!b)return;const u=b.dataset.u,lab=b.textContent,done=t=>{b.textContent=t;setTimeout(()=>b.textContent=lab,1600);};
   if(navigator.share&&matchMedia('(pointer:coarse)').matches){navigator.share({title:b.dataset.t,url:u}).catch(()=>{});return;}

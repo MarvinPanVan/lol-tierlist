@@ -662,7 +662,9 @@ details.brow{display:block}
 .pn-gh span{font:600 13px Inter,sans-serif;color:var(--faint)}
 .pn-gh.pn-buff{color:var(--pos)}.pn-gh.pn-nerf{color:var(--neg)}
 .pn-grid{columns:2 380px;column-gap:14px}
-.pn-c{display:block;break-inside:avoid;margin:0 0 14px;padding:16px;min-width:0;scroll-margin-top:16px}
+.pn-c{display:block;break-inside:avoid;margin:0 0 14px;padding:16px;min-width:0;scroll-margin-top:72px}
+.pn-c.pn-hit{animation:pnhit 1.6s var(--ease)}
+@keyframes pnhit{0%,35%{box-shadow:0 0 0 2px var(--acc)}100%{box-shadow:0 0 0 2px transparent}}
 .pn-c:target{outline:2px solid var(--acc);outline-offset:2px}
 .pn-h{display:flex;align-items:center;gap:12px}
 .pn-c.pn-focus{box-shadow:0 0 0 2px var(--acc)}
