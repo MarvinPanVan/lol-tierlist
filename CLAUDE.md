@@ -21,6 +21,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   green/red tag with the patch number ("▲26.23") on the bottom edge of the portrait, so it can't be read as last patch's
   change; "trap" is a small "!" on the portrait's top corner; the ↑↓ by the score = score moved since last patch; a low-sample score is plain grey on the chips
   (panel lists, counter finder and builds use the same grey = could be luck; no dotted underlines anywhere).
+  Side card (`renderPanel`): art header with two icon buttons (star, share), one stat strip, then tabs Overview (note,
+  rank x region grid, trend, changes, game length, other sites), Build (most common build, OP.GG link) and Matchups (lane
+  matchups, who beats X, duos for bot lane, one colour key). `PTAB` keeps the tab while clicking through champions; the
+  tab bar sticks while the card scrolls. CSS in one block at the end of the stylesheet ("side card, one system").
+  Avoid new short class names: three clashes happened on 15 Nov (.pw, .pn-st, .nx, .tbl). grep the template first.
   Side card (desktop): never taller than the list (`--bh` = list height from a ResizeObserver, min 400px), it scrolls
   inside. Check layouts at tall screens too (1920x1080, 2560x1440), not only 1440x900.
   Strip under the controls (`.hintline`): view chip on the left (`#vwn` view name, `#hint` short source, full sources in

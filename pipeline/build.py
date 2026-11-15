@@ -139,7 +139,7 @@ def head_home(root):
     nx = P.get('next', {})
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
-    nl = (f'<a class="nx" href="{root}patch/{nx["patch"]}/">Patch {nx["patch"]} on {E(nx.get("date", ""))}: see what changes</a>' if nx.get('patch') in NOTES else f'<span class="nx">Next patch on {E(nx.get("date", ""))}</span>') if nx else ''
+    nl = (f'<a class="dlnx" href="{root}patch/{nx["patch"]}/">Patch {nx["patch"]} on {E(nx.get("date", ""))}: see what changes</a>' if nx.get('patch') in NOTES else f'<span class="dlnx">Next patch on {E(nx.get("date", ""))}</span>') if nx else ''
     when = f'<span>Patch {PATCH}, updated {E(UPD)}</span>{nl}'
     return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt"><p class="dl">{when}</p>'
             f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div></div></header>')

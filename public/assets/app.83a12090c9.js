@@ -86,7 +86,7 @@ function renderTable(){if(!DATA[role])return;
   const val=(d,c)=>c==='t'?({Z:7,S:6,A:5,B:4,C:3,D:2,P:1}[tierOf(d)]||0):c==='c'?d.c:SC[c]?(stat(d)||{})[SC[c]]:c.startsWith('r_')?SV(d,VK(c[2])):d[c];
   const rows=list.filter(d=>tierOf(d)).slice().sort((a,b)=>{const x=val(a,sk),y=val(b,sk);if(typeof x==='string')return sortD*(x<y?-1:x>y?1:0);return sortD*((x??-999)-(y??-999));});
   const cell=(d,c)=>{const v=d[c];if(c.startsWith('r_')){const r=c[2],x=vw(d,VK(r)),on=r===R();if(!x)return `<td class="n">${NA}</td>`;return `<td class="n${on?' cur':''}">${on?`<b>${fmt(x.s)}</b> <span class="mu se">±${x.se.toFixed(1)}</span>`:`${fmt(x.s)} <span class="tg sm" style="--T:var(${colT(x.t)})">${x.t}</span>`}</td>`;}
-    switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxTag(d,' tbl'):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
+    switch(c){case 'c':return `<td class="tc">${pic(d.c)}<b>${isMine(d.c)?'<span class="mst">★</span>':''}${d.c}</b>${d.nx?nxTag(d,' intbl'):''}${d.mx!=null&&d.mx>=6?'<span class="flag mx" title="Its best players win far more than average">mastery</span>':''}</td>`;
     case 't':{const t=tierOf(d);return `<td><span class="tg" style="--T:var(${colT(t)})">${t}</span></td>`;}
     case 'tr':return `<td class="n">${v==null?NA:Math.abs(v)<.05?'<span class="mu">0.0</span>':`<span style="color:var(${v>=0?'--pos':'--neg'})">${v>=0?'↑':'↓'} ${fmt(v)}</span>`}</td>`;
     case 'wr':case 'pick':case 'ban':{const w=val(d,c);return `<td class="n">${w==null?NA:w.toFixed(c==='ban'?0:1)}</td>`;}
@@ -159,6 +159,7 @@ function renderBoard(){if(!DATA[role])return;
 const OPGG={wukong:'monkeyking',nunuwillump:'nunu',renataglasc:'renata'};
 const opgg=(c,pg='build')=>`https://op.gg/lol/champions/${OPGG[slug(c)]||slug(c)}/${pg}/${role}`;
 const HIGHV=()=>R()!=='e';
+let PTAB='ov';   // side card tab, kept while you click through champions
 function renderPanel(){if(!DATA[role])return;
   const d=DATA[role].find(x=>x.c===pick);if(!d){$('panel').innerHTML='';$('panel').dataset.key='';return;}
   const rn=ROLES.find(r=>r[0]===role)[1],sx=stat(d)||{},vx=vw(d)||{},lim=LIM();
@@ -171,14 +172,20 @@ function renderPanel(){if(!DATA[role])return;
   const tex=[pkShift(d),chance(d)&&Math.abs(d.tr)>=.05?'too small to be sure':''].filter(Boolean).join(', ');
   const tr=d.tr==null||ARCH?'':`<p class="trend">Since ${META.prev_patch} (Global Emerald+): ${Math.abs(d.tr)<.05?'<b>no change</b>':`<b style="color:var(${d.tr>0?'--pos':'--neg'})">${d.tr>0?'↑':'↓'} ${fmt(d.tr)}</b>`}${tex?`, ${tex}`:''}</p>`;
   const tt=t=>t?`<span class="tg sm" style="--T:var(${colT(t)})">${t}</span>`:'';
+  const BD=buildHTML(d),MU=ctrHTML(d)+duoHTML(d),TABS=[['ov','Overview'],...(BD?[['bd','Build']]:[]),...(MU?[['mu','Matchups']]:[])];
+  const PT=TABS.some(t=>t[0]===PTAB)?PTAB:'ov';
   const PH=`<div class="pin"><div class="pban" style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"></div><div class="ph">${pic(d.c,'pic big')}<div class="pht"><h3>${!ARCH&&PAGE!=='champ'?`<a href="${champURL(d.c)}" title="Open the full page for ${d.c}">${d.c}<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`:d.c}</h3><p class="rolesub">${rn} · ${sx.n!=null?sx.n.toLocaleString('en-US'):'No'} games in ${DSRC()}${d.mx!=null&&d.mx>=6?' · <b class="mxb">Rewards mastery</b>':''}</p></div><button type="button" class="x" id="x" aria-label="Close">×</button></div>
-  <div class="acts"><button type="button" class="star" data-star="${d.c}" aria-pressed="${isMine(d.c)}" title="${isMine(d.c)?'Remove from your champions':'Save to your champions (this browser only)'}">${isMine(d.c)?'★ My champ':'☆ My champs'}</button><a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener" title="Builds and runes on OP.GG">OP.GG build ↗</a><button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+  <div class="acts"><button type="button" class="star ico" data-star="${d.c}" aria-pressed="${isMine(d.c)}" aria-label="${isMine(d.c)?'Remove from your champions':'Save to your champions'}" title="${isMine(d.c)?'Remove from your champions':'Save to your champions (this browser only)'}"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2.6 2.3 4.7 5.1.7-3.7 3.6.9 5.1L10 14.3l-4.6 2.4.9-5.1L2.6 8l5.1-.7z" fill="${isMine(d.c)?'currentColor':'none'}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>${BD?'':`<a class="ext" href="${opgg(d.c)}" target="_blank" rel="noopener" title="Builds and runes on OP.GG">OP.GG ↗</a>`}<button type="button" class="ext ico" data-share="${d.c}" aria-label="Share ${d.c}" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="kv"><div class="km" data-tip="Win rate points above the role average in ${VNM()}, corrected for sample size and one-tricks. ± is a rough 90% range."><span><u>${VNM()}</u></span><strong>${tt(vx.t)}${fmt(vx.s)}<small> ±${vx.se==null?'?':vx.se.toFixed(1)}</small></strong>${rngHTML(d)}</div><div><span>Win</span><strong>${sx.wr==null?'–':sx.wr.toFixed(1)+'%'}</strong></div><div><span>Pick</span><strong>${sx.pick==null?'–':sx.pick.toFixed(1)+'%'}</strong></div><div><span>Ban</span><strong>${sx.ban==null?'–':sx.ban.toFixed(0)+'%'}</strong></div></div>
-  ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap">Every rank and region. Tap one to show that list.</p>${grid}`}
+  ${TABS.length>1?`<div class="ptabs" role="tablist" aria-label="${d.c} details">${TABS.map(([k,n])=>`<button type="button" role="tab" data-ptab="${k}" aria-selected="${k===PT}">${n}</button>`).join('')}</div>`:''}
+  <div class="ptab" data-pt="ov"${PT==='ov'?'':' hidden'}>
   ${d.note?`<p class="note">${d.note}</p>`:''}
+  ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap gcap">Every rank and region <span class="mu">tap one to show that list</span></p>${grid}`}
   ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.${nlink(META.next.patch,d.c)}</p>`:''}
-  ${glHTML(d)}${buildHTML(d)}${ctrHTML(d)}${duoHTML(d)}
-  ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+:</span>${sites}</div>`:''}</div>`;
+  ${glHTML(d)}
+  ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+</span>${sites}</div>`:''}</div>
+  ${BD?`<div class="ptab" data-pt="bd"${PT==='bd'?'':' hidden'}>${BD}</div>`:''}
+  ${MU?`<div class="ptab" data-pt="mu"${PT==='mu'?'':' hidden'}>${MU}<p class="bnote pkey"><b class="dk pos">Green</b> / <b class="dk neg">red</b> = clearly more / less than ${d.c}'s usual win rate, <b class="lowdemo">grey</b> = could be luck. Matchups with ${CMIN}+ games only.</p></div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
   if(P0.dataset.key===key&&P0.firstElementChild){const t=document.createElement('template');t.innerHTML=PH;morph(P0.firstElementChild,t.content.firstElementChild);}
   else{P0.innerHTML=PH;P0.dataset.key=key;}
@@ -283,7 +290,7 @@ function buildHTML(d){const b=d.bd;if(!b||ARCH)return '';const L=LK(),chg=new Se
   const sk=b.sk?`<div class="brow"><span class="blab">Skills</span><span class="bic">${b.sk[0].split('').map(ab).join('')}</span><span class="bnm">${b.sk[0].split('').join(' > ')}</span><span class="bsh" title="Levels 1 to 3">start ${b.sk[1].split('').join(' ')}</span><span class="bch"></span></div>`:'';
   const rows=[part(P[0]),part(P[1]),sk,part(P[2]),part(P[3]),part(P[4])].join('');
   if(!rows)return '';
-  return `<div class="caph"><p class="cap">Build <span class="mu">OP.GG Emerald+</span></p><a class="ctrl" href="${opgg(d.c,'build')}" target="_blank" rel="noopener">Full build ↗</a></div>`
+  return `<div class="caph"><p class="cap">Most common build <span class="mu">OP.GG Emerald+</span></p><a class="ctrl" href="${opgg(d.c,'build')}" target="_blank" rel="noopener">Full build ↗</a></div>`
     +`<div class="bld">${rows}</div><p class="bnote">% = share of games. Tap a row for what else players take.</p>`;
 }
 // matchups from OP.GG's full matchup lists (Global): Emerald+, or Diamond+ when the view is Diamond+ or Master+. Up to 5 hardest
@@ -295,14 +302,14 @@ function ctrs(d){const dia=R()!=='e'&&d.mud,m=dia?d.mud:d.mu,ok=a=>(a||[]).filte
 function ctrHTML(d){
   const {m,rk,cs,gs,thin}=ctrs(d);const inRole=c=>DATA[role].some(x=>x.c===c);
   const all=`<a class="ctrl" href="${opgg(d.c,'counters')}" target="_blank" rel="noopener">All matchups ↗</a>`;
-  const head=`<div class="caph"><p class="cap">Matchups <span class="mu">OP.GG ${rk}${m?`, vs ${d.c}'s usual ${m.o.toFixed(1)}%`:''}</span></p>${all}</div>`;
+  const head=`<div class="caph"><p class="cap"${m?` title="Each against ${d.c}'s usual ${m.o.toFixed(1)}% in OP.GG's matchup data"`:''}>Lane matchups <span class="mu">OP.GG ${rk}</span></p>${all}</div>`;
   if(!cs.length&&!gs.length)return thin||((d.ctr||[]).length)||m?`${head}<p class="mi0">OP.GG's matchups for ${d.c} each have under ${CMIN} games, or none differs from ${d.c}'s usual win rate.</p>`:'';
   const card=([c,wr,n,cl],good)=>{const weak=cl===0,inner=`${pic(c,'pic xs')}<span>${c}</span><small${weak?' class="lowdemo"':''}>${wr.toFixed(0)}% · ${kfmt(n)} games</small>`,
     tip=`${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}`+(m?(weak?`. Too few games to be sure that differs from ${d.c}'s usual ${m.o.toFixed(1)}%.`:`, against ${m.o.toFixed(1)}% usually.`):''),cl2=`cc${good?' good':''}`;
     return inRole(c)?`<button type="button" class="${cl2}" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="${cl2}" title="${tip}">${inner}</span>`;};
   const grid=(L,good)=>`<div class="ctr">${L.map(x=>card(x,good)).join('')}</div>`;
   const more=cs.length>3||gs.length>3;
-  const foot=m&&[...cs,...gs].some(x=>x[3]===0)?`<p class="bnote"><b class="lowdemo">Grey</b> = too few games to be sure. Only matchups with ${CMIN}+ games.</p>`:'';
+  const foot='';
   return `${head}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
     +(more?`<details class="pmore sm-d"><summary>More matchups</summary><div class="dc">${cs.length>3?`<p class="mlab">Also hard</p>${grid(cs.slice(3),0)}`:''}${gs.length>3?`<p class="mlab">Also easy</p>${grid(gs.slice(3),1)}`:''}</div></details>`:'')+foot
     +(META.cpf&&!ARCH?`<button type="button" class="cpgo" data-cpgo="${d.c}">Who beats ${d.c}? <span>See every pick ranked</span></button>`:'');
@@ -335,9 +342,8 @@ document.addEventListener('input',e=>{if(e.target.id!=='cpq')return;const v=e.ta
 function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const pr=role==='adc'?'support':'adc',pn=role==='adc'?'supports':'ADCs';
   const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
   const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
-  return `<div class="caph"><p class="cap">Best ${pn} with ${d.c} <span class="mu">OP.GG Emerald+, vs ${d.c}'s usual ${D.o.toFixed(1)}%</span></p></div>${grid(D.l.slice(0,3))}`
-    +(D.l.length>3?`<details class="pmore sm-d"><summary>The other ${D.l.length-3} ${pn} played most often with ${d.c}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'')
-    +`<p class="bnote"><b class="dk pos">Green</b> = ${d.c} clearly wins more with them than usual (${D.o.toFixed(1)}%), <b class="dk neg">red</b> = clearly less, <b class="lowdemo">grey</b> = the gap could be luck.</p>`;}
+  return `<div class="caph duoh"><p class="cap" title="Each against ${d.c}'s usual ${D.o.toFixed(1)}% in OP.GG's duo data">Best ${pn} with ${d.c} <span class="mu">OP.GG Emerald+</span></p></div>${grid(D.l.slice(0,3))}`
+    +(D.l.length>3?`<details class="pmore sm-d"><summary>The other ${D.l.length-3} ${pn} played most often with ${d.c}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'');}
 // the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
   const ALL=PAGE==='home';
@@ -442,6 +448,8 @@ document.addEventListener('click',e=>{
   if(DOC)return;
   const t=e.target;
   const st=t.closest('[data-star]');if(st){toggleMine(st.dataset.star);return;}
+  const ptb=t.closest('[data-ptab]');if(ptb){PTAB=ptb.dataset.ptab;const P0=$('panel');P0.querySelectorAll('[data-ptab]').forEach(b=>b.setAttribute('aria-selected',b===ptb));P0.querySelectorAll('.ptab').forEach(x=>x.hidden=x.dataset.pt!==PTAB);
+    const tb=P0.querySelector('.ptabs');if(tb&&P0.scrollTop>tb.offsetTop-8)P0.scrollTop=tb.offsetTop-8;return;}
   const sh=t.closest('[data-share]');if(sh){share(sh.dataset.share);return;}
   if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}

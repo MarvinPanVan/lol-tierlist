@@ -158,7 +158,7 @@ button.gopt:hover{border-color:var(--faint)}
 .kv{display:flex;gap:8px;margin-bottom:18px}
 .kv>div{flex:1 1 0;min-width:0}.kv>[data-tip]{flex-grow:1.35}.kv>div{background:var(--surf);border-radius:12px;padding:10px 12px}
 .kv>div>span{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11.5px;color:var(--mut);font-weight:500;white-space:nowrap;min-height:17px}
-.kv [data-tip]>span u{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
+.kv [data-tip]>span u{text-decoration:none;cursor:help}
 .kv strong{font:700 20px/1.2 Inter,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
 .kv strong small{font:500 11.5px Inter,sans-serif;color:var(--mut);margin-left:3px;letter-spacing:0}
 .cap{font-size:12.5px;color:var(--mut);margin:0 0 8px;font-weight:500}
@@ -785,13 +785,13 @@ details.brow{display:block}
 @media(max-width:640px){.home .dl>span:first-child{display:none}}
 .caph .cap{color:var(--ink);font-weight:650;font-size:13.5px}
 .caph .cap .mu{font-weight:500;font-size:12px;color:var(--faint);margin-left:5px}
-.tv .nxp.tbl{margin-left:8px}
+.tv .nxp.intbl{margin-left:8px}
 .hintline .legend[hidden]+#patchsel{margin-left:auto}
 :root[data-theme=light] .pban{background:linear-gradient(180deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.55) 52%,var(--card) 80%),var(--art) center 22%/cover no-repeat}
-.home .dl{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.home .dl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 18px}
 .home .dl>*{display:inline-flex;align-items:center;gap:7px;min-height:28px;padding:0 11px;border-radius:999px;background:var(--surf);box-shadow:inset 0 0 0 1px var(--line);font:500 12.5px/1 Inter,sans-serif;color:var(--mut);text-decoration:none}
 .home .dl a{color:var(--ink)}.home .dl a:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 50%,var(--line))}
-.home .dl .nx::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.home .dl .dlnx::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
 .pn-tl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 34px;align-items:center}
 .pn-num{display:flex;gap:10px}
 .pn-num div{display:grid;justify-items:start;gap:4px;min-width:84px;padding:12px 16px;border-radius:12px;background:var(--surf)}
