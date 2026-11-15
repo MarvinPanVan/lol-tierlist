@@ -76,14 +76,14 @@ for role in ['top','jungle','mid','adc','support']:
             def bavg(f):
                 pr = [(src[c][f], w) for src, w in GB[rk] if c in src]
                 return sum(a*w for a, w in pr)/sum(w for _, w in pr) if pr else None
-            parts = {'glob': (bavg('sh'), bavg('sd'), bavg('raw'), .5)}
-            for rg, wt in [('euw', .2), ('kr', .2), ('na', .1)]:
-                x = D[f'{rg}_{rk}'].get(c); parts[rg] = (x['sh'], x['sd'], x['raw'], wt) if x else (None,)*3 + (wt,)
+            parts = {'glob': (bavg('sh'), bavg('sd'), bavg('raw'), 1)}   # All regions = the Global block alone
+            chk = [parts['glob'][2]] + [D[f'{rg}_{rk}'][c]['raw'] for rg in ['euw', 'kr', 'na'] if c in D[f'{rg}_{rk}']]   # S/Z consistency check
             av = [p for p in parts.values() if p[0] is not None]
-            pk = D[f'global_{rk}'][c]['p'] if c in D[f'global_{rk}'] else g[c]['p']
-            s = round(sum(p[0]*p[3] for p in av)/sum(p[3] for p in av) - spec(pk), 2)
-            se = round(1.64*sum(p[1]*p[3] for p in av)/sum(p[3] for p in av), 2)
-            W[(c, rk.upper())] = (s, se, pk, all(p[2] > 0 for p in av), s >= 1.8 and min(p[2] for p in av) >= 1.5)
+            if av:
+                pk = D[f'global_{rk}'][c]['p'] if c in D[f'global_{rk}'] else g[c]['p']
+                s = round(sum(p[0]*p[3] for p in av)/sum(p[3] for p in av) - spec(pk), 2)
+                se = round(1.64*sum(p[1]*p[3] for p in av)/sum(p[3] for p in av), 2)
+                W[(c, rk.upper())] = (s, se, pk, all(x > 0 for x in chk), s >= 1.8 and min(chk) >= 1.5)
             for rg in ['euw','kr','na']:
                 x = D[f'{rg}_{rk}'].get(c); k = rg + ('' if rk == 'e' else rk)
                 if not x:

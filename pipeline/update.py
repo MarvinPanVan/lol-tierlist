@@ -22,7 +22,9 @@ P = json.load(open('patch.json', encoding='utf-8'))
 SAMPLES = json.load(open('data/samples.json'))
 SPEC = 0.4          # one-trick correction: points per ln-unit of pick rate below 2%
 TAU_FLOOR = 0.35    # never assume the true spread between champions is below 0.35 points
-VIEW_W = {'glob': .50, 'euw': .20, 'kr': .20, 'na': .10}   # weights of an 'All regions' view, same for every rank
+# 'All regions' = the Global block alone: every server at its real share of games (Marvin, 15 Nov 2026). The old mix
+# (Global .5 + EUW .2 + KR .2 + NA .1) counted EUW, KR and NA twice, because Global already holds them (~52% of its games).
+VIEW_W = {'glob': 1, 'euw': 0, 'kr': 0, 'na': 0}
 # Global block per rank: OP.GG Emerald+; Diamond+ from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs (half weight); Master+ from OP.GG and U.GG
 GBLK = {'e': [('g', 1)], 'd': [('d_op', 1), ('U.GG|D', 1), ('Blitz|D', 1), ('dpm.lol|D', 1), ('League of Graphs|D', .5)], 'm': [('m_op', 1), ('U.GG|M', 1)]}
 REGK = {'e': {'euw': 'euw', 'kr': 'kr', 'na': 'na'}, 'd': {'euw': 'euwd', 'kr': 'krd', 'na': 'nad'}, 'm': {'euw': 'euwm', 'kr': 'krm', 'na': 'nam'}}
@@ -354,13 +356,13 @@ for role in ROLES:
             parts = {'glob': (avg([(val(k, c), w) for k, w in blk]), avg([(val(k, c, 'sd'), w) for k, w in blk]), avg([(val(k, c, 'raw'), w) for k, w in blk]))}
             for rg, k in REGK[rk].items(): parts[rg] = (val(k, c), val(k, c, 'sd'), val(k, c, 'raw'))
             pk = val(PICKK[rk], c, 'pick'); pk = pick if pk is None else pk
-            av = {k: p for k, p in parts.items() if p[0] is not None}
-            if not av: continue
-            ws = sum(VIEW_W[k] for k in av)
-            s_ = round(sum(VIEW_W[k] * p[0] for k, p in av.items()) / ws - spec(pk), 2)
-            se_ = round(1.64 * sum(VIEW_W[k] * p[1] for k, p in av.items()) / ws, 2)   # errors treated as fully correlated (datasets overlap)
-            raws = [p[2] for p in av.values()]
-            V[rk.upper()] = [s_, se_, None]; AUX[(c, rk.upper())] = (pk, all(x > 0 for x in raws), s_ >= 1.8 and min(raws) >= 1.5)
+            av = {k: p for k, p in parts.items() if p[0] is not None and VIEW_W[k] > 0}
+            if av:
+                ws = sum(VIEW_W[k] for k in av)
+                s_ = round(sum(VIEW_W[k] * p[0] for k, p in av.items()) / ws - spec(pk), 2)
+                se_ = round(1.64 * sum(VIEW_W[k] * p[1] for k, p in av.items()) / ws, 2)   # errors treated as fully correlated (datasets overlap)
+                raws = [p[2] for p in parts.values() if p[0] is not None]   # S and Z also need EUW, KR and NA on side (check only)
+                V[rk.upper()] = [s_, se_, None]; AUX[(c, rk.upper())] = (pk, all(x > 0 for x in raws), s_ >= 1.8 and min(raws) >= 1.5)
             for rg, k in REGK[rk].items():
                 if val(k, c) is None: continue
                 pk2 = val(k, c, 'pick'); raw = val(k, c, 'raw')

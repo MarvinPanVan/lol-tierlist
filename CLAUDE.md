@@ -161,7 +161,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Views (Marvin chose this in 26.22): every list is one rank (Emerald+, Diamond+, Master+) x one region (All, EUW,
      KR, NA), 12 views, all scored the same way with the same tier rules. Site controls: Rank and Region buttons, the
      panel grid (tap a cell to switch), stored in localStorage `tl-view` as `rank|region`.
-     - All regions = Global block .50, EUW .20, KR .20, NA .10, all at that rank, each shrunk. Global block: Emerald+ =
+     - All regions = the Global block alone at that rank (Marvin, 15 Nov 2026: the old .5/.2/.2/.1 mix counted EUW, KR and
+       NA twice, since Global already holds ~52% of its games from them). Global block: Emerald+ =
        OP.GG Global; Diamond+ = OP.GG, U.GG, Blitz, dpm.lol at 1 and League of Graphs at 0.5; Master+ = OP.GG and U.GG.
      - One region = that OP.GG dataset alone, shrunk. Pick rate for the one-trick penalty and Z/P = the view's OP.GG
        dataset (Global at that rank for All). ± = 1.64 x combined sd.
