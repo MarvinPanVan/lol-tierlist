@@ -68,11 +68,7 @@
      "E costs more, longer early cooldown",
      "nerf"
     ],
-    [
-     "Mel, Azir, Galio, Annie",
-     "Buffs",
-     "buff"
-    ],
+    ["Mel", "Q and W up", "buff"], ["Azir", "More range, W on-hit up", "buff"], ["Galio", "W shield up", "buff"], ["Annie", "Tibbers stronger", "buff"], ["Akshan", "Numbers not out yet", "buff"],
     [
      "Voltaic Cyclosword",
      "Current-health damage down",

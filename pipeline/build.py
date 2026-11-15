@@ -95,6 +95,12 @@ if os.path.exists(_CPF):
 if PATCH in NOTES:   # the short lines on the panels (changes, item_changes) and the full notes must list the same things
     assert {x['c']: [x['kind'], x['short']] for x in NOTES[PATCH]['champs']} == P.get('changes'), 'patch.json: "changes" and "notes" disagree'
     assert {x['c']: [x['kind'], x['short'], x['slot']] for x in NOTES[PATCH].get('items', [])} == P.get('item_changes', {}), 'patch.json: "item_changes" and "notes" disagree'
+_nx = P.get('next', {})
+if _nx.get('patch') in NOTES:   # the "Changing next patch" card: one row per champion, and nothing from the preview left out
+    _rows = [x for L in _nx.get('roles', {}).values() for x in L]
+    assert not [x[0] for x in _rows if ',' in x[0]], 'patch.json next.roles: one champion per row, no "A, B, C" groups: ' + str([x[0] for x in _rows if ',' in x[0]])
+    _miss = [x['c'] for x in NOTES[_nx['patch']]['champs'] + NOTES[_nx['patch']].get('items', []) if x['c'] not in {r[0] for r in _rows}]
+    assert not _miss, 'patch.json next.roles is missing changes from the preview notes: ' + ', '.join(_miss)
 def data_for(role, page_kind):
     m = dict(META_SLIM, part=True)
     return json.dumps({'_meta': m} if page_kind in ('method', 'champ', 'patch') else {'_meta': m, role: D[role]}, ensure_ascii=False, separators=(',', ':'))
