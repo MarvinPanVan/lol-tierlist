@@ -92,11 +92,39 @@ CTR = {rk: {r: {nm(c): [[nm(x[0]), round(100 * x[2] / x[1], 1), x[1]] for x in c
 # sample size (empirical Bayes per role and rank, like the tier list), so a 150-game fluke cannot top the list.
 # clear = 1 when the raw difference is at least 1.64 standard errors (otherwise the site greys it out).
 MU = json.load(open('data/opgg_matchups.json', encoding='utf-8')) if os.path.exists('data/opgg_matchups.json') else {}
-def matchups(rk, role, c):   # -> {o: champion's own win rate, h/g: [[opponent, win rate of this champion, games, clear], ...]}
-    D = MU.get(rk); v = D and D['m'].get(f'{role}|{c}')
-    if not v: return None
-    f = lambda L: [[nm(D['names'][i]), round(100 * w / n, 1), n, cl] for i, n, w, cl in L]
-    return {'o': round(100 * v['o'][1] / v['o'][0], 1), 'h': f(v['h']), 'g': f(v['g'])}
+# Lane matchups, compared with what the champion should win against an opponent that strong in general:
+# expected = own win rate - (opponent's own win rate - 50). Measured on 26.22 data: a matchup's gap moves almost one for one
+# with the opponent's general strength (slope -0.95 to -1.03 in every role), so the raw "hardest" list was mostly just the
+# strongest champions of the role. What is left after taking that out is the matchup itself.
+MUF = json.load(open('data/opgg_matchups_full.json', encoding='utf-8')) if os.path.exists('data/opgg_matchups_full.json') else {}
+def _own(rk, role, c):   # the champion's own win rate in the role, from OP.GG's matchup totals
+    o = MU.get(rk, {}).get('m', {}).get(f'{role}|{c}', {}).get('o')
+    if o: return 100 * o[1] / o[0]
+    L = MUF.get(rk, {}).get(f'{role}|{c}')
+    return 100 * sum(w for _, n, w in L) / sum(n for _, n, w in L) if L else None
+_MU_T2 = {}
+def _mu_t2(rk, role):   # spread of the real matchup effects in this role (empirical Bayes, pairs with 300+ games)
+    if (rk, role) not in _MU_T2:
+        dl = []
+        for k, L in MUF.get(rk, {}).items():
+            r, a = k.split('|'); wa = _own(rk, role, a) if r == role else None
+            if wa is None: continue
+            for op, n, w in L:
+                wb = _own(rk, role, op)
+                if n >= 300 and wb is not None: d = 100 * w / n - wa + (wb - 50); dl.append(d * d - 2500 / n)
+        _MU_T2[(rk, role)] = max(sum(dl) / len(dl), 1) if dl else 1
+    return _MU_T2[(rk, role)]
+def matchups(rk, role, c):   # -> {o: own win rate, h/g: [[opponent, win rate, games, clear, expected], ...]} (5 each, 150+ games)
+    L, wa = MUF.get(rk, {}).get(f'{role}|{c}'), _own(rk, role, c)
+    if not L or wa is None: return None
+    t2, rows = _mu_t2(rk, role), []
+    for op, n, w in L:
+        wb = _own(rk, role, op)
+        if n < 150 or wb is None: continue
+        r, ex, v = 100 * w / n, wa - (wb - 50), 2500 / n
+        rows.append([nm(op), round(r, 1), n, 1 if abs(r - ex) >= 1.64 * math.sqrt(v) else 0, round(ex, 1), (r - ex) * t2 / (t2 + v)])
+    rows.sort(key=lambda x: x[5])
+    return {'o': round(wa, 1), 'h': [x[:5] for x in rows[:5] if x[5] < 0], 'g': [x[:5] for x in rows[::-1][:5] if x[5] > 0]}
 # OP.GG build page, Global Emerald+, per "role|champion": [spells, rune pages, core builds, boots, starting items], everything
 # OP.GG's overview shows. Pick and win rates come x10 (runes: per mille, same thing). Skills: [max order, 15 levels, pick %, win %, games].
 BST = json.load(open('data/opgg_build_stats.json', encoding='utf-8')) if os.path.exists('data/opgg_build_stats.json') else {}
@@ -145,29 +173,34 @@ def switches(role, c, kind, key, base):
 # role like the matchups); clear = a gap of 1.64+ standard errors. Partners with 300+ games only.
 SYN = json.load(open('data/opgg_synergy.json', encoding='utf-8')) if os.path.exists('data/opgg_synergy.json') else {}
 DUO_PART = {'adc': 'SUPPORT', 'support': 'ADC'}
-def _duo_tau():
-    out = {}
-    for role, part in DUO_PART.items():
-        dl = []
+# Duos the same way: expected = own win rate + (partner's own win rate in its role - 50). The raw list was mostly the
+# strongest supports (slope +0.8 to +0.9 on partner strength); this shows who works best with this champion in particular.
+_WIN = {}
+def _role_win(role):
+    if role not in _WIN: _WIN[role] = {nm(c): float(w) for c, w in opgg('opgg_global_e', role)['win'].items()}
+    return _WIN[role]
+_DUO_T2 = {}
+def _duo_t2(role):
+    if role not in _DUO_T2:
+        part, dl = DUO_PART[role], []
+        pw = _role_win(part.lower())
         for k, rows in SYN.items():
             if not k.startswith(role + '|'): continue
-            P = [(n, w) for pos, _, n, w in rows if pos == part and n >= 300]
-            if not P: continue
-            o = sum(w for n, w in P) / sum(n for n, w in P)
-            dl += [((100 * w / n - 100 * o) ** 2 - 2500 / n) for n, w in P]
-        out[role] = max(sum(dl) / len(dl), 1) if dl else 1
-    return out
-DUO_TAU = _duo_tau()
-def duos(role, c, win):
+            wa = _role_win(role).get(nm(k.split('|')[1]))
+            if wa is None: continue
+            dl += [(100 * w / n - wa - (pw[nm(p_)] - 50)) ** 2 - 2500 / n for pos, p_, n, w in rows if pos == part and n >= 300 and nm(p_) in pw]
+        _DUO_T2[role] = max(sum(dl) / len(dl), 1) if dl else 1
+    return _DUO_T2[role]
+def duos(role, c, win):   # -> {o: own win rate, l: [[partner, win rate, games, clear, expected], ...]} best match first
     part, rows = DUO_PART.get(role), SYN.get(f'{role}|{c}')
     if not part or not rows or win is None: return None
-    t2, L = DUO_TAU.get(role, 1), []
+    t2, pw, L = _duo_t2(role), _role_win(part.lower()), []
     for pos, p_, n, w in rows:
-        if pos != part or n < 300: continue
-        r = 100 * w / n; d = r - win; v = 2500 / n
-        L.append([nm(p_), round(r, 1), n, 1 if abs(d) / math.sqrt(v) >= 1.64 else 0, d * t2 / (t2 + v)])
-    L.sort(key=lambda x: -x[4])
-    return {'o': round(win, 1), 'l': [x[:4] for x in L]} if L else None
+        if pos != part or n < 300 or nm(p_) not in pw: continue
+        r, ex, v = 100 * w / n, win + (pw[nm(p_)] - 50), 2500 / n
+        L.append([nm(p_), round(r, 1), n, 1 if abs(r - ex) >= 1.64 * math.sqrt(v) else 0, round(ex, 1), (r - ex) * t2 / (t2 + v)])
+    L.sort(key=lambda x: -x[5])
+    return {'o': round(win, 1), 'l': [x[:5] for x in L]} if L else None
 # OP.GG runes page: up to 5 rune pages (the build page only shows 2), same format as the build page's
 RNP = json.load(open('data/opgg_rune_pages.json', encoding='utf-8')) if os.path.exists('data/opgg_rune_pages.json') else {}
 # OP.GG trends page: win rate by game length, buckets under 25, 25-30, 30-35, 35-40 and 40+ minutes. OP.GG gives no game
@@ -225,25 +258,27 @@ def build(role, c):
 BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.exists('data/opgg_builds.json') else {}
 
 # tiers: the same rules for every role and view, no hand edits (Marvin chose this on 15 Nov 2026).
-# Z and P use fixed win rate points. S to D are cut in units of the role's own spread in that view (sd = pick-weighted
-# standard deviation of the scores of the regular picks, pick >= 1.5%), because roles differ a lot: support runs from
-# +2 to -7, top only from +2 to -3. Weak picks under 1.5% pick rate (mostly off-role) go to R, "Rarely played".
+# Z uses fixed win rate points. S to D are cut in units of the role's own spread (sd = pick-weighted standard deviation of
+# the scores of the regular picks, pick >= 1.5%), because roles differ a lot: support runs from +2 to -7, top only from +2
+# to -3. The lines come from the all-regions list of each rank (the most games) and are used for its single-region lists
+# too, so small noisy lists don't get tighter lines. Picks under 1.5% get their letter by the same lines plus a rare flag;
+# the site lists them in their own "Rarely played" row.
 TIER_Z = [('S', 1.0), ('A', .45), ('B', 0), ('C', -.6)]
-def tier(v, pk, allpos, zcheck, sd):
-    if v is None: return None
-    if zcheck and pk >= 2: return 'Z'
-    if pk < 1.5 and v >= .6: return 'P'
-    if pk < 1.5: return 'R'
+def tier(v, pk, allpos, zcheck, sd):   # -> (letter, rare)
+    if v is None: return None, 0
+    rare = 1 if pk < 1.5 else 0
+    if zcheck and pk >= 2: return 'Z', 0
     z = v / sd
     for t, cut in TIER_Z:
-        if z >= cut and (t != 'S' or allpos): return t
-    return 'D'
+        if z >= cut and (t != 'S' or allpos): return t, rare
+    return 'D', rare
 def role_spread(rows):   # rows: [(score, pick)]; pick-weighted sd of the regular picks
     W = [(v, p) for v, p in rows if v is not None and p is not None and p >= 1.5]
     w = sum(p for _, p in W); m = sum(v * p for v, p in W) / w
     return math.sqrt(sum(p * (v - m) ** 2 for v, p in W) / w)
 
 out, meta_tau, prev_cmp, SPREAD = {}, {}, [], {}
+RANK_OF = {'E': 'E', 'D': 'D', 'M': 'M'} | {k: rk.upper() for rk in 'edm' for k in REGK[rk].values()}
 for role in ROLES:
     base = opgg('opgg_global_e', role)
     comp = {}          # name -> dict(raw delta, shrunk, sd, n)
@@ -376,13 +411,13 @@ for role in ROLES:
         e['gl'] = game_length(role, c, val('g', c, 'n'), val('g', c, 'win'))
         e['duo'] = duos(role, c, val('g', c, 'win'))
         res.append(e)
-    # second pass: tiers per view, cut in units of this role's spread in that view
-    for k in {k for e in res for k in e['v']}:
-        sd = role_spread([(e['v'][k][0], AUX[(e['c'], k)][0]) for e in res if k in e['v']])
-        SPREAD.setdefault(role, {})[k] = round(sd, 3)
-        for e in res:
-            if k in e['v']: e['v'][k][2] = tier(e['v'][k][0], *AUX[(e['c'], k)], sd)
-    for e in res: e['t'] = e['v']['E'][2]
+    # second pass: tiers per view, in units of this role's spread in the all-regions list of that rank
+    for K in 'EDM':
+        SPREAD.setdefault(role, {})[K] = round(role_spread([(e['v'][K][0], AUX[(e['c'], K)][0]) for e in res if K in e['v']]), 3)
+    for e in res:
+        for k in e['v']:
+            e['v'][k][2:] = list(tier(e['v'][k][0], *AUX[(e['c'], k)], SPREAD[role][RANK_OF[k]]))
+        e['t'], e['rare'] = e['v']['E'][2], e['v']['E'][3]
     out[role] = res
 
 # ---------- next patch flags ----------
@@ -495,7 +530,6 @@ json.dump(out, open('tiers.json', 'w', encoding='utf-8'), ensure_ascii=False)
 # From X's own full matchup list (OP.GG counters page, 150+ games), turned around: C's win rate against X. Ranked by C's
 # gap to what an average opponent gets against X, pulled toward 0 by sample size (tau per role and rank, like the panel's
 # matchups); clear = a gap of 1.64+ standard errors. Written to counters.json, the site loads it when the finder opens.
-MUF = json.load(open('data/opgg_matchups_full.json', encoding='utf-8')) if os.path.exists('data/opgg_matchups_full.json') else {}
 if MUF and MU:
     cdat = {}
     for rk, D_ in MUF.items():
@@ -522,4 +556,4 @@ print('facts', facts)
 print('grade', grade)
 taus = pd.Series(meta_tau); print('fitted spread (tau, points) median by dataset:'); print(taus.groupby(lambda k: k.split('|')[0]).median().round(2).to_string())
 for r in ROLES:
-    print(f'== {r}', ' | '.join(f"{t}: " + ', '.join(f"{e['c']} {e['score']:+.1f}" for e in sorted(out[r], key=lambda e: -e['score']) if e['t'] == t) for t in 'ZSAP'))
+    print(f'== {r}', ' | '.join(f"{t}: " + ', '.join(f"{e['c']} {e['score']:+.1f}" for e in sorted(out[r], key=lambda e: -e['score']) if e['t'] == t and not e.get('rare')) for t in 'ZSA'))

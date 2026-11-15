@@ -8,8 +8,8 @@ mid:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4" stroke="cu
 adc:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M17 17H6l3.5-3.5h4v-4L17 6z" fill="currentColor"/><path d="M12.5 3H3v9.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".45"/></svg>',
 support:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.2 16.5 5v4.6c0 4-2.7 6.9-6.5 8.2-3.8-1.3-6.5-4.2-6.5-8.2V5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 6.2v7.6M6.4 9.6h7.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'};
 const ROLES=[['top','Top'],['jungle','Jungle'],['mid','Mid'],['adc','ADC'],['support','Support']];
-const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D',''],['P','Mains only'],['R','Rarely played']];
-let RX=false;   // the Rarely played row starts closed
+const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D','']];
+let RX=false;   // the Rarely played row shows its strongest four until opened
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
 const META=CUR._meta;let ARCH=null;const DOC=PAGE==="method"||PAGE==="patch";
@@ -45,9 +45,10 @@ const STK=(r=R(),g=G())=>g==='all'?{e:'g',d:'dia',m:'m'}[r]:VK(r,g);          //
 const VNM=(r=R(),g=G())=>LIM()?'Global Emerald+':g==='all'?RN[r]:GN[g]+' '+RN[r];
 const DSRC=(r=R(),g=G())=>(g==='all'?'Global ':GN[g]+' ')+RN[r];   // the OP.GG dataset behind games, pick and ban
 const stat=(d,k=STK())=>{const x=d.st&&d.st[k];return x?{n:x[0],pick:x[1],ban:x[2],wr:x[3]}:k==='g'?{n:d.games,pick:d.pick,ban:d.ban,wr:d.wr}:null;};
-const vw=(d,k=VK())=>{const x=d.v&&d.v[k];return x?{s:x[0],se:x[1],t:x[2]}:k==='E'?{s:d.score,se:d.se,t:d.t}:null;};
+const vw=(d,k=VK())=>{const x=d.v&&d.v[k];return x?{s:x[0],se:x[1],t:x[2],r:x[3]||(x[2]==='P'||x[2]==='R'?1:0)}:k==='E'?{s:d.score,se:d.se,t:d.t,r:d.rare||(d.t==='P'?1:0)}:null;};
 const SV=(d,k)=>{const x=vw(d,k);return x?x.s:null;};
 const tierOf=(d,k)=>{const x=vw(d,k);return x?x.t:null;};
+const isRare=(d,k)=>{const x=vw(d,k);return !!(x&&x.r);};   // under 1.5% pick in this view: listed in the Rarely played row
 const isLow=d=>{const x=vw(d);return !!x&&x.se>=.8;};
 const LOWN=1500;
 const slug=c=>c.toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -105,7 +106,7 @@ function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classL
   for(const k of ['ctr','games','ban']){if(t.scrollWidth<=t.clientWidth+1)break;const i=hs.findIndex(h=>h.dataset.k===k);if(i<0)continue;
     tb.querySelectorAll(`tr>:nth-child(${i+1})`).forEach(c=>{c.hidden=true;c.dataset.drop='1';});}
   if(t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
-const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',P:'Strong but rarely picked (under 1.5%). Mostly played by mains, so expect less if you are new to it.',R:'Under 1.5% pick and not strong: mostly off-role or niche picks. Their numbers say little about the champion in its main role.'};
+const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',R:'Picked in under 1.5% of games: mostly mains or off-role players. Each gets its letter by the same lines as the rest, but with few games and mostly experienced players, take the numbers with care.'};
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
@@ -148,13 +149,15 @@ function renderBoard(){if(!DATA[role])return;
   if(mode==='counter'){renderCounter();return;}
   const list=DATA[role];
   $('board').innerHTML=TIERS.map(([t,cap],ti)=>{
-    const cs=list.filter(d=>tierOf(d)===t).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
-    if(!cs.length&&(t==='Z'||t==='P'||t==='R'))return '';
-    if(t==='R'&&!RX&&!cs.some(d=>d.c===pick||(q&&hit(d.c))))return `<div class="row t-R rclosed" style="--T:var(--E)"><div class="lab" title="${LABT.R}"><span class="lt">R</span><small>${cap}</small></div><div class="chips"><button type="button" class="ropen" data-ropen="1">${cs.length} champions under 1.5% pick, mostly off-role <span>Show</span></button></div></div>`;
+    const cs=list.filter(d=>tierOf(d)===t&&!isRare(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
+    if(!cs.length&&t==='Z')return '';
     const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
     return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}><span class="lt">${t}</span>${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
-  }).join('');
+  }).join('')+(()=>{   // every pick under 1.5%: one row, best first, each with its letter by the same lines
+    const rs=list.filter(d=>isRare(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));if(!rs.length)return '';
+    const open=RX||rs.length<=5||rs.slice(4).some(d=>d.c===pick||(q&&hit(d.c))),shown=open?rs:rs.slice(0,4);
+    return `<div class="row t-R" style="--T:var(--E)"><div class="lab" title="${LABT.R}"><span class="lt">R</span><small>Rarely played</small></div><div class="chips smalls">${shown.map(d=>chipHTML(d,true,'sm')).join('')}${rs.length>5?`<button type="button" class="ropen" data-ropen="1" aria-expanded="${open}">${open?'Show fewer':`Show all ${rs.length}`} <span>under 1.5% pick</span></button>`:''}</div></div>`;})();
   const mine=list.filter(d=>isMine(d.c)&&tierOf(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
   if(mine.length)$('board').insertAdjacentHTML('afterbegin',`<div class="row mine-row" style="--T:var(--acc)"><div class="lab" title="Your champions, saved in this browser only"><span class="lt">★</span><small>Yours</small></div><div class="chips">${mine.map(d=>chipHTML(d,true)).join('')}${poolHTML(mine)}</div></div>`);
 }
@@ -195,7 +198,7 @@ function renderPanel(){if(!DATA[role])return;
   ${glHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+</span>${sites}</div>`:''}</div>
   ${BD?`<div class="ptab" data-pt="bd"${PT==='bd'?'':' hidden'}>${BD}</div>`:''}
-  ${MU?`<div class="ptab" data-pt="mu"${PT==='mu'?'':' hidden'}>${MU}<p class="bnote pkey"><b class="dk pos">Green</b> / <b class="dk neg">red</b> = clearly more / less than ${d.c}'s usual win rate, <b class="lowdemo">grey</b> = could be luck. Matchups with ${CMIN}+ games only.</p></div>`:''}</div>`;
+  ${MU?`<div class="ptab" data-pt="mu"${PT==='mu'?'':' hidden'}>${MU}<p class="bnote pkey">Expected = what ${d.c} usually wins against an opponent (or with a partner) that strong in general, so the lists show the matchup itself, not just who is strong this patch. <b class="dk pos">Green</b> / <b class="dk neg">red</b> = clearly above / below that, <b class="lowdemo">grey</b> = could be luck. ${CMIN}+ games.</p></div>`:''}</div>`;
   const key=role+'|'+d.c+'|'+(ARCH?ARCH.patch:''),P0=$('panel');
   if(P0.dataset.key===key&&P0.firstElementChild){const t=document.createElement('template');t.innerHTML=PH;morph(P0.firstElementChild,t.content.firstElementChild);}
   else{P0.innerHTML=PH;P0.dataset.key=key;}
@@ -227,7 +230,7 @@ function histHTML(d,tr=''){
 }
 // tier lines in units of the role's spread in this view (update.py TIER_Z); archived patches used fixed lines
 const cutT=v=>{const sd=((META.spread||{})[role]||{})[VK()];if(!sd)return v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D';const z=v/sd;return z>=1?'S':z>=.45?'A':z>=0?'B':z>=-.6?'C':'D';},TRANK={S:4,A:3,B:2,C:1,D:0};
-function rngHTML(d){const x=vw(d);if(!x||!'SABCD'.includes(x.t)||x.se==null)return '';const lo=cutT(x.s-x.se),hi=cutT(x.s+x.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===x.t?hi:hi===x.t?lo:lo+' to '+hi}</small>`;}
+function rngHTML(d){const x=vw(d);if(x&&x.r)return `<small class="rng" title="${LABT.R}">rare pick, under 1.5%</small>`;if(!x||!'SABCD'.includes(x.t)||x.se==null)return '';const lo=cutT(x.s-x.se),hi=cutT(x.s+x.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===x.t?hi:hi===x.t?lo:lo+' to '+hi}</small>`;}
 const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance
 const CHW={buff:'Buffed',nerf:'Nerfed'};
@@ -296,13 +299,15 @@ function buildHTML(d){const b=d.bd;if(!b||ARCH)return '';const L=LK(),chg=new Se
     if(opts.length<2)return `<div class="brow">${head}<span class="bch"></span></div>`;
     const seen=new Set([key(o)]);
     const alt=opts.slice(1).map(x=>{const weak=weakVs(wn(x),gm(x),ref),f=seen.has(key(x))?'':faces(key(x));seen.add(key(x));
-      return `<div class="balt"><span class="bic">${ic(x)}</span><span class="bnm">${nm(x)}</span><span class="bst">${pct(sh(x))} · <span class="${weak?'wk':''}"${weak?' title="Too few games to say it wins more or less than the usual pick"':''}>${wn(x).toFixed(1)}% win</span></span>${f?`<span class="bsw">${f}</span>`:''}</div>`;}).join('');
-    return `<details class="brow sm-d"><summary>${head}<span class="bch" aria-hidden="true"></span></summary><div class="dc"><div class="bwin">${nm(o)}: ${wn(o).toFixed(1)}% win${lab==='Core'||lab==='Boots'?'. Item win rates run high, whoever finishes items is often ahead already.':''}</div>${alt}</div></details>`;};
+      const itm=lab==='Core'||lab==='Boots'||lab==='Start';
+      return `<div class="balt"><span class="bic">${ic(x)}</span><span class="bnm">${nm(x)}</span><span class="bst">${pct(sh(x))}${itm?'':` · <span class="${weak?'wk':''}" title="${weak?'Too few games to say it wins more or less than the usual pick':`The usual pick wins ${wn(o).toFixed(1)}%`}">${wn(x).toFixed(1)}% win</span>`}</span>${f?`<span class="bsw">${f}</span>`:''}</div>`;}).join('');
+    const usual=lab==='Spells'||lab==='Runes'?`<div class="bwin">The usual pick wins ${wn(o).toFixed(1)}%</div>`:'';
+    return `<details class="brow sm-d"><summary>${head}<span class="bch" aria-hidden="true"></span></summary><div class="dc">${usual}${alt}</div></details>`;};
   const sk=b.sk?`<div class="brow"><span class="blab">Skills</span><span class="bic">${b.sk[0].split('').map(ab).join('')}</span><span class="bnm">${b.sk[0].split('').join(' > ')}</span><span class="bsh" title="Levels 1 to 3">start ${b.sk[1].split('').join(' ')}</span><span class="bch"></span></div>`:'';
   const rows=[part(P[0]),part(P[1]),sk,part(P[2]),part(P[3]),part(P[4])].join('');
   if(!rows)return '';
   return `<div class="caph"><p class="cap">Most common build <span class="mu">OP.GG Emerald+</span></p><a class="ctrl" href="${opgg(d.c,'build')}" target="_blank" rel="noopener">Full build ↗</a></div>`
-    +`<div class="bld">${rows}</div><p class="bnote">% = share of games. Tap a row for what else players take.</p>`;
+    +`<div class="bld">${rows}</div><p class="bnote">% = share of games. Tap a row for the other options, and "more vs" when players clearly switch against certain lane opponents. Items show no win rates: whoever finishes items is often ahead already, so those numbers say little about the item.</p>`;
 }
 // matchups from OP.GG's full matchup lists (Global): Emerald+, or Diamond+ when the view is Diamond+ or Master+. Up to 5 hardest
 // and 5 easiest opponents with 150+ games, ranked after pulling each toward the champion's own win rate (update.py), as
@@ -315,10 +320,11 @@ function ctrHTML(d){
   const all=`<a class="ctrl" href="${opgg(d.c,'counters')}" target="_blank" rel="noopener">All matchups ↗</a>`;
   const head=`<div class="caph"><p class="cap"${m?` title="Each against ${d.c}'s usual ${m.o.toFixed(1)}% in OP.GG's matchup data"`:''}>Lane matchups <span class="mu">OP.GG ${rk}</span></p>${all}</div>`;
   if(!cs.length&&!gs.length)return thin||((d.ctr||[]).length)||m?`${head}<p class="mi0">OP.GG's matchups for ${d.c} each have under ${CMIN} games, or none differs from ${d.c}'s usual win rate.</p>`:'';
-  const card=([c,wr,n,cl],good)=>{const weak=cl===0,inner=`${pic(c,'pic xs')}<span>${c}</span><small${weak?' class="lowdemo"':''}>${wr.toFixed(0)}% · ${kfmt(n)} games</small>`,
-    tip=`${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}`+(m?(weak?`. Too few games to be sure that differs from ${d.c}'s usual ${m.o.toFixed(1)}%.`:`, against ${m.o.toFixed(1)}% usually.`):''),cl2=`cc${good?' good':''}`;
-    return inRole(c)?`<button type="button" class="${cl2}" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="${cl2}" title="${tip}">${inner}</span>`;};
-  const grid=(L,good)=>`<div class="ctr">${L.map(x=>card(x,good)).join('')}</div>`;
+  const card=([c,wr,n,cl,ex],good)=>{const weak=cl===0,
+    tip=`${d.c} wins ${wr.toFixed(1)}% of ${n.toLocaleString('en-US')} games against ${c}`+(ex!=null?`. Against an opponent as strong as ${c} in general you'd expect ${ex.toFixed(1)}%`:'')+(weak?'. Too few games to be sure the gap is real.':'.');
+    const inner=`${pic(c,'pic xs')}<span class="mn">${c}</span><b class="${weak?'lowdemo':good?'up':'dn'}">${wr.toFixed(1)}%</b><small>${ex!=null?`expected ${ex.toFixed(1)}%`:''}</small><small class="mg">${kfmt(n)}</small>`;
+    return inRole(c)?`<button type="button" class="mrow" data-c="${c}" title="${tip}">${inner}</button>`:`<span class="mrow" title="${tip}">${inner}</span>`;};
+  const grid=(L,good)=>`<div class="mrows">${L.map(x=>card(x,good)).join('')}</div>`;
   const more=cs.length>3||gs.length>3;
   const foot='';
   return `${head}${cs.length?`<p class="mlab">Hardest for ${d.c}</p>${grid(cs.slice(0,3),0)}`:''}${gs.length?`<p class="mlab">Easiest for ${d.c}</p>${grid(gs.slice(0,3),1)}`:''}`
@@ -351,9 +357,10 @@ document.addEventListener('input',e=>{if(e.target.id!=='cpq')return;const v=e.ta
 // bot lane duos (panel, ADCs and supports): the champion's 10 most played partners from OP.GG, each against the champion's
 // own win rate, pulled toward it by sample size (update.py); grey when the gap could be luck. Links to the partner's page.
 function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const pr=role==='adc'?'support':'adc',pn=role==='adc'?'supports':'ADCs';
-  const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
-  const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
-  return `<div class="caph duoh"><p class="cap" title="Each against ${d.c}'s usual ${D.o.toFixed(1)}% in OP.GG's duo data">Best ${pn} with ${d.c} <span class="mu">OP.GG Emerald+</span></p></div>${grid(D.l.slice(0,3))}`
+  const card=([c,wr,n,cl,ex])=>{const good=ex!=null?wr>ex:wr>D.o,tip=`${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games`+(ex!=null?`. With a partner as strong as ${c} in general you'd expect ${ex.toFixed(1)}%`:'')+(cl?'.':'. Too few games to be sure the gap is real.');
+    return `<a class="mrow" href="${SITE}${pr}/${slug(c)}/" title="${tip}">${pic(c,'pic xs')}<span class="mn">${c}</span><b class="${cl?(good?'up':'dn'):'lowdemo'}">${wr.toFixed(1)}%</b><small>${ex!=null?`expected ${ex.toFixed(1)}%`:''}</small><small class="mg">${kfmt(n)}</small></a>`;};
+  const grid=L=>`<div class="mrows">${L.map(card).join('')}</div>`;
+  return `<div class="caph duoh"><p class="cap" title="Each against ${d.c}'s usual ${D.o.toFixed(1)}% in OP.GG's duo data">Works best with ${d.c} <span class="mu">${pn}, OP.GG Emerald+</span></p></div>${grid(D.l.slice(0,3))}`
     +(D.l.length>3?`<details class="pmore sm-d"><summary>The other ${D.l.length-3} ${pn} played most often with ${d.c}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'');}
 // the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
@@ -365,7 +372,7 @@ function renderSide(){if(!DATA[role])return;
   const none='<li class="none">None in this view.</li>';
   $('maph').textContent=(ALL?'All roles':RNm[role])+' this patch';
   $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
-  if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
+  if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null&&!isRare(d)).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
     $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="--T:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
     const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
     $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
@@ -461,7 +468,7 @@ document.addEventListener('click',e=>{
   const st=t.closest('[data-star]');if(st){toggleMine(st.dataset.star);return;}
   const ptb=t.closest('[data-ptab]');if(ptb){PTAB=ptb.dataset.ptab;const P0=$('panel');P0.querySelectorAll('[data-ptab]').forEach(b=>b.setAttribute('aria-selected',b===ptb));P0.querySelectorAll('.ptab').forEach(x=>x.hidden=x.dataset.pt!==PTAB);
     const tb=P0.querySelector('.ptabs');if(tb&&P0.scrollTop>tb.offsetTop-8)P0.scrollTop=tb.offsetTop-8;return;}
-  if(t.closest('[data-ropen]')){RX=true;renderBoard();return;}
+  if(t.closest('[data-ropen]')){RX=!RX;renderBoard();return;}
   const sh=t.closest('[data-share]');if(sh){share(sh.dataset.share);return;}
   if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}

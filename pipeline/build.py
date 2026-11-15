@@ -37,7 +37,7 @@ def write(rel, h):
 
 # each page carries only its own role (plus a small summary); the site loads data/<patch>.json when you switch roles or search
 def best(r):
-    L = sorted([e for e in D[r] if e['t'] != 'P'], key=lambda e: (TR[e['t']], -e['score']))
+    L = sorted([e for e in D[r] if e['t'] != 'P' and not e.get('rare')], key=lambda e: (TR[e['t']], -e['score']))
     return [L[0]['c'], L[0]['t'], L[0]['score']] if L else None
 META_SLIM = {k: v for k, v in D['_meta'].items() if k != 'tau'}
 META_SLIM['best'] = {r: best(r) for r, _, _ in ROLES}
@@ -133,7 +133,7 @@ def head_role(r):
     return (f'<header class="band head" style="--R:var(--R{r})"><div class="wrap"><div class="rh"><div class="rt"><span class="ri">{RICON[r]}</span>'
             f'<div><h1>{RNAME[r]} tier list {SHARE_ICO}</h1>{dline()}</div></div><p class="take">{E(P.get("takes", {}).get(r, ""))}</p></div></div></header>')
 def strongest(vk='E'):   # every Z and S pick across roles, Z first, then by score (same order as the site's "Strongest picks" card)
-    return sorted([(r, e) for r, _, _ in ROLES for e in D[r] if vk in e['v'] and e['v'][vk][2] in ('Z', 'S')], key=lambda x: (TR[x[1]['v'][vk][2]], -x[1]['v'][vk][0]))
+    return sorted([(r, e) for r, _, _ in ROLES for e in D[r] if vk in e['v'] and e['v'][vk][2] in ('Z', 'S') and not (e['v'][vk][3:] or [0])[0]], key=lambda x: (TR[x[1]['v'][vk][2]], -x[1]['v'][vk][0]))
 def head_home(root):
     # the patch story: fixed for the patch (Emerald+, all regions). Everything under the control bar follows the visitor's rank and region.
     strong = strongest()

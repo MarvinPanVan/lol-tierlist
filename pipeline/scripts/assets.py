@@ -22,7 +22,7 @@ def sc(v):
     return ('+' if r>0 else '\u2212' if r<0 else '')+f"{abs(r):.1f}"
 rows=''
 for r,n in ROLES:
-    d=sorted([x for x in data[r] if x['t']!='P'],key=lambda x:(TR[x['t']],-x['score']))[0]
+    d=sorted([x for x in data[r] if x['t']!='P' and not x.get('rare')],key=lambda x:(TR[x['t']],-x['score']))[0]
     rows+=f'<div class="r"><span class="rl">{n}</span><span class="cn"><img src="{IMG(d["c"])}">{d["c"]}</span><span class="sc">{sc(d["score"])}</span><span class="tg" style="background:{COL[d["t"]]}">{d["t"]}</span></div>'
 fonts=''.join(f"@font-face{{font-family:'{fam}';font-weight:{w};src:url(file://{PUB}/fonts/{f}-latin-{w}-normal.woff2)}}" for fam,f,ws in [('Inter','inter',(400,500,600,700,800)),('Barlow Condensed','barlow-condensed',(600,700,800))] for w in ws)
 CSS=f"""{fonts}
@@ -44,7 +44,7 @@ body{{display:grid;grid-template-columns:1fr 480px;gap:52px}}</style></head><bod
 open('/tmp/og.html','w',encoding='utf-8').write(og)
 ROLEPAGES={}
 for r,n in ROLES:
-    L=sorted([x for x in data[r] if x['t']!='P'],key=lambda x:(TR[x['t']],-x['score']))[:6]
+    L=sorted([x for x in data[r] if x['t']!='P' and not x.get('rare')],key=lambda x:(TR[x['t']],-x['score']))[:6]
     cells=''.join(f'<div class="c"><img src="{IMG(x["c"])}"><b>{x["c"]}</b><span class="s">{sc(x["score"])}</span><span class="tg" style="background:{COL[x["t"]]};width:40px">{x["t"]}</span></div>' for x in L)
     ROLEPAGES[r]=f'''<html><head><style>{CSS}</style></head><body><div style="display:flex;justify-content:space-between;align-items:center"><div class="b">{mark}LoL Tier List</div><div style="font-size:19px;color:#959cab">Patch {patch} &middot; updated {upd}</div></div>
 <h1 style="font-size:72px;margin:34px 0 28px">{n} tier list</h1><div class="grid">{cells}</div></body></html>'''

@@ -1,7 +1,9 @@
 """Collect ranked solo/duo matches of Master+ players from the Riot API (runs in GitHub Actions).
 
 Stores no player identifiers: per match only the match id, game version, duration, and for each of the
-10 players champion name, position, team and win, plus the banned champion ids.
+10 players champion name, position, team and win, plus the banned champion ids. Since 15 Nov 2026 also each player's
+build ('k', same order as 'p'): summoner spells, keystone, secondary rune tree and final items, so the site can say when
+players switch (enemy team AD/AP, ranged lane opponent...) once there are enough matches.
 Usage: RIOT_API_KEY=... python pipeline/riot/collect.py --minutes 45 --regions euw1,kr
 """
 import os, sys, json, time, argparse, urllib.request, urllib.error, random
@@ -34,6 +36,12 @@ class Api:
             except (urllib.error.URLError, TimeoutError):
                 time.sleep(2 + 2 * t)
         return None
+
+def build(p):   # [spell 1, spell 2, keystone, secondary rune tree, [final items 0-5]] - game data only, nothing about the player
+    st = (p.get('perks') or {}).get('styles') or [{}, {}]
+    key = ((st[0].get('selections') or [{}])[0]).get('perk') if st else None
+    sec = st[1].get('style') if len(st) > 1 else None
+    return [p.get('summoner1Id'), p.get('summoner2Id'), key, sec, [p.get(f'item{i}', 0) for i in range(6)]]
 
 def main():
     ap = argparse.ArgumentParser()
@@ -80,7 +88,8 @@ def main():
                     if any(p.get('gameEndedInEarlySurrender') for p in ps) or info.get('gameDuration', 0) < 600: continue
                     rec = {'id': mid, 'v': info['gameVersion'], 'd': info['gameDuration'],
                            'p': [[p['championName'], p.get('teamPosition', ''), p['teamId'], int(p['win'])] for p in ps],
-                           'b': [b['championId'] for t in info.get('teams', []) for b in t.get('bans', []) if b.get('championId', -1) > 0]}
+                           'b': [b['championId'] for t in info.get('teams', []) for b in t.get('bans', []) if b.get('championId', -1) > 0],
+                           'k': [build(p) for p in ps]}
                     f.write(json.dumps(rec, separators=(',', ':')) + '\n'); new += 1
                     if new % 50 == 0: print(f'{reg}: {new} new matches ({api.calls} calls)', flush=True); f.flush()
         print(f'{reg}: stored {new} new matches', flush=True); total_new += new

@@ -57,7 +57,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   games (update.py writes `pipeline/counters.json` from `data/opgg_matchups_full.json`, build.py copies it to
   `public/data/<patch>-counters.json`, loaded only when the finder opens). Emerald+, Diamond+ for D+/M+ views. Not remembered.
 - Bot lane duos on the panel (ADCs and supports): OP.GG synergies page, the 10 most played partners
-  (`data/opgg_synergy.json`), each against the champion's own win rate, shrunk (`duos()` in update.py).
+  (`data/opgg_synergy.json`), each against the expected win rate = own + (partner's own in its role - 50), shrunk (`duos()`).
+- Panel matchups (`matchups()` in update.py, from `data/opgg_matchups_full.json`): each against the expected win rate =
+  own - (opponent's own - 50), because measured on 26.22 a matchup's gap moves about one for one with the opponent's general
+  strength (slope -0.95 to -1.03 in every role). Rows show actual and expected. The counter finder stays raw on purpose.
 - Method page check: `backtest.cover` = % of unchanged champions whose value lands inside last patch's ± range (about 85-90%
   is healthy; far below means the ± is too narrow).
 - Patch notes pages: `/patch/<patch>/` for every patch in `patch.json` `notes`, `/patch/` = the newest live one. Built by
@@ -166,10 +169,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
        Emerald+ all regions (homepage, link previews, takes); `st` = games, pick, ban, win per OP.GG dataset.
    - Tiers, same rules for every view, no hand edits (Marvin chose role-scaled lines on 15 Nov 2026, because support's
      spread is about twice top's and fixed lines put almost every support in S or D):
-     Z score>=1.8, every dataset of the view >=1.5 raw, pick>=2; under 1.5% pick: P when >=.6, else R ("Rarely played",
-     shown as a closed row); the rest in steps of z = score / sd, sd = pick-weighted standard deviation of the scores of
-     that role and view's picks with 1.5%+ pick (`role_spread`, saved in `_meta.spread`): S z>=1 and every dataset of the
-     view above average, A z>=.45, B z>=0, C z>=-.6, else D. The site's "could be A" hint uses the same lines (`cutT`).
+     Z score>=1.8, every dataset of the view >=1.5 raw, pick>=2; the rest in steps of z = score / sd, sd = pick-weighted
+     standard deviation of the scores of the role's picks with 1.5%+ pick in the all-regions list of that rank (`role_spread`,
+     `_meta.spread[role][E|D|M]`; single-region lists use their rank's lines): S z>=1 and every dataset of the view above
+     average, A z>=.45, B z>=0, C z>=-.6, else D. Picks under 1.5% get their letter the same way plus a rare flag
+     (`v[view] = [score, ±, tier, rare]`, `e.rare` for Emerald+); the site shows them in one "Rarely played" row, best first,
+     strongest four visible. The old P tier is gone (archives still have it). The "could be A" hint uses the same lines (`cutT`).
    - Check after scoring: `python3 pipeline/scripts/verify_views.py` (independent recompute, must print 0 mismatches) and
      that the takes in patch.json still match the Emerald+ list and what they say about Diamond+/Master+.
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
@@ -253,8 +258,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   matchups, ban rates). Trigger: change `pipeline/riot/run.txt` and push, or "Run workflow" on the Actions tab.
 - The key lives only in the repo secret `RIOT_API_KEY`. Never copy or handle the key. A development key expires every
   24 hours: Marvin regenerates it on developer.riotgames.com (captcha) and pastes it into the secret himself.
-- Stored per match: match id, version, duration, champion/position/team/win for the 10 players, banned champion ids.
-  No player names or ids. Keep it that way.
+- Stored per match: match id, version, duration, champion/position/team/win for the 10 players, banned champion ids, and
+  since 15 Nov 2026 each player's build (`k`: spells, keystone, secondary tree, final items). No player names or ids. Keep it that way.
+- Plan for the build card's "when" lines: today only ~6% of the alternative options have one (OP.GG matchup builds cover
+  just the 6 most played lane opponents, and items depend on the whole enemy team). With enough matches in `k` (needs the
+  production key), compute each option's share by enemy team (AD/AP mix, ranged lane opponent, tanks) per champion, with
+  the same significance rules as `switches()`.
 - Not part of the scoring yet. Next: once the sample is big enough (and a production key is approved), add it as a
   dataset in update.py and use the matchups for counters. Production key: Marvin applied (Nov 2026), waiting for Riot; when approved it goes into the same secret.
 - `pipeline/data/riot/agg_*.json` uses `pipeline/data/ddragon_champions.json` to name banned champions.
