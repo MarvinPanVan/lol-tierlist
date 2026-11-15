@@ -73,7 +73,7 @@ function renderControls(){if(!DATA[role])return;
   $('vwn').textContent=lim?`Patch ${ARCH.patch}`:G()==='all'?`${RN[R()]}, all regions`:VNM();
   $('hint').textContent=(lim?'Global Emerald+ only':G()==='all'?BLS[R()]:'OP.GG only, fewer games')+(miss?`, ${miss} with no games`:'');
   $('gbtn').title=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'')+' Tap to see which rank and region to pick.';
-  $('legend').hidden=lim||mode==='chart';
+  $('legend').hidden=lim||mode==='chart'||mode==='counter';
 }
 function renderTable(){if(!DATA[role])return;
   const list=DATA[role],lim=LIM();
@@ -336,7 +336,8 @@ function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const
   const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
   const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
   return `<div class="caph"><p class="cap">Best ${pn} with ${d.c} <span class="mu">OP.GG Emerald+, vs ${d.c}'s usual ${D.o.toFixed(1)}%</span></p></div>${grid(D.l.slice(0,3))}`
-    +(D.l.length>3?`<details class="pmore sm-d"><summary>All ${D.l.length} most played ${pn}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'');}
+    +(D.l.length>3?`<details class="pmore sm-d"><summary>The other ${D.l.length-3} ${pn} played most often with ${d.c}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'')
+    +`<p class="bnote"><b class="dk pos">Green</b> = ${d.c} clearly wins more with them than usual (${D.o.toFixed(1)}%), <b class="dk neg">red</b> = clearly less, <b class="lowdemo">grey</b> = the gap could be luck.</p>`;}
 // the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
   const ALL=PAGE==='home';

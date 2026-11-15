@@ -42,7 +42,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   `/patch/<p>/i-<item>/` (noindex, own og title/text/picture, JS sends visitors to the card). "Copy link" on each card copies
   it (phones: share sheet). Pictures: build.py writes their HTML to `pipeline/.og_jobs.json`, assets.py renders only changed
   ones to `public/og/patch/` (hashes in `data/og_hashes.json`). Champion pages use their splash art as preview.
-- Counter-pick finder (layout "counter", header link "Counter pick", panel button "Who beats X?"; phones: Filters):
+- Counter-pick finder (layout "Counter" in the Tiers/Table/Chart switch on every screen size, header link "Counter pick",
+  panel button "Who beats X?"). Between 981 and 1599px wide the search is a magnifier button that opens on click or "/"
+  so the four layouts fit on one line:
   tap the enemy laner, get every pick in that role ranked by the gap to what an average opponent gets against it, shrunk by
   games (update.py writes `pipeline/counters.json` from `data/opgg_matchups_full.json`, build.py copies it to
   `public/data/<patch>-counters.json`, loaded only when the finder opens). Emerald+, Diamond+ for D+/M+ views. Not remembered.

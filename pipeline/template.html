@@ -555,6 +555,8 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .cc{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:7px;row-gap:3px;align-items:center;text-align:left;border-radius:10px;padding:7px 9px;font-size:13px;min-width:0}
 .cc .pic.xs{margin:0;width:20px;height:20px}
 .cc.good small{color:var(--pos)}
+.dk.pos{color:var(--pos)}.dk.neg{color:var(--neg)}
+.cc small.lowdemo,.cc.good small.lowdemo{color:var(--faint)}
 .glw{margin:4px 0 4px;padding:10px 10px 8px;border-radius:12px;background:color-mix(in srgb,var(--ink) 3.5%,transparent)}
 .glc{display:block;width:100%;height:auto;overflow:visible}
 .glc .gla{fill:color-mix(in srgb,var(--acc) 10%,transparent)}
@@ -567,7 +569,16 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .glkm{width:16px;border-top:1px dashed color-mix(in srgb,var(--ink) 45%,transparent)}
 .glkh{width:9px;height:9px;border-radius:50%;border:1.6px solid var(--acc);margin-left:6px}
 .glt{margin:8px 0 14px;font-size:13px;color:var(--mut)}.glt b{color:var(--ink)}
-@media(min-width:981px){#modes button[data-mode=counter]{display:none}}   /* desktop: header link and panel button instead */
+@media(min-width:981px){@media(min-width:981px) and (max-width:1599px){
+#bar .search{flex:0 0 40px;max-width:none;margin-left:0}
+#bar .search input{width:40px;padding:0 0 0 38px;cursor:pointer;transition:width .22s var(--ease),box-shadow .15s}
+#bar .search input::placeholder{color:transparent}
+#bar .search kbd{display:none}
+#bar .search:focus-within input,#bar .search input:not(:placeholder-shown){position:absolute;right:0;top:0;width:300px;z-index:31;padding-right:12px;cursor:text}
+#bar .search:focus-within input::placeholder{color:var(--faint)}
+#bar .search::before{z-index:32;pointer-events:none}
+#bar .search:focus-within::before,#bar .search:has(input:not(:placeholder-shown))::before{left:auto;right:275px}
+#bar .search .res{left:auto;right:0;width:340px}}}   /* desktop: header link and panel button instead */
 .cpback{justify-self:start;font:600 12.5px Inter,sans-serif;color:var(--acc);background:none;border:0;padding:0;cursor:pointer}
 .cpgo{display:block;width:100%;margin:2px 0 14px;padding:10px 12px;border-radius:11px;border:1px solid color-mix(in srgb,var(--acc) 40%,var(--line));background:color-mix(in srgb,var(--acc) 7%,transparent);color:var(--ink);font:600 13px Inter,sans-serif;text-align:left;cursor:pointer}
 .cpgo:hover{background:color-mix(in srgb,var(--acc) 13%,transparent)}.cpgo span{color:var(--acc);margin-left:4px}
@@ -1053,7 +1064,7 @@ function renderControls(){if(!DATA[role])return;
   $('vwn').textContent=lim?`Patch ${ARCH.patch}`:G()==='all'?`${RN[R()]}, all regions`:VNM();
   $('hint').textContent=(lim?'Global Emerald+ only':G()==='all'?BLS[R()]:'OP.GG only, fewer games')+(miss?`, ${miss} with no games`:'');
   $('gbtn').title=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'')+' Tap to see which rank and region to pick.';
-  $('legend').hidden=lim||mode==='chart';
+  $('legend').hidden=lim||mode==='chart'||mode==='counter';
 }
 function renderTable(){if(!DATA[role])return;
   const list=DATA[role],lim=LIM();
@@ -1316,7 +1327,8 @@ function duoHTML(d){const D=d.duo;if(!D||!D.l||!D.l.length||ARCH)return '';const
   const card=([c,wr,n,cl])=>`<a class="cc${cl&&wr>D.o?' good':''}" href="${SITE}${pr}/${slug(c)}/" title="${d.c} with ${c}: ${wr.toFixed(1)}% win in ${n.toLocaleString('en-US')} games${cl?'':', too few to be sure it differs'}">${pic(c,'pic xs')}<span>${c}</span><small${cl?'':' class="lowdemo"'}>${wr.toFixed(0)}% · ${kfmt(n)} games</small></a>`;
   const grid=L=>`<div class="ctr">${L.map(card).join('')}</div>`;
   return `<div class="caph"><p class="cap">Best ${pn} with ${d.c} <span class="mu">OP.GG Emerald+, vs ${d.c}'s usual ${D.o.toFixed(1)}%</span></p></div>${grid(D.l.slice(0,3))}`
-    +(D.l.length>3?`<details class="pmore sm-d"><summary>All ${D.l.length} most played ${pn}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'');}
+    +(D.l.length>3?`<details class="pmore sm-d"><summary>The other ${D.l.length-3} ${pn} played most often with ${d.c}</summary><div class="dc">${grid(D.l.slice(3))}</div></details>`:'')
+    +`<p class="bnote"><b class="dk pos">Green</b> = ${d.c} clearly wins more with them than usual (${D.o.toFixed(1)}%), <b class="dk neg">red</b> = clearly less, <b class="lowdemo">grey</b> = the gap could be luck.</p>`;}
 // the cards under the list: one role on role pages; every role on the homepage, plus its strongest picks
 function renderSide(){if(!DATA[role])return;
   const ALL=PAGE==='home';
