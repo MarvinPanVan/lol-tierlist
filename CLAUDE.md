@@ -295,7 +295,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   2026: League of Graphs' "Winrate / Ranked Games Played" chart can't be used (no game counts, 10-game buckets, and every
   bucket of Ahri Diamond+ sits above her overall 52.0%, so it is not a split of the same games); no other site shows it.
 - Not part of the scoring yet. Next: once the sample is big enough (and a production key is approved), add it as a
-  dataset in update.py and use the matchups for counters. Production key: Marvin applied (Nov 2026), waiting for Riot; when approved it goes into the same secret.
+  dataset in update.py and use the matchups for counters. Production key: Marvin applied (14 Nov 2026, app 907562 "LoL Tier List"), still "Pending Review" with no messages on
+  20 Nov; when approved it goes into the same secret. The app description was updated on 20 Nov to match what we store
+  (builds since 15 Nov) and the planned mastery buckets; keep it in line with collect.py (limit 1500 characters).
 - `pipeline/data/riot/agg_*.json` uses `pipeline/data/ddragon_champions.json` to name banned champions.
 
 ## Champion portraits
