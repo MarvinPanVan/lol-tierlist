@@ -554,7 +554,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .home h1{max-width:17ch}
 /* strongest picks (homepage, under the list) */
 .xsl{display:flex;flex-wrap:wrap;gap:6px;padding:2px 6px 0}
-.xsl:not(.all)>.xchip:nth-child(n+13){display:none}
+
 @media(max-width:1180px){}
 .xchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);border-radius:999px;padding:3px 10px 3px 3px;font:600 13px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:border-color .15s}
 .xchip:hover{border-color:var(--faint)}
@@ -570,7 +570,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .xsl{display:flex;flex-wrap:wrap;gap:8px}
 @media(max-width:1180px){.ins4.all{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.ins4.all{grid-template-columns:minmax(0,1fr)}.ins4.all>.xsc{grid-column:auto}
-.xsl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.xchip{min-width:0;padding-right:7px;gap:5px;font-size:12.5px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xsl:not(.all)>.xchip:nth-child(n+9){display:none}
+.xsl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.xchip{min-width:0;padding-right:7px;gap:5px;font-size:12.5px}.xchip b{display:none}.xchip .xn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}.xsl:not(.all) .xgl>.xchip:nth-child(n+7){display:none}
 .home .leads{display:grid;gap:8px;margin-top:18px}.home .lead{padding:8px;border-radius:12px;max-height:none}.home .lead .lr{font-size:10.5px;padding:3px 7px 3px 3px}.home .lead .lb b{font-size:15px}.home .lead .lb>span{font-size:10.5px;flex-wrap:wrap;gap:3px 5px}}
 /* chart layout + the four cards under the list */
 .chart-card{padding:0;overflow:hidden}
@@ -868,7 +868,19 @@ details.brow{display:block}
 .home .dl>*{display:inline-flex;align-items:center;gap:7px;min-height:28px;padding:0 11px;border-radius:999px;background:var(--surf);box-shadow:inset 0 0 0 1px var(--line);font:500 12.5px/1 Inter,sans-serif;color:var(--mut);text-decoration:none}
 .home .dl a{color:var(--ink)}.home .dl a:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 50%,var(--line))}
 .home .dl .dlnx::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
-.pn-tl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 34px;align-items:center}
+/* calmer chrome (20 Nov 2026): the data line and the top bar patch label are plain text, not pills */
+.home .dl{gap:6px 0}.home .dl>*{min-height:0;padding:0;border-radius:0;background:none;box-shadow:none;font-size:13px}
+.home .dl .dlnx::before{content:"/";width:auto;height:auto;margin:0 10px;border-radius:0;background:none;color:var(--faint)}
+@media(max-width:640px){.home .dl .dlnx::before{content:none}}
+.home .dl a:hover{box-shadow:none}
+.brand+.pill{background:none;border:0;box-shadow:none;padding:0;color:var(--faint);font-weight:500}
+@media(min-width:641px){.chip .nm:has(.tg){flex-wrap:nowrap}}
+.hintline .vchip{background:none;box-shadow:none;padding:0 4px 0 0}.hintline .vchip:hover,.hintline .vchip[aria-expanded=true]{box-shadow:none;color:var(--ink)}
+.xsl{display:block;padding:2px 0 0}.xgr{display:flex;align-items:flex-start;gap:14px}.xgr+.xgr{margin-top:12px}
+.xgr>.tg{flex:none;margin-top:4px}.xgl{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+.xchip{padding:3px 11px 3px 3px;gap:7px}.xchip .pic{margin-left:0}.xchip .xro{font:500 11.5px/1 Inter,sans-serif;color:var(--faint)}
+@media(max-width:640px){.xgr{flex-direction:column;gap:8px}.xgr>.tg{margin-top:0}.xgl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.xchip .xro{display:none}}
+.pn-tl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 34px;align-items:start}
 .pn-num{display:flex;gap:10px}
 .pn-num div{display:grid;justify-items:start;gap:4px;min-width:84px;padding:12px 16px;border-radius:12px;background:var(--surf)}
 .pn-num b{font:700 30px/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;color:var(--ink)}
@@ -878,9 +890,9 @@ details.brow{display:block}
 .pn-tl li{padding-left:14px;position:relative}.pn-tl li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--faint)}
 .pn-tl .pn-mine{grid-column:1/-1;margin:0}
 @media(max-width:760px){.pn-tl{grid-template-columns:minmax(0,1fr)}.pn-num div{min-width:0;flex:1}}
-@media(max-width:1340px){.legend .k:first-child{display:none}}
+@media(max-width:1340px){.legend .kt{display:none}}
 @media(max-width:1180px){.hintline{flex-wrap:wrap}.legend{margin-left:0;flex-wrap:wrap}.hintline #patchsel{margin-left:auto}}
-.hintline.tight .legend .k:first-child{display:none}
+.hintline.tight .legend .kt{display:none}
 .chip.big:hover{background:color-mix(in srgb,var(--T) 11%,var(--card))}
 .chip.big[aria-pressed=true]{background:color-mix(in srgb,var(--T) 7%,var(--card))}
 @media(max-width:640px){
@@ -950,7 +962,7 @@ details.brow{display:block}
 <p class="gh">Region</p>
 <button type="button" class="gopt" data-rg="all"><b>All regions <span class="rec">Recommended</span></b><span class="who">Every server together.</span><span>Every server at its real share of games. The most games, so the least noise.</span></button>
 <div class="gopt reg"><b>EUW, KR or NA</b><span class="who">What wins on one server.</span><span>Its own games, leaning on all regions as far as its smaller sample needs. Early in a patch it looks a lot like All regions.</span><span class="gr3"><button type="button" data-rg="euw">EUW</button><button type="button" data-rg="kr">KR</button><button type="button" data-rg="na">NA</button></span></div>
-<p class="gnote">Every combination is scored the same way and uses the same tier cutoffs, so a different list means different games, nothing else.</p>
+<p class="gnote">The number next to each champion is its score: how many percentage points more it wins than the average pick in its role. Every combination is scored the same way and uses the same tier cutoffs, so a different list means different games, nothing else.</p>
 </div>
 </div>
 <div class="arch" id="arch" hidden></div>
@@ -995,30 +1007,32 @@ details.brow{display:block}
 <div class="card pad">
 <h2>How the score works</h2>
 <ul>
-<li>Per dataset: win rate minus that dataset's average for the role, in percentage points.</li>
-<li>Sample size: each number is pulled toward zero by how noisy it is. Game counts come from OP.GG's sample totals and U.GG. How hard to pull is fitted from the data for every dataset and role, not guessed.</li>
-<li>One-tricks: a small penalty under 2% pick rate, because mostly mains play those champions and their win rate flatters the champion.</li>
-<li>Every list is one rank and one region. Ranks are Emerald+, Diamond+ and Master+, and each counts every game at that rank or higher. All 12 combinations are scored the same way and use the same tier cutoffs.</li>
-<li>All regions: every server together at the chosen rank, each at its real share of games. At Emerald+ that is OP.GG's global numbers; at Diamond+ OP.GG, U.GG, Blitz, dpm.lol and League of Graphs (half weight) averaged; at Master+ OP.GG and U.GG. EUW, KR and NA each have their own list too.</li>
-<li>One region: that region's OP.GG numbers, pulled toward the all-regions value of the same rank instead of toward zero. A region only moves away from the global value as far as its own games carry it, because regions rarely differ by more than about half a point while a few hundred games swing by two. Tested on 20 Nov against 26.22's region numbers (other games): about 4 to 7 times less error than reading each region on its own, and the ± ranges hold. Early in a patch, and at Master+, the region lists therefore look a lot like the all-regions list.</li>
-<li>Tiers follow the same rules for every list, no hand edits. Roles spread out very differently (support runs from about +2 to −7, top only from +2 to −3), so S to D are cut in steps of each role's own spread: S from 1.25 spreads above average (S is meant for the best picks, not just good ones) and above average in every region (EUW, KR and NA, each read as described above), A from 0.45, B from 0, C from −0.6, D below. The spread is the pick-weighted standard deviation of the regular picks (1.5%+ pick) in the all-regions list of that rank; the single-region lists use the same lines, so their fewer games can't make the lines tighter. Z needs +1.8 and at least 1.6 spreads above average (so wide roles don't collect outliers), +1.5 or better in every region and a 2%+ pick rate. Until 20 Nov these region checks used each region's raw numbers, which this early in a patch swing by ±2 from luck alone; that decided 26 of 38 S and Z calls. Picks under 1.5% get their letter by the same lines. If the role is the champion's main one (where it is picked most in Global Emerald+), it stays in the list like any other pick, for example Taric support. Off-role picks under 1.5% sit in their own row at the bottom, best first.</li>
-<li>Last patch is the starting point for champions the new patch did not touch, so early-patch numbers don't jump around. This uses OP.GG's global numbers at Emerald+, Diamond+ and Master+. How far a champion can move between patches is fitted from the data once per rank over all roles: about 0.2 points at Emerald+, 0.3 at Diamond+ and 0.4 at Master+. Checked on 26.22 to 26.23 with different games: last patch predicts this patch with an error of 0.06, 0.16 and 0.40, against about 1.8 without it.</li>
-<li>The ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch. For champions the patch did not touch that change is damped on purpose, because last patch is their starting point.</li>
-<li>A move only gets a reason when there is a fact for it: the change in the patch notes (Summoner's Rift only, not the Classic mode or ARAM), a changed item in its most common OP.GG builds (core items and boots, not starter items), a big shift in pick rate, or a note that the move is too small to be sure. No guessed explanations.</li>
-<li>Matchups come from OP.GG's full matchup lists (Emerald+, and Diamond+ for the Diamond+ and Master+ lists). A matchup's result moves almost point for point with how strong the opponent is in general, so a plain list of the lowest win rates is mostly just the strongest champions of the role. Each matchup is therefore compared with what the champion should win against an opponent that strong (its own win rate minus the opponent's lead over 50%), then pulled toward that by sample size like the scores, so a lucky 150-game matchup can't top the list. Grey means the gap could still be luck. Bot lane duos work the same way with the partner's strength. The counter-pick finder is different on purpose: when you pick into someone, a pick's general strength counts too.</li><li>The build card shows what OP.GG players actually take and how often. Tapping a row shows the other options, and "more vs" when players clearly switch against certain lane opponents (OP.GG's builds for the 6 most played matchups). Items get no win rates: whoever finishes items is often ahead already. For most options there is no reliable "when" yet, because items and boots depend on the whole enemy team; our own Riot match sample records builds and enemy teams from now on to answer that.</li><li>Win rate by game length is OP.GG's, per 5-minute bucket. OP.GG gives no game counts per bucket, so they are estimated from the game lengths in our own Riot match sample, and the card only says a champion wins more in short or long games when the gap is 2+ points and bigger than that noise.</li>
-<li>Your champions (the ★ on a card, saved in your browser only) get their own row with a ban tip: the opponent that costs them the most, from the same full matchup lists as the counter-pick finder. For each opponent: how much worse your champions do against it than against an average opponent, pulled toward no difference when there are few games, averaged over your champions, times how often it is picked and corrected for how often it is already banned.</li>
+<li><b>Per dataset:</b> win rate minus that dataset's average for the role, in percentage points.</li>
+<li><b>Sample size:</b> each number is pulled toward zero by how noisy it is. Game counts come from OP.GG's sample totals and U.GG. How hard to pull is fitted from the data for every dataset and role, not guessed.</li>
+<li><b>One-tricks:</b> a small penalty under 2% pick rate, because mostly mains play those champions and their win rate flatters the champion.</li>
+<li><b>Ranks and regions:</b> every list is one rank and one region. Ranks are Emerald+, Diamond+ and Master+, and each counts every game at that rank or higher. All 12 combinations are scored the same way and use the same tier cutoffs.</li>
+<li><b>All regions:</b> every server together at the chosen rank, each at its real share of games. At Emerald+ that is OP.GG's global numbers; at Diamond+ OP.GG, U.GG, Blitz, dpm.lol and League of Graphs (half weight) averaged; at Master+ OP.GG and U.GG. EUW, KR and NA each have their own list too.</li>
+<li><b>One region:</b> that region's OP.GG numbers, pulled toward the all-regions value of the same rank instead of toward zero. A region only moves away from the global value as far as its own games carry it, because regions rarely differ by more than about half a point while a few hundred games swing by two. Tested on 20 Nov against 26.22's region numbers (other games): about 4 to 7 times less error than reading each region on its own, and the ± ranges hold. Early in a patch, and at Master+, the region lists therefore look a lot like the all-regions list.</li>
+<li><b>Tiers:</b> the same rules for every list, no hand edits. Roles spread out very differently (support runs from about +2 to −7, top only from +2 to −3), so the letters are cut in steps of each role's own spread: S from 1.25 spreads above average and above average in every region, A from 0.45, B from 0, C from −0.6, D below. S is meant for the best picks, not just good ones. The spread is the pick-weighted standard deviation of the regular picks (1.5%+ pick) in the all-regions list of that rank; the single-region lists use the same lines, so their fewer games can't make the lines tighter.</li>
+<li><b>Z (outliers):</b> +1.8 or more, at least 1.6 spreads above average (so wide roles don't collect outliers), +1.5 or better in every region and a 2%+ pick rate. Until 20 Nov the region checks used each region's raw numbers, which this early in a patch swing by ±2 from luck alone; that decided 26 of 38 S and Z calls.</li>
+<li><b>Rare picks:</b> picks under 1.5% get their letter by the same lines. If the role is the champion's main one (where it is picked most in Global Emerald+), it stays in the list like any other pick, for example Taric support. Off-role picks under 1.5% sit in their own row at the bottom, best first.</li>
+<li><b>Last patch:</b> it is the starting point for champions the new patch did not touch, so early-patch numbers don't jump around. This uses OP.GG's global numbers at Emerald+, Diamond+ and Master+. How far a champion can move between patches is fitted from the data once per rank over all roles: about 0.2 points at Emerald+, 0.3 at Diamond+ and 0.4 at Master+. Checked on 26.22 to 26.23 with different games: last patch predicts this patch with an error of 0.06, 0.16 and 0.40, against about 1.8 without it.</li>
+<li><b>Ranges and arrows:</b> the ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch. For champions the patch did not touch that change is damped on purpose, because last patch is their starting point.</li>
+<li><b>Reasons:</b> a move only gets a reason when there is a fact for it: the change in the patch notes (Summoner's Rift only, not the Classic mode or ARAM), a changed item in its most common OP.GG builds (core items and boots, not starter items), a big shift in pick rate, or a note that the move is too small to be sure. No guessed explanations.</li>
+<li><b>Matchups:</b> they come from OP.GG's full matchup lists (Emerald+, and Diamond+ for the Diamond+ and Master+ lists). A matchup's result moves almost point for point with how strong the opponent is in general, so a plain list of the lowest win rates is mostly just the strongest champions of the role. Each matchup is therefore compared with what the champion should win against an opponent that strong (its own win rate minus the opponent's lead over 50%), then pulled toward that by sample size like the scores, so a lucky 150-game matchup can't top the list. Grey means the gap could still be luck. Bot lane duos work the same way with the partner's strength. The counter-pick finder is different on purpose: when you pick into someone, a pick's general strength counts too.</li><li><b>Builds:</b> the build card shows what OP.GG players actually take and how often. Tapping a row shows the other options, and "more vs" when players clearly switch against certain lane opponents (OP.GG's builds for the 6 most played matchups). Items get no win rates: whoever finishes items is often ahead already. For most options there is no reliable "when" yet, because items and boots depend on the whole enemy team; our own Riot match sample records builds and enemy teams from now on to answer that.</li><li><b>Game length:</b> win rate by game length is OP.GG's, per 5-minute bucket. OP.GG gives no game counts per bucket, so they are estimated from the game lengths in our own Riot match sample, and the card only says a champion wins more in short or long games when the gap is 2+ points and bigger than that noise.</li>
+<li><b>Your champions:</b> the ★ on a card (saved in your browser only) puts a champion in its own row, with a ban tip: the opponent that costs them the most, from the same full matchup lists as the counter-pick finder. For each opponent: how much worse your champions do against it than against an average opponent, pulled toward no difference when there are few games, averaged over your champions, times how often it is picked and corrected for how often it is already banned.</li>
 <li id="btline"></li>
 </ul>
 </div>
 <div class="card pad">
 <h2>What it cannot tell you</h2>
 <ul>
-<li>Your champion pool. A one-trick on a B-tier pick beats a first-timer on a Z.</li>
-<li>Draft. Matchups and builds show what happens on average, not what your team needs. Mage bots and Kog'Maw need the right support.</li>
-<li>Chinese servers. Tencent's data lives in its apps and is not public.</li>
-<li>Anything after 26.23. Patch 26.24 comes on 9 Dec, and its changes are not out yet.</li> <li>Small samples early in the patch. This list was read on 20 Nov, two and a half days after 26.23 went live: about 400,000 Emerald+ games, but only about 7,000 Master+ games in NA. The ± ranges show it, and the list gets read again around 26 Nov.</li>
-<li>Game counts for Blitz and League of Graphs. They don't show them, so OP.GG Diamond+ counts stand in.</li>
-<li>How good the players are on the champion. That would need per-player data from the Riot API.</li>
+<li><b>Your champion pool.</b> A one-trick on a B-tier pick beats a first-timer on a Z.</li>
+<li><b>Draft.</b> Matchups and builds show what happens on average, not what your team needs. Mage bots and Kog'Maw need the right support.</li>
+<li><b>Chinese servers.</b> Tencent's data lives in its apps and is not public.</li>
+<li><b>Anything after 26.23.</b> Patch 26.24 comes on 9 Dec, and its changes are not out yet.</li> <li><b>Small samples early in the patch.</b> This list was read on 20 Nov, two and a half days after 26.23 went live: about 400,000 Emerald+ games, but only about 7,000 Master+ games in NA. The ± ranges show it, and the list gets read again around 26 Nov.</li>
+<li><b>Game counts for Blitz and League of Graphs.</b> They don't show them, so OP.GG Diamond+ counts stand in.</li>
+<li><b>How good the players are on the champion.</b> That would need per-player data from the Riot API.</li>
 </ul>
 </div>
 </div>
@@ -1054,6 +1068,8 @@ let RX=false;   // the off-role row (R) shows its strongest four until opened
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
 const META=CUR._meta;let ARCH=null;const PP=()=>(ARCH&&ARCH.prev_patch)||META.prev_patch;const NX=()=>(ARCH?ARCH.next:META.next)||{patch:'',date:'',roles:{}};   // the patch an archived list compares with
+// header links and 'Who beats X?' switch the list in place; only scroll when the list is not on screen at all (Marvin, 20 Nov 2026: the jump looked goofy)
+const toBoard=()=>{const r=$('board-sec').getBoundingClientRect();if(r.top>innerHeight-60||r.bottom<60)$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
 const DOC=PAGE==="method"||PAGE==="patch";
 // pages carry one role; the rest of the patch loads on demand (and quietly after the first render)
 let FULLP=null;
@@ -1439,9 +1455,11 @@ function renderSide(){if(!DATA[role])return;
   $('maph').textContent=(ALL?'All roles':RNm[role])+' this patch';
   $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
   if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null&&!isRare(d)).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
-    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="--T:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
-    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
-    $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
+    // grouped by tier: one Z/S letter per group instead of a badge and a role icon on every chip (20 Nov 2026)
+    const xc=([r,d])=>`<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" title="${d.c}, ${RNm[r]}: ${tierOf(d)} tier, ${fmt(SV(d))}">${pic(d.c)}<span class="xn">${d.c}</span><small class="xro">${RNm[r]}</small><b>${fmt(SV(d))}</b></button>`;
+    $('xs').innerHTML=['Z','S'].map(t=>{const g=st.filter(([,d])=>tierOf(d)===t);return g.length?`<div class="xgr"><span class="tg" style="--T:var(--${t})" title="${t==='Z'?LABT.Z:'S tier'}">${t}</span><div class="xgl">${g.map(xc).join('')}</div></div>`:'';}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=!matchMedia('(max-width:640px)').matches||![...$('xs').querySelectorAll('.xgl')].some(g=>g.children.length>6);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
+    $('xsh').textContent='Strongest picks';}
   $('traps').innerHTML=items.filter(([r,d])=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a[1])-vv(b[1])).slice(0,6).map(([r,d])=>row(r,d,`${rl(r)}${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
   // best bans: score x pick rate, adjusted for how often it is already banned. All roles: summed over every role the champion is above average in.
   let bans=[];
@@ -1451,7 +1469,7 @@ function renderSide(){if(!DATA[role])return;
       const sub=pos.length===1?`${RNm[pos[0][0]]} ${tierOf(pos[0][1])} · ${pos[0][2].pick.toFixed(1)}% pick · ${ban.toFixed(0)}% ban`:`${pos.slice(0,2).map(x=>RNm[x[0]]+' '+tierOf(x[1])).join(', ')} · ${ban.toFixed(0)}% ban`;
       bans.push([pos[0][0],pos[0][1],pos.reduce((t,x)=>t+vv(x[1])*x[2].pick,0)/(100-ban),sub]);}}
   $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
-  $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
+  $('bansh').textContent='Best bans';$('trapsh').textContent='Popular, but losing';
   const mv=Object.values(items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4&&!chance(d)).reduce((o,x)=>{const k=x[1].c;if(!o[k]||Math.abs(x[1].tr)>Math.abs(o[k][1].tr))o[k]=x;return o;},{})).sort((a,b)=>b[1].tr-a[1].tr);
   $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')+(mv.length&&mv.length<4?`<li class="none">Everyone else moved too little since ${PP()} to be sure it isn't luck.</li>`:'')||'<li class="none">No big moves this patch.</li>';
   $('movh').textContent=`Moved most since ${PP()}`;
@@ -1541,17 +1559,17 @@ document.addEventListener('click',e=>{
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('q').blur();$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);showPick();return;}
   if(r){navRole(r.dataset.r);return;}
-  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}toBoard();return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
   {const ce=t.closest('[data-cpe]');if(ce){CPE=ce.dataset.cpe;CPall=false;renderCounter();const r_=$('cpres');if(r_)r_.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});return;}}
   if(t.closest('#cpmore')){CPall=!CPall;renderCounter();return;}
-  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;mode='counter';renderControls();renderBoard();if(narrow())openPanel(false);$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}}
+  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;mode='counter';renderControls();renderBoard();if(narrow())openPanel(false);toBoard();return;}}
   if(t.closest('#cpchange')){CPE='';renderCounter();return;}
   if(t.closest('#nxmore')){const x=$('next'),all=!x.classList.contains('all'),b=$('nxmore');x.classList.toggle('all',all);b.setAttribute('aria-expanded',all);b.textContent=all?'Show fewer':`Show all ${b.dataset.n}`;return;}
   if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
-  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')toBoard();return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);if(!c.closest('#board,#panel'))showPick();return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
@@ -1625,12 +1643,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('.pn-share');if(!
 if(mine.length){const el=$('pnmine');el.hidden=false;el.innerHTML='★ Your starred champions in this patch: '+mine.map(a=>`<a href="${a.getAttribute('href')}">${a.dataset.pc}</a>`).join(', ')+'.';}
 }else if(PAGE==='method'){
 $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
-{const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). ${(()=>{const d=b.mse_raw-b.mse_shrunk,g=`average squared gap ${b.mse_shrunk} vs ${b.mse_raw} unpulled, most of it this patch's own sampling noise`;return Math.abs(d)<.01?`Pulling last patch toward zero first barely changed how well it predicts (${g}), because last patch had so many games.`:d>0?`Pulling last patch toward zero first made it a better guess (${g}).`:`Pulling last patch toward zero first made it a slightly worse guess this time (${g}).`;})()}${b.cover!=null?` And the ± range: ${b.cover}% of them landed inside last patch's range. With nothing but luck moving them that would be about 90%, so the rest is real movement from item changes and the meta, which no ± can see coming.`:''}`;}
+{const b=META.backtest;$('btline').innerHTML=`<b>Check:</b> for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). ${(()=>{const d=b.mse_raw-b.mse_shrunk,g=`average squared gap ${b.mse_shrunk} vs ${b.mse_raw} unpulled, most of it this patch's own sampling noise`;return Math.abs(d)<.01?`Pulling last patch toward zero first barely changed how well it predicts (${g}), because last patch had so many games.`:d>0?`Pulling last patch toward zero first made it a better guess (${g}).`:`Pulling last patch toward zero first made it a slightly worse guess this time (${g}).`;})()}${b.cover!=null?` And the ± range: ${b.cover}% of them landed inside last patch's range. With nothing but luck moving them that would be about 90%, so the rest is real movement from item changes and the meta, which no ± can see coming.`:''}`;}
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
 addEventListener('resize',fitStrip);if(document.fonts)document.fonts.ready.then(fitStrip);
-function setLegend(){$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${PP()}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${PP()}</span>${NX().patch&&Object.values(NX().roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${NX().patch} (${NX().date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${NX().patch}</span> = buff or nerf on ${NX().date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;}setLegend();
+function setLegend(){$('legend').innerHTML=`<span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${PP()}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${PP()}</span>${NX().patch&&Object.values(NX().roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${NX().patch} (${NX().date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${NX().patch}</span> = buff or nerf on ${NX().date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;}setLegend();
 {const bd=$('board');if(bd)new ResizeObserver(()=>document.documentElement.style.setProperty('--bh',Math.max(bd.offsetHeight,400)+'px')).observe(bd);}
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;

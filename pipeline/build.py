@@ -148,7 +148,7 @@ def head_home(root):
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
     nl = (f'<a class="dlnx" href="{root}patch/{nx["patch"]}/">Patch {nx["patch"]} on {E(nx.get("date", ""))}: see what changes</a>' if nx.get('patch') in NOTES else f'<span class="dlnx">Next patch on {E(nx.get("date", ""))}</span>') if nx else ''
-    when = f'<span>Patch {PATCH}, updated {E(UPD)}</span>{nl}'
+    when = f'<span>Updated {E(UPD)}</span>{nl}'
     return (f'<header class="band head home"><div class="wrap"><div class="hero2"><div class="htxt"><p class="dl">{when}</p>'
             f'<h1>{E(P.get("headline", ""))}</h1><p class="lede">{P.get("lede", "")}</p></div><div class="leads">{lc}</div></div></div></header>')
 RKN = [('E', 'Emerald+'), ('D', 'Diamond+'), ('M', 'Master+')]
@@ -377,6 +377,9 @@ def _faces(M, root, label):   # who builds an item: names when there are a few, 
     return f'<div class="pn-us"><p class="pn-ul">{label} for {_count(len(M), "listed champion", "listed champions")}{split}</p><div class="pn-fs">{fs}</div></div>'
 def _count(n, one, many): return f'{n} {one if n == 1 else many}'
 def _and(L): return ', '.join(L[:-1]) + (' and ' if len(L) > 1 else '') + (L[-1] if L else '')
+def _lead(t):   # 'Map: The winter...' -> bold label, so the short version scans like a list of topics
+    k, sep, rest = t.partition(': ')
+    return f'<b>{E(k)}:</b> {E(rest)}' if sep and len(k) <= 32 else E(t)
 def tldr(p, n):
     out, live = [], n['status'] == 'live'
     ks = [x['kind'] for x in n['champs']]; adj = [x['c'] for x in n['champs'] if x['kind'] not in ('buff', 'nerf')]
@@ -414,14 +417,14 @@ def notes_body(p, root):
     n = NOTES[p]; live = n['status'] == 'live'; moves = live and p == PATCH
     order = sorted(NOTES, key=lambda q: [int(v) for v in q.split('.')], reverse=True)
     sw = ''.join(f'<a href="{root}patch/{q}/"{" aria-current=\"page\"" if q == p else ""}>{q}{" preview" if NOTES[q]["status"] != "live" else ""}</a>' for q in order)
-    head = (f'<header class="band hero-band pn-hero"><div class="wrap"><p class="meta"><span>Patch {p}</span><span>{"Live since" if live else "Preview, goes live"} {E(n["live"])}</span></p>'
+    head = (f'<header class="band hero-band pn-hero"><div class="wrap"><p class="meta"><span>{"Live since" if live else "Preview, goes live"} {E(n["live"])}</span></p>'
             f'<h1>Patch {p} {"notes" if live else "preview"}</h1><p class="lede">Every Summoner\'s Rift change with the exact numbers, what they mean, '
             f'and where each champion stands in this tier list right now.</p><nav class="pn-sw" aria-label="Patches">{sw}</nav></div></header>')
     ks = [x['kind'] for x in n['champs']]; nadj = len([k for k in ks if k not in ('buff', 'nerf')])
     st = ''.join(f'<div class="{c}"><b>{v}</b><span>{lab}</span></div>' for c, v, lab in
                   [('pos', ks.count('buff'), 'buffs' if ks.count('buff') != 1 else 'buff'), ('neg', ks.count('nerf'), 'nerfs' if ks.count('nerf') != 1 else 'nerf'),
                    ('', nadj, 'adjusted'), ('', len(n.get('items', [])), 'items' if len(n.get('items', [])) != 1 else 'item')] if v)
-    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh" class="sr">Short version</h2><div class="pn-num">{st}</div><ul>{"".join(f"<li>{E(t)}</li>" for t in tldr(p, n)[1:])}</ul>'
+    tl = (f'<section class="card pn-tl" aria-labelledby="pn-tlh"><h2 id="pn-tlh" class="sr">Short version</h2><div class="pn-num">{st}</div><ul>{"".join(f"<li>{_lead(t)}</li>" for t in tldr(p, n)[1:])}</ul>'
           f'<p class="pn-mine" id="pnmine" hidden></p></section>')
     groups = [(k, lab, [x for x in n['champs'] if (x['kind'] if x['kind'] in ('buff', 'nerf') else 'adjust') == k]) for k, lab in GROUPS]
     groups = [(k, lab, sorted(xs, key=lambda x: x['c'])) for k, lab, xs in groups if xs]

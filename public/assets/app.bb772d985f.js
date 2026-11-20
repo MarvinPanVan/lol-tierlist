@@ -13,6 +13,8 @@ let RX=false;   // the off-role row (R) shows its strongest four until opened
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
 const META=CUR._meta;let ARCH=null;const PP=()=>(ARCH&&ARCH.prev_patch)||META.prev_patch;const NX=()=>(ARCH?ARCH.next:META.next)||{patch:'',date:'',roles:{}};   // the patch an archived list compares with
+// header links and 'Who beats X?' switch the list in place; only scroll when the list is not on screen at all (Marvin, 20 Nov 2026: the jump looked goofy)
+const toBoard=()=>{const r=$('board-sec').getBoundingClientRect();if(r.top>innerHeight-60||r.bottom<60)$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
 const DOC=PAGE==="method"||PAGE==="patch";
 // pages carry one role; the rest of the patch loads on demand (and quietly after the first render)
 let FULLP=null;
@@ -398,9 +400,11 @@ function renderSide(){if(!DATA[role])return;
   $('maph').textContent=(ALL?'All roles':RNm[role])+' this patch';
   $('insg').classList.toggle('all',ALL);$('xsc').hidden=!ALL;
   if(ALL){const st=items.filter(([r,d])=>TRK[tierOf(d)]!=null&&!isRare(d)).sort((a,b)=>TRK[tierOf(a[1])]-TRK[tierOf(b[1])]||SV(b[1])-SV(a[1]));
-    $('xs').innerHTML=st.map(([r,d])=>{const t=tierOf(d);return `<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" style="--R:var(--R${r})" title="${d.c}, ${RNm[r]}: ${t} tier, ${fmt(SV(d))}"><span class="ri">${RICON[r]}</span>${pic(d.c)}<span class="xn">${d.c}</span><span class="tg sm" style="--T:var(--${t})">${t}</span><b>${fmt(SV(d))}</b></button>`;}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
-    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=st.length<=(matchMedia('(max-width:640px)').matches?8:12);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
-    $('xsh').innerHTML=`Strongest picks <span class="vn">${VN}</span>`;}
+    // grouped by tier: one Z/S letter per group instead of a badge and a role icon on every chip (20 Nov 2026)
+    const xc=([r,d])=>`<button type="button" class="xchip" data-jr="${r}" data-jc="${d.c}" title="${d.c}, ${RNm[r]}: ${tierOf(d)} tier, ${fmt(SV(d))}">${pic(d.c)}<span class="xn">${d.c}</span><small class="xro">${RNm[r]}</small><b>${fmt(SV(d))}</b></button>`;
+    $('xs').innerHTML=['Z','S'].map(t=>{const g=st.filter(([,d])=>tierOf(d)===t);return g.length?`<div class="xgr"><span class="tg" style="--T:var(--${t})" title="${t==='Z'?LABT.Z:'S tier'}">${t}</span><div class="xgl">${g.map(xc).join('')}</div></div>`:'';}).join('')||'<p class="mi0">No Z or S picks in this view.</p>';
+    const mb=$('xmore');mb.dataset.n=st.length;mb.hidden=!matchMedia('(max-width:640px)').matches||![...$('xs').querySelectorAll('.xgl')].some(g=>g.children.length>6);mb.textContent=$('xs').classList.contains('all')?'Show fewer':`Show all ${st.length}`;
+    $('xsh').textContent='Strongest picks';}
   $('traps').innerHTML=items.filter(([r,d])=>vv(d)!=null&&(sx(d).pick||0)>=5&&vv(d)<=-.3).sort((a,b)=>vv(a[1])-vv(b[1])).slice(0,6).map(([r,d])=>row(r,d,`${rl(r)}${sx(d).pick.toFixed(1)}% pick · ${kfmt(sx(d).n)} games`,fmt(vv(d)),'neg')).join('')||none;
   // best bans: score x pick rate, adjusted for how often it is already banned. All roles: summed over every role the champion is above average in.
   let bans=[];
@@ -410,7 +414,7 @@ function renderSide(){if(!DATA[role])return;
       const sub=pos.length===1?`${RNm[pos[0][0]]} ${tierOf(pos[0][1])} · ${pos[0][2].pick.toFixed(1)}% pick · ${ban.toFixed(0)}% ban`:`${pos.slice(0,2).map(x=>RNm[x[0]]+' '+tierOf(x[1])).join(', ')} · ${ban.toFixed(0)}% ban`;
       bans.push([pos[0][0],pos[0][1],pos.reduce((t,x)=>t+vv(x[1])*x[2].pick,0)/(100-ban),sub]);}}
   $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
-  $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
+  $('bansh').textContent='Best bans';$('trapsh').textContent='Popular, but losing';
   const mv=Object.values(items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4&&!chance(d)).reduce((o,x)=>{const k=x[1].c;if(!o[k]||Math.abs(x[1].tr)>Math.abs(o[k][1].tr))o[k]=x;return o;},{})).sort((a,b)=>b[1].tr-a[1].tr);
   $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')+(mv.length&&mv.length<4?`<li class="none">Everyone else moved too little since ${PP()} to be sure it isn't luck.</li>`:'')||'<li class="none">No big moves this patch.</li>';
   $('movh').textContent=`Moved most since ${PP()}`;
@@ -500,17 +504,17 @@ document.addEventListener('click',e=>{
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('q').blur();$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);showPick();return;}
   if(r){navRole(r.dataset.r);return;}
-  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}toBoard();return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
   {const ce=t.closest('[data-cpe]');if(ce){CPE=ce.dataset.cpe;CPall=false;renderCounter();const r_=$('cpres');if(r_)r_.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});return;}}
   if(t.closest('#cpmore')){CPall=!CPall;renderCounter();return;}
-  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;mode='counter';renderControls();renderBoard();if(narrow())openPanel(false);$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}}
+  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;mode='counter';renderControls();renderBoard();if(narrow())openPanel(false);toBoard();return;}}
   if(t.closest('#cpchange')){CPE='';renderCounter();return;}
   if(t.closest('#nxmore')){const x=$('next'),all=!x.classList.contains('all'),b=$('nxmore');x.classList.toggle('all',all);b.setAttribute('aria-expanded',all);b.textContent=all?'Show fewer':`Show all ${b.dataset.n}`;return;}
   if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
-  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')toBoard();return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);if(!c.closest('#board,#panel'))showPick();return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
@@ -584,12 +588,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('.pn-share');if(!
 if(mine.length){const el=$('pnmine');el.hidden=false;el.innerHTML='★ Your starred champions in this patch: '+mine.map(a=>`<a href="${a.getAttribute('href')}">${a.dataset.pc}</a>`).join(', ')+'.';}
 }else if(PAGE==='method'){
 $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
-{const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). ${(()=>{const d=b.mse_raw-b.mse_shrunk,g=`average squared gap ${b.mse_shrunk} vs ${b.mse_raw} unpulled, most of it this patch's own sampling noise`;return Math.abs(d)<.01?`Pulling last patch toward zero first barely changed how well it predicts (${g}), because last patch had so many games.`:d>0?`Pulling last patch toward zero first made it a better guess (${g}).`:`Pulling last patch toward zero first made it a slightly worse guess this time (${g}).`;})()}${b.cover!=null?` And the ± range: ${b.cover}% of them landed inside last patch's range. With nothing but luck moving them that would be about 90%, so the rest is real movement from item changes and the meta, which no ± can see coming.`:''}`;}
+{const b=META.backtest;$('btline').innerHTML=`<b>Check:</b> for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). ${(()=>{const d=b.mse_raw-b.mse_shrunk,g=`average squared gap ${b.mse_shrunk} vs ${b.mse_raw} unpulled, most of it this patch's own sampling noise`;return Math.abs(d)<.01?`Pulling last patch toward zero first barely changed how well it predicts (${g}), because last patch had so many games.`:d>0?`Pulling last patch toward zero first made it a better guess (${g}).`:`Pulling last patch toward zero first made it a slightly worse guess this time (${g}).`;})()}${b.cover!=null?` And the ± range: ${b.cover}% of them landed inside last patch's range. With nothing but luck moving them that would be about 90%, so the rest is real movement from item changes and the meta, which no ± can see coming.`:''}`;}
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
 addEventListener('resize',fitStrip);if(document.fonts)document.fonts.ready.then(fitStrip);
-function setLegend(){$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${PP()}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${PP()}</span>${NX().patch&&Object.values(NX().roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${NX().patch} (${NX().date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${NX().patch}</span> = buff or nerf on ${NX().date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;}setLegend();
+function setLegend(){$('legend').innerHTML=`<span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${PP()}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${PP()}</span>${NX().patch&&Object.values(NX().roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${NX().patch} (${NX().date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${NX().patch}</span> = buff or nerf on ${NX().date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;}setLegend();
 {const bd=$('board');if(bd)new ResizeObserver(()=>document.documentElement.style.setProperty('--bh',Math.max(bd.offsetHeight,400)+'px')).observe(bd);}
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;
