@@ -25,7 +25,7 @@ const SITES=[
 ["Blitz","https://blitz.gg/lol/tierlist","NA","Diamond+, all roles","Matches OP.GG; letters follow win rate"],
 ["dpm.lol","https://dpm.lol/tierlist","EU","Diamond+, all roles","Numbers match; letters lean on popularity"],
 ["League of Graphs","https://www.leagueofgraphs.com/champions/tier-list/diamond","EU (France)","Diamond+, all roles","Numbers drift; odd letters; half weight"],
-["METAsrc","https://www.metasrc.com/lol/tier-list","Global","Diamond+, all roles","Letters are a popularity ranking; not scored"],
+["METAsrc","https://www.metasrc.com/lol/tier-list","Global","Diamond+, all roles, until 26.23","Letters followed pick rate (0.94), not wins (−0.18); dropped"],
 ["Mobalytics","https://mobalytics.gg/lol/tier-list/high-elo","NA/EU","Expert high-elo list; stats only for all ranks","Expert list follows popularity"],
 ["lol.ps","https://lol.ps/statistics","Korea","KR Emerald+ top lane","Matched OP.GG KR within 0.13 points"],
 ["Lolalytics","https://lolalytics.com/lol/tierlist/","NA/EU","Top 20 per role, Emerald+","About 1.6 points high; tiers reward popularity"],
@@ -116,14 +116,36 @@ function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
 const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}><span class="chpf">${pic(d.c)}${badges(d)}</span><span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="--T:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+// your champions: the ban that costs them the most. Uses the full matchup lists of the counter finder (loaded once you
+// have stars): for every opponent, how much worse your champions do against it than against an average opponent (pulled
+// toward no difference by games: x n/(n+400)), averaged over your champions, times how often it is picked, adjusted for
+// how often it is already banned (like "Best bans").
+let PBL=0;
+function poolBan(mine){
+  if(!META.cpf||ARCH)return null;
+  if(!CPD){if(!PBL){PBL=1;fetch(`${SITE}data/${META.cpf}`).then(r=>r.json()).then(j=>{CPD=CPD||j;if(mode==='tiers')renderBoard();}).catch(()=>{});}return null;}
+  const rk=R()==='e'?'e':'d',D=CPD[rk],RR=(D&&D.r&&D.r[role])||{},acc={};
+  for(const d of mine){const m=rk==='e'?d.mu:(d.mud||d.mu),own=m&&m.o;if(own==null)continue;
+    for(const [oi,w10,n] of (RR[d.c]||[])){const o=D.names[oi];if(mine.some(x=>x.c===o))continue;
+      const g=((100-w10/10)-own)*n/(n+400);(acc[o]=acc[o]||[]).push([g,own+g]);}}
+  const rows=[];
+  for(const [o,a] of Object.entries(acc)){const od=(DATA[role]||[]).find(x=>x.c===o);if(!od)continue;const s=stat(od)||{pick:od.pick,ban:od.ban};
+    const hurt=-a.reduce((t,[g])=>t+g,0)/mine.length;
+    if(hurt>0)rows.push({o,v:hurt*(s.pick||0)/Math.max(5,100-(s.ban||0)),wr:a.reduce((t,[,w])=>t+w,0)/a.length,pick:s.pick||0});}
+  return rows.sort((a,b)=>b.v-a.v).slice(0,2);
+}
 function poolHTML(mine){
-  const best=mine[0],cnt={};
-  for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
-  const bans=Object.entries(cnt).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,2);
-  let t=mine.length>1?`Best of yours this patch: <b>${best.c}</b> (${tierOf(best)}, ${fmt(SV(best))}).`:'';
-  if(bans.length)t+=` Ban ${bans.map(([c,n])=>`<b>${c}</b>`).join(' or ')}: hard matchup for ${bans[0][1]} of your ${mine.length}.`;
-  else if(mine.length===1){const {cs}=ctrs(best);if(cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(([c,wr])=>`<b>${c}</b> (${wr.toFixed(0)}%)`).join(', ')}.`;}
-  return t?`<p class="mi">${t}</p>`:'';
+  const best=mine[0],cnt={},one=mine.length===1,pb=poolBan(mine);
+  let t=!one?`Best of yours this patch: <b>${best.c}</b> (${tierOf(best)}, ${fmt(SV(best))}).`:'';
+  if(pb&&pb.length){const b=pb[0];
+    t+=` Best ban for ${one?best.c:'them'}: <b>${b.o}</b>. ${one?`${best.c} wins`:'They win'} about ${b.wr.toFixed(0)}% against ${b.o}${one?'':' on average'}, and ${b.o} is picked in ${b.pick.toFixed(0)}% of games.${pb[1]?` Next: <b>${pb[1].o}</b>.`:''}`;}
+  else{
+    for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
+    const bans=Object.entries(cnt).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,2);
+    if(bans.length)t+=` Ban ${bans.map(([c])=>`<b>${c}</b>`).join(' or ')}: hard matchup for ${bans[0][1]} of your ${mine.length}.`;
+    else if(one){const {cs}=ctrs(best);if(cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(([c,wr])=>`<b>${c}</b> (${wr.toFixed(0)}%)`).join(', ')}.`;}
+  }
+  return t?`<p class="mi">${t.trim()}</p>`:'';
 }
 function sinceVisit(){
   if(ARCH)return;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])sinceVisit();});return;}let seen=null;try{seen=JSON.parse(localStorage.getItem('tl-seen')||'null');}catch(e){}
@@ -181,7 +203,7 @@ function renderPanel(){if(!DATA[role])return;
   const rn=ROLES.find(r=>r[0]===role)[1],sx=stat(d)||{},vx=vw(d)||{},lim=LIM();
   // every rank x region view: score and tier; tapping one switches the whole list to it
   const gcell=(r,g)=>{const x=vw(d,VK(r,g)),on=r===R()&&g===G();if(!x)return `<td class="na">–</td>`;const n=d.st&&d.st[STK(r,g)];
-    return `<td class="${on?'on':''}" style="--T:var(${colT(x.t)})"><button type="button" data-rk="${r}" data-rg="${g}" title="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)} ±${x.se.toFixed(1)}${n?`, ${n[0].toLocaleString('en-US')} games`:''}. Tap to show this list." aria-label="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)}. Show this list"><b>${fmt(x.s)}</b><i>${x.t}</i></button></td>`;};
+    return `<td class="${on?'on':''}" style="--T:var(${colT(x.t)})"><button type="button" data-rk="${r}" data-rg="${g}" title="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)} ±${x.se.toFixed(1)}${n?`, ${n[0].toLocaleString('en-US')} games`:''}. Tap to show this list." aria-label="${fmt(x.s)} ${x.t}: ${VNM(r,g)}, ${x.t} tier. Show this list"><b>${fmt(x.s)}</b> <i>${x.t}</i></button></td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RKS.map(([,n])=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${RGS.map(([g,n])=>`<tr><th>${n}</th>${RKS.map(([r])=>gcell(r,g)).join('')}</tr>`).join('')}</tbody></table>`;
   const SNM={'Mobalytics experts':'Mobalytics'};
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site"${SNM[k]?` title="${k}"`:''}>${SNM[k]||k}<b style="--T:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site" title="Lolalytics, Emerald+">Lolalytics E+<b style="--T:var(${colT(d.ll)})">${d.ll}</b></span>`:'');

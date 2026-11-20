@@ -56,6 +56,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   tap the enemy laner, get every pick in that role ranked by the gap to what an average opponent gets against it, shrunk by
   games (update.py writes `pipeline/counters.json` from `data/opgg_matchups_full.json`, build.py copies it to
   `public/data/<patch>-counters.json`, loaded only when the finder opens). Emerald+, Diamond+ for D+/M+ views. Not remembered.
+- "Yours" row (starred champions, localStorage `tl-mine` as `role|champion`): best of yours plus a ban tip (`poolBan()`):
+  per opponent, mean over your champions of (actual - own matchup win rate) x n/(n+400) from the counter-finder data,
+  times pick / (100 - ban); loads `data/<patch>-counters.json` once someone has stars (20 Nov 2026).
 - Bot lane duos on the panel (ADCs and supports): OP.GG synergies page, the 10 most played partners
   (`data/opgg_synergy.json`), each against the expected win rate = own + (partner's own in its role - 50), shrunk (`duos()`).
 - Panel matchups (`matchups()` in update.py, from `data/opgg_matchups_full.json`): each against the expected win rate =
@@ -148,9 +151,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - U.GG tier list Diamond+ and Master+ (scroll the rendered table; do not hit their API directly).
      `data2/ugg_d.txt`, `ugg_m.txt`: `slug;role;tier;win;pick;ban;games`.
    - Blitz Diamond+ (`data2/blitz_d.txt`), dpm.lol Diamond+ (`dpm_d.txt`), Mobalytics high elo expert list (`moba_highelo.json`).
-   - League of Graphs Diamond+ (`log_d.csv`) and METAsrc Diamond+ (`ms_d_{role}.txt`): open these in Claude in Chrome.
-     The built-in browser gets stuck in a Cloudflare check on both. METAsrc drops `ranks=diamond+` on the first
-     load, navigate twice. Chrome tool output is blocked when text contains "&", replace it with "and".
+   - League of Graphs Diamond+ (`log_d.csv`): open it in Claude in Chrome. The built-in browser gets stuck in a
+     Cloudflare check there. Chrome tool output is blocked when text contains "&", "=" or "?", replace them.
+   - METAsrc is no longer read (Marvin, 20 Nov 2026): its letters followed pick rate (0.94), not win rate (-0.18), its
+     win rates matched OP.GG at only 0.42, and it was never scored. The method page keeps a "dropped" row for it.
    - Lolalytics Emerald+ (runs about +1.6 points high on win rate, use only for shape) and lol.ps KR as cross-checks.
    - Reject optional cookies on every site. If a fetch gets blocked, use the browser, never work around a block.
    - Ask Marvin to be at his PC with the browser open if the cloud fetch cannot read a site.
@@ -265,8 +269,12 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    print "no problems"), and still look at screenshots yourself: desktop, dark mode, the mobile sheet.
 6. Commit "Patch 26.xx" and push to main. Check https://lol-tierlist.pages.dev after a minute.
 7. Mid-patch refresh around day 8 of each patch: same collection again (bigger samples), rerun, rebuild, push.
-   Reminders for 26.23 are scheduled in Marvin's Claude session (20 Nov full update, 26 Nov refresh). After each
-   refresh, schedule the next patch's two reminders.
+   7a. Stats-only refresh around day 5 (Marvin, 20 Nov 2026): the first read on day 2-3 has only about a sixth of a
+   patch's games, so day 5 roughly doubles them and cuts the noise by about a third. Only `TLC.run('16.xx', ['stats'])`
+   (about 2 minutes, one save click), import, update.py, texts (lede day count and games, `updated`), build, check, push.
+   Matchups, builds and the other sites stay from the first read.
+   Reminders for 26.23 are scheduled in Marvin's Claude session (20 Nov full update, 23 Nov stats refresh, 26 Nov
+   refresh). After each day-8 refresh, schedule the next patch's three reminders.
 
 ## Riot API collector (prototype, development key)
 
@@ -281,6 +289,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   just the 6 most played lane opponents, and items depend on the whole enemy team). With enough matches in `k` (needs the
   production key), compute each option's share by enemy team (AD/AP mix, ranged lane opponent, tanks) per champion, with
   the same significance rules as `switches()`.
+- Plan for a real "new to the champion" number (replaces the crude one-trick penalty): at collection time look up each
+  player's champion-mastery-v4 points for the champion they played and store only a bucket (no puuid, no name), so win
+  rate by experience comes with game counts. 10 extra calls per match, so it needs the production key. Checked 20 Nov
+  2026: League of Graphs' "Winrate / Ranked Games Played" chart can't be used (no game counts, 10-game buckets, and every
+  bucket of Ahri Diamond+ sits above her overall 52.0%, so it is not a split of the same games); no other site shows it.
 - Not part of the scoring yet. Next: once the sample is big enough (and a production key is approved), add it as a
   dataset in update.py and use the matchups for counters. Production key: Marvin applied (Nov 2026), waiting for Riot; when approved it goes into the same secret.
 - `pipeline/data/riot/agg_*.json` uses `pipeline/data/ddragon_champions.json` to name banned champions.

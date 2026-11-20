@@ -5,7 +5,7 @@ Inputs (pipeline/):
   data/prev/opgg_global_e_{role}_<prev>.csv   OP.GG Global Emerald+ of the previous patch
   data/samples.json                           OP.GG 'Total analyzed samples' per dataset (= 10 x matches)
   data/lolalytics_global_e_{role}.csv         Lolalytics Emerald+ (letters only)
-  data2/ugg_{d,m}.txt  data2/blitz_d.txt  data2/dpm_d.txt  data2/log_d.csv  data2/ms_d_{role}.txt  data2/moba_highelo.json
+  data2/ugg_{d,m}.txt  data2/blitz_d.txt  data2/dpm_d.txt  data2/log_d.csv  data2/moba_highelo.json
   patch.json                                  patch numbers, next patch preview, champions changed this patch
 Output: tiers.json (roles + _meta) with a score, ± and tier for every rank x region view, printed summary incl. backtest.
 Check: python3 pipeline/scripts/verify_views.py
@@ -84,9 +84,8 @@ for line in open('data2/blitz_d.txt'):
 for i, line in enumerate(open('data2/log_d.csv')):
     if i == 0: continue
     c, r, t, pop, w, b = line.strip().split(';'); rows.append(('League of Graphs', 'D', ROLEMAP[r], nm(c), t, float(w), float(pop), float(b), np.nan))
-for r in ROLES:
-    for it in open(f'data2/ms_d_{r}.txt').read().strip().split('|'):
-        c, t, w, p, b, g = it.split(','); rows.append(('METAsrc', 'D', r, nm(c), t, float(w), float(p), float(b), np.nan))
+# METAsrc was read until 26.23 and dropped on 20 Nov 2026 (Marvin): its letters followed pick rate (r 0.94) and not win
+# rate (r -0.18), its win rates matched OP.GG at only 0.42, and it was never scored.
 SITE = pd.DataFrame(rows, columns=['site', 'rank', 'role', 'c', 'tier', 'win', 'pick', 'ban', 'games'])
 MOBA = json.load(open('data2/moba_highelo.json'))
 # OP.GG's three hardest matchups per champion (tier list Counter column), Emerald+ and Diamond+. Stopgap until the Riot data has enough games.
@@ -337,7 +336,6 @@ for role in ROLES:
     dref = comp['d_op']
     # third-party Diamond+/Master+ sites (deltas against their own role mean; counts from the site or OP.GG Diamond+)
     for (site, rk), g in SITE[SITE.role == role].groupby(['site', 'rank']):
-        if site == 'METAsrc': continue
         g = g.drop_duplicates('c').set_index('c')
         w = g.pick if g.pick.notna().all() else dref.pick.reindex(g.index).fillna(0.3)
         dl = deltas(g, w)
@@ -428,7 +426,7 @@ for role in ROLES:
             prev_cmp.append((role, c, val('prev', c, 'raw'), pv, val('g', c, 'raw'), float(comp['prev'].loc[c, 'n']), float(comp['g'].loc[c, 'n']), float(comp['prev'].loc[c, 'sd'])))
         # site letters at Diamond+
         sites = {}
-        for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'METAsrc']:
+        for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs']:
             s = SITE[(SITE.site == site) & (SITE['rank'] == 'D') & (SITE.role == role) & (SITE.c == c)]
             sites[site] = s.tier.iloc[0] if len(s) else None
         mt = None
@@ -513,7 +511,7 @@ ref = {}
 for role in ROLES:
     d = opgg('opgg_global_d', role); dl = deltas(d)
     for c in d.index: ref[(role, c)] = (float(dl[c]), math.log(float(d.loc[c, 'pick'])))
-for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'Mobalytics experts', 'METAsrc']:
+for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'Mobalytics experts']:
     tv, wr, lp, sd_, od = [], [], [], [], []
     if site == 'Mobalytics experts':
         for role, ts in MOBA.items():
@@ -533,8 +531,8 @@ for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'Mobalytics experts
         corr_num = round(float(np.corrcoef(sd_, od)[0, 1]), 2) if len(sd_) > 10 else None
     grade.append([site, round(spearmanr(tv, wr).correlation, 2), round(spearmanr(tv, lp).correlation, 2), corr_num, len(tv)])
 
-# notes: 'Sites disagree' only counts sites whose letters follow win rate (grade r >= 0.3). METAsrc and the Mobalytics
-# expert list rank mostly by popularity (r about 0 or below against win rate, 0.7 to 0.95 against pick rate), so their S is not a strength claim.
+# notes: 'Sites disagree' only counts sites whose letters follow win rate (grade r >= 0.3). The Mobalytics expert list
+# (and METAsrc, no longer read) rank mostly by popularity (r about 0 or below against win rate, 0.7 to 0.95 against pick rate), so their S is not a strength claim.
 TRUST = {g[0] for g in grade if g[1] is not None and g[1] >= .3}
 for L in out.values():
     for e in L: e['note'] = note(e)

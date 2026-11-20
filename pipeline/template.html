@@ -74,7 +74,7 @@ span.mrow{cursor:default}
 :root{color-scheme:light dark;
 --bg:light-dark(#f5f6f8,#0b0c0f);--card:light-dark(#ffffff,#14161b);--surf:light-dark(#f0f1f4,#1b1e25);--surf2:light-dark(#e9ebef,#22252d);
 --line:light-dark(#e4e6eb,#252830);--ink:light-dark(#0f1115,#eceef2);--mut:light-dark(#646b78,#959cab);--faint:light-dark(#727985,#858c9b);
---pos:light-dark(#14894a,#3fd17f);--neg:light-dark(#d23b2b,#ff7a68);--acc:light-dark(#4f5bd5,#8f99ff);--sel:var(--acc);
+--pos:light-dark(#0c7339,#3fd17f);--neg:light-dark(#b92d1d,#ff7a68);--acc:light-dark(#4f5bd5,#8f99ff);--sel:var(--acc);
 --sh1:0 1px 2px light-dark(rgba(16,24,40,.05),rgba(0,0,0,.4));
 --sh2:0 1px 2px light-dark(rgba(16,24,40,.04),rgba(0,0,0,.35)),0 10px 28px -12px light-dark(rgba(16,24,40,.16),rgba(0,0,0,.6));
 --r:14px;--ease:cubic-bezier(.2,.7,.2,1);
@@ -161,6 +161,8 @@ button.gopt:hover{border-color:var(--faint)}
 .gopt:disabled{opacity:.45;cursor:not-allowed}
 .rec{font:700 10.5px/1 Inter,sans-serif;padding:3px 7px;border-radius:999px;background:color-mix(in srgb,var(--pos) 14%,transparent);color:var(--pos)}
 .legend .ticks{grid-column:auto}.legend[hidden]{display:none}
+/* no layout shift while the script builds the page: the list and the button rows keep their space until they are filled (CLS was 0.4 to 0.5 on 20 Nov 2026) */
+#board:empty{min-height:100vh}.seg:empty{min-height:44px;box-sizing:border-box}
 .ticks:empty{display:none}.chip:has(.ticks:empty){grid-template-areas:"p n s"}
 
 /* board */
@@ -378,7 +380,7 @@ body{background:var(--bg)}
 .gbtn,.ctrl,.mxb,.mst{color:var(--acc)}
 .star[aria-pressed=true]{background:color-mix(in srgb,var(--acc) 14%,var(--card));border-color:color-mix(in srgb,var(--acc) 55%,transparent);color:var(--acc)}
 .arch{background:color-mix(in srgb,var(--acc) 10%,var(--card));border-color:color-mix(in srgb,var(--acc) 40%,transparent)}
-.arch button{background:var(--acc);color:var(--acc-ink)}
+.arch button{background:var(--acc);color:light-dark(#fff,var(--acc-ink))}
 /* header */
 .head{padding-top:clamp(18px,2.6vw,36px);padding-bottom:clamp(14px,2vw,22px)}
 .head h1{margin:0;font-size:clamp(26px,2.8vw,40px);max-width:none}
@@ -745,7 +747,7 @@ details.brow{display:block}
 .pill.pn-adj{background:var(--surf2);color:var(--mut)}
 .pn-rs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
 .pn-r{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--surf);color:var(--ink);text-decoration:none;font:600 12.5px/1 Inter,sans-serif;font-variant-numeric:tabular-nums}
-.pn-r:hover{background:var(--surf2)}.pn-r.pn-off{opacity:.62}.pn-r.pn-off:hover{opacity:1}
+.pn-r:hover{background:var(--surf2)}.pn-r.pn-off{color:var(--mut)}.pn-r.pn-off b{color:var(--mut)}.pn-r.pn-off .ri,.pn-r.pn-off .tg{opacity:.62}.pn-r.pn-off:hover{opacity:1}
 .pn-r .ri{width:24px;height:24px;border-radius:7px}.pn-r .ri svg{width:14px;height:14px}
 .pn-mv{font-weight:700;margin-left:1px}.pn-mv.pos{color:var(--pos)}.pn-mv.neg{color:var(--neg)}.pn-mv.pn-weak{color:var(--faint)}
 .pn-fx{display:grid;grid-template-columns:66px minmax(0,1fr);gap:7px 14px;margin:14px 0 0;font-size:14px;line-height:1.5}
@@ -984,7 +986,7 @@ details.brow{display:block}
 <p class="lede">At the same rank every site reads the same Riot match data, so their win rates nearly match. Their letter grades do not. Below is how closely each site's tiers follow winning versus popularity, as rank correlations across about 200 champion-role pairs at Diamond+.</p>
 <div class="card pad" style="margin-top:18px"><div class="grade" id="grade"></div>
 <p class="cap" style="margin:0">Last column: how closely the site's win rates match OP.GG at the same rank (1 = identical). Mobalytics' expert list has no win rates.</p></div>
-<p style="max-width:75ch;margin-top:14px">U.GG and Blitz are the sites whose letters you can take at face value. dpm.lol mixes in popularity, and Mobalytics' expert list and METAsrc mostly tell you what people pick: both put Kai'Sa, Lee Sin, Lulu and Nautilus in their top tier, and all four win less than the average pick in their role. So when a champion's note says sites disagree, it only counts sites at 0.3 or more in the first column.</p>
+<p style="max-width:75ch;margin-top:14px">U.GG and Blitz are the sites whose letters you can take at face value. dpm.lol mixes in popularity, and Mobalytics' expert list mostly tells you what people pick: it puts Kai'Sa, Lee Sin, Lulu and Nautilus in its top tier, and all four win less than the average pick in their role. METAsrc did the same even more strongly, so it is no longer read. So when a champion's note says sites disagree, it only counts sites at 0.3 or more in the first column.</p>
 </div>
 </section>
 
@@ -1004,6 +1006,7 @@ details.brow{display:block}
 <li>The ± next to a score is a rough 90% range. Arrows show the change in Global Emerald+ since last patch. For champions the patch did not touch that change is damped on purpose, because last patch is their starting point.</li>
 <li>A move only gets a reason when there is a fact for it: the change in the patch notes (Summoner's Rift only, not the Classic mode or ARAM), a changed item in its most common OP.GG builds (core items and boots, not starter items), a big shift in pick rate, or a note that the move is too small to be sure. No guessed explanations.</li>
 <li>Matchups come from OP.GG's full matchup lists (Emerald+, and Diamond+ for the Diamond+ and Master+ lists). A matchup's result moves almost point for point with how strong the opponent is in general, so a plain list of the lowest win rates is mostly just the strongest champions of the role. Each matchup is therefore compared with what the champion should win against an opponent that strong (its own win rate minus the opponent's lead over 50%), then pulled toward that by sample size like the scores, so a lucky 150-game matchup can't top the list. Grey means the gap could still be luck. Bot lane duos work the same way with the partner's strength. The counter-pick finder is different on purpose: when you pick into someone, a pick's general strength counts too.</li><li>The build card shows what OP.GG players actually take and how often. Tapping a row shows the other options, and "more vs" when players clearly switch against certain lane opponents (OP.GG's builds for the 6 most played matchups). Items get no win rates: whoever finishes items is often ahead already. For most options there is no reliable "when" yet, because items and boots depend on the whole enemy team; our own Riot match sample records builds and enemy teams from now on to answer that.</li><li>Win rate by game length is OP.GG's, per 5-minute bucket. OP.GG gives no game counts per bucket, so they are estimated from the game lengths in our own Riot match sample, and the card only says a champion wins more in short or long games when the gap is 2+ points and bigger than that noise.</li>
+<li>Your champions (the ★ on a card, saved in your browser only) get their own row with a ban tip: the opponent that costs them the most, from the same full matchup lists as the counter-pick finder. For each opponent: how much worse your champions do against it than against an average opponent, pulled toward no difference when there are few games, averaged over your champions, times how often it is picked and corrected for how often it is already banned.</li>
 <li id="btline"></li>
 </ul>
 </div>
@@ -1063,7 +1066,7 @@ const SITES=[
 ["Blitz","https://blitz.gg/lol/tierlist","NA","Diamond+, all roles","Matches OP.GG; letters follow win rate"],
 ["dpm.lol","https://dpm.lol/tierlist","EU","Diamond+, all roles","Numbers match; letters lean on popularity"],
 ["League of Graphs","https://www.leagueofgraphs.com/champions/tier-list/diamond","EU (France)","Diamond+, all roles","Numbers drift; odd letters; half weight"],
-["METAsrc","https://www.metasrc.com/lol/tier-list","Global","Diamond+, all roles","Letters are a popularity ranking; not scored"],
+["METAsrc","https://www.metasrc.com/lol/tier-list","Global","Diamond+, all roles, until 26.23","Letters followed pick rate (0.94), not wins (−0.18); dropped"],
 ["Mobalytics","https://mobalytics.gg/lol/tier-list/high-elo","NA/EU","Expert high-elo list; stats only for all ranks","Expert list follows popularity"],
 ["lol.ps","https://lol.ps/statistics","Korea","KR Emerald+ top lane","Matched OP.GG KR within 0.13 points"],
 ["Lolalytics","https://lolalytics.com/lol/tierlist/","NA/EU","Top 20 per role, Emerald+","About 1.6 points high; tiers reward popularity"],
@@ -1154,14 +1157,36 @@ function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...
 const isTrap=d=>{const x=stat(d),v=SV(d);return !!x&&v!=null&&x.pick>=5&&v<=-.3;};
 const kfmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
 const chipHTML=(d,tag,size='')=>{const low=isLow(d),x=stat(d),big=size==='big',vx=vw(d);return `<button type="button" class="chip${size?' '+size:''}${hit(d.c)?'':' dim'}${low?' low':''}" data-c="${d.c}" aria-pressed="${pick===d.c}"${big?` style="--art:url(${SITE}img/splash/${slug(d.c)}.webp)"`:''}${low?` title="Few games${x?` (${x.n.toLocaleString('en-US')} in ${VNM()})`:''}, could be off by ±${vx.se.toFixed(1)}"`:''}><span class="chpf">${pic(d.c)}${badges(d)}</span><span class="nm">${!tag&&isMine(d.c)?'<span class="mst">★</span>':''}<span class="nmt${d.c.length>=12?' l2':d.c.length>=10?' l1':''}">${d.c}</span>${tag?`<span class="tg sm" style="--T:var(${colT(tierOf(d))})">${tierOf(d)}</span>`:''}</span><span class="sc">${tri(d)}<b>${fmt(vx&&vx.s)}</b></span>${big&&x?`<span class="cm">${x.pick.toFixed(1)}% pick · ${kfmt(x.n)} games</span>`:''}</button>`;};
+// your champions: the ban that costs them the most. Uses the full matchup lists of the counter finder (loaded once you
+// have stars): for every opponent, how much worse your champions do against it than against an average opponent (pulled
+// toward no difference by games: x n/(n+400)), averaged over your champions, times how often it is picked, adjusted for
+// how often it is already banned (like "Best bans").
+let PBL=0;
+function poolBan(mine){
+  if(!META.cpf||ARCH)return null;
+  if(!CPD){if(!PBL){PBL=1;fetch(`${SITE}data/${META.cpf}`).then(r=>r.json()).then(j=>{CPD=CPD||j;if(mode==='tiers')renderBoard();}).catch(()=>{});}return null;}
+  const rk=R()==='e'?'e':'d',D=CPD[rk],RR=(D&&D.r&&D.r[role])||{},acc={};
+  for(const d of mine){const m=rk==='e'?d.mu:(d.mud||d.mu),own=m&&m.o;if(own==null)continue;
+    for(const [oi,w10,n] of (RR[d.c]||[])){const o=D.names[oi];if(mine.some(x=>x.c===o))continue;
+      const g=((100-w10/10)-own)*n/(n+400);(acc[o]=acc[o]||[]).push([g,own+g]);}}
+  const rows=[];
+  for(const [o,a] of Object.entries(acc)){const od=(DATA[role]||[]).find(x=>x.c===o);if(!od)continue;const s=stat(od)||{pick:od.pick,ban:od.ban};
+    const hurt=-a.reduce((t,[g])=>t+g,0)/mine.length;
+    if(hurt>0)rows.push({o,v:hurt*(s.pick||0)/Math.max(5,100-(s.ban||0)),wr:a.reduce((t,[,w])=>t+w,0)/a.length,pick:s.pick||0});}
+  return rows.sort((a,b)=>b.v-a.v).slice(0,2);
+}
 function poolHTML(mine){
-  const best=mine[0],cnt={};
-  for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
-  const bans=Object.entries(cnt).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,2);
-  let t=mine.length>1?`Best of yours this patch: <b>${best.c}</b> (${tierOf(best)}, ${fmt(SV(best))}).`:'';
-  if(bans.length)t+=` Ban ${bans.map(([c,n])=>`<b>${c}</b>`).join(' or ')}: hard matchup for ${bans[0][1]} of your ${mine.length}.`;
-  else if(mine.length===1){const {cs}=ctrs(best);if(cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(([c,wr])=>`<b>${c}</b> (${wr.toFixed(0)}%)`).join(', ')}.`;}
-  return t?`<p class="mi">${t}</p>`:'';
+  const best=mine[0],cnt={},one=mine.length===1,pb=poolBan(mine);
+  let t=!one?`Best of yours this patch: <b>${best.c}</b> (${tierOf(best)}, ${fmt(SV(best))}).`:'';
+  if(pb&&pb.length){const b=pb[0];
+    t+=` Best ban for ${one?best.c:'them'}: <b>${b.o}</b>. ${one?`${best.c} wins`:'They win'} about ${b.wr.toFixed(0)}% against ${b.o}${one?'':' on average'}, and ${b.o} is picked in ${b.pick.toFixed(0)}% of games.${pb[1]?` Next: <b>${pb[1].o}</b>.`:''}`;}
+  else{
+    for(const d of mine)for(const [c] of ctrs(d).cs)if(!mine.some(m=>m.c===c))cnt[c]=(cnt[c]||0)+1;
+    const bans=Object.entries(cnt).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,2);
+    if(bans.length)t+=` Ban ${bans.map(([c])=>`<b>${c}</b>`).join(' or ')}: hard matchup for ${bans[0][1]} of your ${mine.length}.`;
+    else if(one){const {cs}=ctrs(best);if(cs.length)t=`Hardest matchups for ${best.c}: ${cs.map(([c,wr])=>`<b>${c}</b> (${wr.toFixed(0)}%)`).join(', ')}.`;}
+  }
+  return t?`<p class="mi">${t.trim()}</p>`:'';
 }
 function sinceVisit(){
   if(ARCH)return;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])sinceVisit();});return;}let seen=null;try{seen=JSON.parse(localStorage.getItem('tl-seen')||'null');}catch(e){}
@@ -1219,7 +1244,7 @@ function renderPanel(){if(!DATA[role])return;
   const rn=ROLES.find(r=>r[0]===role)[1],sx=stat(d)||{},vx=vw(d)||{},lim=LIM();
   // every rank x region view: score and tier; tapping one switches the whole list to it
   const gcell=(r,g)=>{const x=vw(d,VK(r,g)),on=r===R()&&g===G();if(!x)return `<td class="na">–</td>`;const n=d.st&&d.st[STK(r,g)];
-    return `<td class="${on?'on':''}" style="--T:var(${colT(x.t)})"><button type="button" data-rk="${r}" data-rg="${g}" title="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)} ±${x.se.toFixed(1)}${n?`, ${n[0].toLocaleString('en-US')} games`:''}. Tap to show this list." aria-label="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)}. Show this list"><b>${fmt(x.s)}</b><i>${x.t}</i></button></td>`;};
+    return `<td class="${on?'on':''}" style="--T:var(${colT(x.t)})"><button type="button" data-rk="${r}" data-rg="${g}" title="${VNM(r,g)}: ${x.t} tier, ${fmt(x.s)} ±${x.se.toFixed(1)}${n?`, ${n[0].toLocaleString('en-US')} games`:''}. Tap to show this list." aria-label="${fmt(x.s)} ${x.t}: ${VNM(r,g)}, ${x.t} tier. Show this list"><b>${fmt(x.s)}</b> <i>${x.t}</i></button></td>`;};
   const grid=`<table class="hm"><thead><tr><th></th>${RKS.map(([,n])=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${RGS.map(([g,n])=>`<tr><th>${n}</th>${RKS.map(([r])=>gcell(r,g)).join('')}</tr>`).join('')}</tbody></table>`;
   const SNM={'Mobalytics experts':'Mobalytics'};
   const sites=Object.entries(d.sites||{}).filter(([k,v])=>v).map(([k,v])=>`<span class="site"${SNM[k]?` title="${k}"`:''}>${SNM[k]||k}<b style="--T:var(${colT(v)})">${v}</b></span>`).join('')+(d.ll?`<span class="site" title="Lolalytics, Emerald+">Lolalytics E+<b style="--T:var(${colT(d.ll)})">${d.ll}</b></span>`:'');

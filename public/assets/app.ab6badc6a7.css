@@ -4,7 +4,7 @@
 :root{color-scheme:light dark;
 --bg:light-dark(#f5f6f8,#0b0c0f);--card:light-dark(#ffffff,#14161b);--surf:light-dark(#f0f1f4,#1b1e25);--surf2:light-dark(#e9ebef,#22252d);
 --line:light-dark(#e4e6eb,#252830);--ink:light-dark(#0f1115,#eceef2);--mut:light-dark(#646b78,#959cab);--faint:light-dark(#727985,#858c9b);
---pos:light-dark(#14894a,#3fd17f);--neg:light-dark(#d23b2b,#ff7a68);--acc:light-dark(#4f5bd5,#8f99ff);--sel:var(--acc);
+--pos:light-dark(#0c7339,#3fd17f);--neg:light-dark(#b92d1d,#ff7a68);--acc:light-dark(#4f5bd5,#8f99ff);--sel:var(--acc);
 --sh1:0 1px 2px light-dark(rgba(16,24,40,.05),rgba(0,0,0,.4));
 --sh2:0 1px 2px light-dark(rgba(16,24,40,.04),rgba(0,0,0,.35)),0 10px 28px -12px light-dark(rgba(16,24,40,.16),rgba(0,0,0,.6));
 --r:14px;--ease:cubic-bezier(.2,.7,.2,1);
@@ -91,6 +91,8 @@ button.gopt:hover{border-color:var(--faint)}
 .gopt:disabled{opacity:.45;cursor:not-allowed}
 .rec{font:700 10.5px/1 Inter,sans-serif;padding:3px 7px;border-radius:999px;background:color-mix(in srgb,var(--pos) 14%,transparent);color:var(--pos)}
 .legend .ticks{grid-column:auto}.legend[hidden]{display:none}
+/* no layout shift while the script builds the page: the list and the button rows keep their space until they are filled (CLS was 0.4 to 0.5 on 20 Nov 2026) */
+#board:empty{min-height:100vh}.seg:empty{min-height:44px;box-sizing:border-box}
 .ticks:empty{display:none}.chip:has(.ticks:empty){grid-template-areas:"p n s"}
 
 /* board */
@@ -308,7 +310,7 @@ body{background:var(--bg)}
 .gbtn,.ctrl,.mxb,.mst{color:var(--acc)}
 .star[aria-pressed=true]{background:color-mix(in srgb,var(--acc) 14%,var(--card));border-color:color-mix(in srgb,var(--acc) 55%,transparent);color:var(--acc)}
 .arch{background:color-mix(in srgb,var(--acc) 10%,var(--card));border-color:color-mix(in srgb,var(--acc) 40%,transparent)}
-.arch button{background:var(--acc);color:var(--acc-ink)}
+.arch button{background:var(--acc);color:light-dark(#fff,var(--acc-ink))}
 /* header */
 .head{padding-top:clamp(18px,2.6vw,36px);padding-bottom:clamp(14px,2vw,22px)}
 .head h1{margin:0;font-size:clamp(26px,2.8vw,40px);max-width:none}
@@ -675,7 +677,7 @@ details.brow{display:block}
 .pill.pn-adj{background:var(--surf2);color:var(--mut)}
 .pn-rs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
 .pn-r{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--surf);color:var(--ink);text-decoration:none;font:600 12.5px/1 Inter,sans-serif;font-variant-numeric:tabular-nums}
-.pn-r:hover{background:var(--surf2)}.pn-r.pn-off{opacity:.62}.pn-r.pn-off:hover{opacity:1}
+.pn-r:hover{background:var(--surf2)}.pn-r.pn-off{color:var(--mut)}.pn-r.pn-off b{color:var(--mut)}.pn-r.pn-off .ri,.pn-r.pn-off .tg{opacity:.62}.pn-r.pn-off:hover{opacity:1}
 .pn-r .ri{width:24px;height:24px;border-radius:7px}.pn-r .ri svg{width:14px;height:14px}
 .pn-mv{font-weight:700;margin-left:1px}.pn-mv.pos{color:var(--pos)}.pn-mv.neg{color:var(--neg)}.pn-mv.pn-weak{color:var(--faint)}
 .pn-fx{display:grid;grid-template-columns:66px minmax(0,1fr);gap:7px 14px;margin:14px 0 0;font-size:14px;line-height:1.5}
