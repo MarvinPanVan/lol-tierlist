@@ -25,7 +25,7 @@ def spec(p): return .4*math.log(max(1, 2/p)) if p and p > 0 else .4*math.log(2/.
 def tier(v, pk, allpos, z, sd, main):   # -> [letter, rare]; S to D in steps of the role's spread (all-regions list of that rank)
     if z and pk >= 2 and v / sd >= 1.6: return ['Z', 0]   # Z: +1.8, every region +1.5, 2%+ pick, 1.6 spreads above average
     q = v / sd; rare = int(pk < 1.5 and not main)   # a champion's main role never goes to the rare row
-    if q >= 1 and allpos: return ['S', rare]
+    if q >= 1.25 and allpos: return ['S', rare]
     return ['A' if q >= .45 else 'B' if q >= 0 else 'C' if q >= -.6 else 'D', rare]
 def spread(xs):   # xs: [(score, pick)] -> pick-weighted standard deviation over picks of 1.5% and more
     xs = [(v, p) for v, p in xs if p >= 1.5]; w = sum(p for _, p in xs); m = sum(v*p for v, p in xs)/w

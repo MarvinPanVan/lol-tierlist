@@ -184,7 +184,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      spread is about twice top's and fixed lines put almost every support in S or D):
      Z score>=1.8 and z>=1.6 (Marvin, 20 Nov 2026: a flat +1.8 gave Master+ jungle 6 outliers, support none), every region's value (EUW, KR, NA, pulled as above, before the one-trick penalty) >=1.5, pick>=2; the rest in steps of z = score / sd, sd = pick-weighted
      standard deviation of the scores of the role's picks with 1.5%+ pick in the all-regions list of that rank (`role_spread`,
-     `_meta.spread[role][E|D|M]`, rounded to 3 decimals, also in verify_views; single-region lists use their rank's lines): S z>=1 and every region's value above
+     `_meta.spread[role][E|D|M]`, rounded to 3 decimals, also in verify_views; single-region lists use their rank's lines): S z>=1.25 (Marvin, 20 Nov 2026: S = the best picks, not just good ones; 1.0 before gave jungle and support 9-10 S) and every region's value above
      average (until 20 Nov 2026 the raw region numbers, which decided 26 of 38 S/Z calls by luck), A z>=.45, B z>=0, C z>=-.6, else D. Picks under 1.5% get their letter the same way plus a rare flag
      (`v[view] = [score, ±, tier, rare]`, `e.rare` for Emerald+); the site shows them in one "Off-role picks" row, best first,
      strongest four visible. Exception (Marvin, 15 Nov 2026): a champion's main role (highest pick in Global Emerald+, same

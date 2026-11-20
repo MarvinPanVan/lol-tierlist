@@ -254,7 +254,7 @@ function histHTML(d,tr=''){
   <text x="${X(fi)}" y="${H-4}" class="pt">${P[fi]}</text><text x="${X(li)}" y="${H-4}" class="pt" text-anchor="end">${P[li]}</text></svg>`;
 }
 // tier lines in units of the role's spread in this view (update.py TIER_Z); archived patches used fixed lines
-const cutT=v=>{const sd=((META.spread||{})[role]||{})[VK()];if(!sd)return v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D';const z=v/sd;return z>=1?'S':z>=.45?'A':z>=0?'B':z>=-.6?'C':'D';},TRANK={S:4,A:3,B:2,C:1,D:0};
+const cutT=v=>{const sd=((META.spread||{})[role]||{})[VK()];if(!sd)return v>=1.15?'S':v>=.6?'A':v>=.15?'B':v>=-.45?'C':'D';const z=v/sd;return z>=1.25?'S':z>=.45?'A':z>=0?'B':z>=-.6?'C':'D';},TRANK={S:4,A:3,B:2,C:1,D:0};
 function rngHTML(d){const x=vw(d);if(x&&x.r)return `<small class="rng" title="${LABT.R}">off-role, under 1.5% pick</small>`;const sx=stat(d);if(x&&d.main&&sx&&sx.pick<1.5)return `<small class="rng" title="${LABT.M}">rare pick, under 1.5%</small>`;if(!x||!'SABCD'.includes(x.t)||x.se==null)return '';const lo=cutT(x.s-x.se),hi=cutT(x.s+x.se);return lo===hi?'':`<small class="rng" title="With the ± range this champion could sit anywhere from ${lo} to ${hi}">could be ${lo===x.t?hi:hi===x.t?lo:lo+' to '+hi}</small>`;}
 const champURL=c=>SITE+role+'/'+slug(c)+'/';
 // why something moved, only from facts: this patch's change (patch notes), a big shift in pick rate, or a change too small to tell from chance

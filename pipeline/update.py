@@ -271,7 +271,7 @@ BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.e
 # the site lists them in their own "Rarely played" row. Exception (Marvin, 15 Nov 2026): a champion's main role (the role
 # where it is picked most in Global Emerald+, the same for every view) always stays in the main list, so Taric support or
 # Rek'Sai jungle are listed like any other pick and only off-role picks go to the rare row.
-TIER_Z = [('S', 1.0), ('A', .45), ('B', 0), ('C', -.6)]
+TIER_Z = [('S', 1.25), ('A', .45), ('B', 0), ('C', -.6)]   # S from 1.25 spreads (Marvin, 20 Nov 2026: S = the best picks, not just good; was 1.0)
 Z_SPREADS = 1.6   # Z also needs 1.6 of the role's spreads (Marvin, 20 Nov 2026): a flat +1.8 gave wide roles many 'outliers' (6 in Master+ jungle) and support none
 def tier(v, pk, allpos, zcheck, sd, main=False):   # -> (letter, rare)
     if v is None: return None, 0
