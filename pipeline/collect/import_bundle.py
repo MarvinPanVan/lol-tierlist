@@ -2,7 +2,7 @@
    python3 pipeline/collect/import_bundle.py <file> [<length> <number sum>]
 The length and number sum come from TLC.run() in the browser; if they don't match, nothing is written (the file is damaged
 or from another run). Parts it understands: stats (+ samples), counters, builds, skills, vs, rune_pages, game_length, synergy.
-For a NEW patch, first copy the current data/opgg_global_e_<role>.csv files to data/prev/ (trend arrows and backtest)."""
+Part 'prev' (run(patch, ['stats','prev'])) writes last patch's final Global Emerald+, Diamond+ and Master+ to data/prev/ (starting point, trend arrows, backtest)."""
 import os, re, sys, json, math
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); DATA = os.path.join(HERE, 'data')
 src = sys.argv[1]; txt = open(src, encoding='utf-8').read()
@@ -23,6 +23,24 @@ if B.get('stats'):   # tier list pages -> CSV per dataset and role, plus OP.GG's
     if B.get('samples'):
         sp = os.path.join(DATA, 'samples.json'); cur = json.load(open(sp)) if os.path.exists(sp) else {}
         cur.update(B['samples']); json.dump(cur, open(sp, 'w'), indent=1); wrote.append('samples.json')
+
+if B.get('prev'):   # last patch's final Global numbers -> data/prev/opgg_global_<e|d|m>_<role>_<code>.csv, samples key opgg_global_<rank>_<code>
+    pv = B['prev']; code = pv['patch'].replace('16.', '26').replace('.', '') if pv['patch'].startswith('16.') else pv['patch'].replace('.', '')
+    rows_by_rank = pv['rows'] if set(pv['rows']) <= {'e', 'd', 'm'} else {'e': pv['rows']}   # older bundles held Emerald+ only
+    smp = pv.get('samples') or {}; smp = smp if isinstance(smp, dict) else {'e': smp}
+    os.makedirs(os.path.join(DATA, 'prev'), exist_ok=True); n = 0
+    for rk, by_role in rows_by_rank.items():
+        for r, rows in by_role.items():
+            tot_pick = sum(float(x[2]) for x in rows)
+            if not 150 <= tot_pick <= 210: print(f'CHECK prev {rk} {r}: picks add to {tot_pick:.0f}%')
+            with open(os.path.join(DATA, 'prev', f'opgg_global_{rk}_{r}_{code}.csv'), 'w', encoding='utf-8') as f:
+                f.write('champion,win,pick,ban\n' + ''.join(f'{c},{w},{p},{bn}\n' for c, w, p, bn in rows))
+            n += 1
+    if smp:
+        sp = os.path.join(DATA, 'samples.json'); cur = json.load(open(sp)) if os.path.exists(sp) else {}
+        for rk, v in smp.items(): cur[f'opgg_global_{rk}_{code}'] = v
+        json.dump(cur, open(sp, 'w'), indent=1)
+    wrote.append(f'prev patch {pv["patch"]} ({code}): {n} CSVs')
 
 if B.get('counters'):   # matchups: rank by the gap to the champion's own win rate, shrunk by sample size (see CLAUDE.md)
     out, full = {}, {}

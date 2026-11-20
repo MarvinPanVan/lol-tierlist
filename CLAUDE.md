@@ -123,7 +123,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   new skins; never ARAM, Arena, Classic or other modes.
 - `pipeline/data/samples.json` : OP.GG "Total analyzed samples" per dataset. It counts 10 per match, so
   games for a champion = pick% / 100 x samples / 10 (checked against U.GG game counts, they match).
-- `pipeline/data/prev/` : last patch's OP.GG Global Emerald+ files, for the trend arrows and the backtest.
+- `pipeline/data/prev/` : last patch's OP.GG Global Emerald+, Diamond+ and Master+ files (starting point for unchanged
+  champions, trend arrows, backtest). The collector's 'prev' part fetches them (26.22 D+/M+ are the 14 Nov reading).
 
 ## Update procedure (each patch, every two weeks)
 
@@ -157,6 +158,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Per dataset: win rate minus the pick-weighted role average.
    - Shrinkage: empirical Bayes per dataset and role. tau^2 = mean(delta^2) - mean(2500/n) over champions with
      n >= 300 (floor 0.35^2); shrunk = delta * tau^2 / (tau^2 + 2500/n).
+   - Last patch as the starting point for champions the patch did not change, OP.GG Global at Emerald+, Diamond+ and
+     Master+ (Marvin, 20 Nov 2026; Emerald+ only before). Prior variance = true patch-to-patch change of that rank,
+     fitted once over all roles (per role it was noise: 0.17 to 0.96 at Master+), + last patch's own sd. 26.23: 0.17 /
+     0.31 / 0.44. Backtest 26.22 -> 26.23 with other games: error 0.06 / 0.16 / 0.40 vs 1.8 predicting 0, cover 91%.
    - One-trick penalty 0.4*ln(2/pick) when pick < 2%.
    - Views (Marvin chose this in 26.22): every list is one rank (Emerald+, Diamond+, Master+) x one region (All, EUW,
      KR, NA), 12 views, all scored the same way with the same tier rules. Site controls: Rank and Region buttons, the
@@ -164,16 +169,19 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
      - All regions = the Global block alone at that rank (Marvin, 15 Nov 2026: the old .5/.2/.2/.1 mix counted EUW, KR and
        NA twice, since Global already holds ~52% of its games from them). Global block: Emerald+ =
        OP.GG Global; Diamond+ = OP.GG, U.GG, Blitz, dpm.lol at 1 and League of Graphs at 0.5; Master+ = OP.GG and U.GG.
-     - One region = that OP.GG dataset alone, shrunk. Pick rate for the one-trick penalty and Z/P = the view's OP.GG
-       dataset (Global at that rank for All). ± = 1.64 x combined sd.
+     - One region = that region's OP.GG numbers pulled toward the all-regions value of the same rank (not toward 0):
+       w = 0.5^2 / (0.5^2 + 2500/n + sd_all^2), value = all + w x (raw - all) (`TAU_REGION`; Marvin, 20 Nov 2026). Tested
+       against 26.22's region numbers (other games): error 0.83/1.42/2.16 -> 0.20/0.18/0.30 (E+/D+/M+), 90% ranges hold
+       92-94%. Early in a patch and at Master+ region lists therefore look a lot like the all-regions list. Pick rate for
+       the one-trick penalty and Z = the view's OP.GG dataset (Global at that rank for All). ± = 1.64 x combined sd.
      - tiers.json: `e.v = {E, D, M, euw, kr, na, euwd, krd, nad, euwm, krm, nam: [score, ±, tier]}`; `score/se/t` =
        Emerald+ all regions (homepage, link previews, takes); `st` = games, pick, ban, win per OP.GG dataset.
    - Tiers, same rules for every view, no hand edits (Marvin chose role-scaled lines on 15 Nov 2026, because support's
      spread is about twice top's and fixed lines put almost every support in S or D):
-     Z score>=1.8, every dataset of the view >=1.5 raw, pick>=2; the rest in steps of z = score / sd, sd = pick-weighted
+     Z score>=1.8 and z>=1.6 (Marvin, 20 Nov 2026: a flat +1.8 gave Master+ jungle 6 outliers, support none), every region's value (EUW, KR, NA, pulled as above, before the one-trick penalty) >=1.5, pick>=2; the rest in steps of z = score / sd, sd = pick-weighted
      standard deviation of the scores of the role's picks with 1.5%+ pick in the all-regions list of that rank (`role_spread`,
-     `_meta.spread[role][E|D|M]`; single-region lists use their rank's lines): S z>=1 and every dataset of the view above
-     average, A z>=.45, B z>=0, C z>=-.6, else D. Picks under 1.5% get their letter the same way plus a rare flag
+     `_meta.spread[role][E|D|M]`, rounded to 3 decimals, also in verify_views; single-region lists use their rank's lines): S z>=1 and every region's value above
+     average (until 20 Nov 2026 the raw region numbers, which decided 26 of 38 S/Z calls by luck), A z>=.45, B z>=0, C z>=-.6, else D. Picks under 1.5% get their letter the same way plus a rare flag
      (`v[view] = [score, ±, tier, rare]`, `e.rare` for Emerald+); the site shows them in one "Off-role picks" row, best first,
      strongest four visible. Exception (Marvin, 15 Nov 2026): a champion's main role (highest pick in Global Emerald+, same
      for every view, `MAIN` in update.py, `e.main`) never gets the rare flag, so Taric support, Rek'Sai jungle or Nilah ADC are

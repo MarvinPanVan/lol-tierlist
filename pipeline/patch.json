@@ -1,218 +1,97 @@
 {
- "patch": "26.22",
- "date": "18 Nov",
+ "patch": "26.23",
+ "date": "9 Dec",
  "changed_this_patch": [
-  "Aurelion Sol",
-  "Corki",
-  "Kayle",
-  "Locke",
-  "Maokai",
+  "Annie",
+  "Azir",
+  "Bard",
+  "Ezreal",
+  "Galio",
+  "Gnar",
+  "K'Sante",
   "Mel",
-  "Naafiri",
-  "Rumble",
-  "Shen",
-  "Smolder",
-  "Thresh",
-  "Viktor",
-  "Yasuo",
-  "Zaahen"
+  "Vel'Koz",
+  "Vi",
+  "LeBlanc",
+  "Master Yi",
+  "Syndra"
  ],
- "prev_patch": "26.21",
- "prev_patch_code": "2621",
+ "prev_patch": "26.22",
+ "prev_patch_code": "2622",
  "next": {
-  "patch": "26.23",
-  "date": "18 Nov",
-  "roles": {
-   "top": [
-    [
-     "Gnar",
-     "Q ratios up",
-     "buff"
-    ],
-    [
-     "K'Sante",
-     "W cheaper and stronger",
-     "buff"
-    ],
-    [
-     "Voltaic Cyclosword",
-     "Current-health damage down",
-     "nerf"
-    ]
-   ],
-   "jungle": [
-    [
-     "Master Yi",
-     "Q AD ratio 70% to 60%",
-     "nerf"
-    ],
-    [
-     "Vi",
-     "E damage up",
-     "buff"
-    ],
-    [
-     "Voltaic Cyclosword",
-     "Hits lethality assassins",
-     "nerf"
-    ]
-   ],
-   "mid": [
-    [
-     "LeBlanc",
-     "Q AP ratio 40% to 35%",
-     "nerf"
-    ],
-    [
-     "Syndra",
-     "E costs more, longer early cooldown",
-     "nerf"
-    ],
-    [
-     "Mel",
-     "Q and W up",
-     "buff"
-    ],
-    [
-     "Azir",
-     "More range, W on-hit up",
-     "buff"
-    ],
-    [
-     "Galio",
-     "W shield up",
-     "buff"
-    ],
-    [
-     "Annie",
-     "Tibbers stronger",
-     "buff"
-    ],
-    [
-     "Akshan",
-     "Numbers not out yet",
-     "buff"
-    ],
-    [
-     "Voltaic Cyclosword",
-     "Current-health damage down",
-     "nerf"
-    ]
-   ],
-   "adc": [
-    [
-     "Ezreal",
-     "W and R damage up",
-     "buff"
-    ],
-    [
-     "Vel'Koz",
-     "R rank 3 damage up",
-     "buff"
-    ],
-    [
-     "Mel",
-     "Q and W up, also played bot",
-     "buff"
-    ]
-   ],
-   "support": [
-    [
-     "Bard",
-     "Q damage and AP ratio up",
-     "buff"
-    ],
-    [
-     "Galio",
-     "W shield up",
-     "buff"
-    ],
-    [
-     "Vel'Koz",
-     "R rank 3 damage up",
-     "buff"
-    ]
-   ]
-  }
+  "patch": "26.24",
+  "date": "9 Dec",
+  "roles": {}
  },
- "game_version": "16.22",
- "updated": "14 Nov 2026",
- "headline": "Ekko, Xayah and Kog'Maw lead patch 26.22",
- "lede": "<b>36 of the 65</b> most-picked champions (5% or more of their role's games) win less than half of them. Built on <b>1.9 million Emerald+ games</b> from OP.GG, plus four more stat sites at Diamond+, corrected for small samples and one-tricks.",
+ "game_version": "16.23",
+ "updated": "20 Nov 2026",
+ "headline": "Kog'Maw, Ekko and Singed lead patch 26.23",
+ "lede": "<b>35 of the 68</b> most-picked champions (5% or more of their role's games) win less than half of them. Read two and a half days into the patch: <b>about 400,000 Emerald+ games</b> from OP.GG plus four more stat sites at Diamond+, corrected for small samples and one-tricks.",
  "takes": {
-  "top": "Singed is the outlier, with Kayle, Malphite and Shen behind him. Higher up Kayle and Singed lead Diamond+, Fiora leads Master+, and Malphite drops to A in Master+. Jayce and Yone are picked a lot and still lose, and Yasuo dropped more than anyone since last patch.",
-  "jungle": "Zyra, Wukong, Lillia and Rek'Sai lead Emerald+. Lillia is the only outlier there, Zyra misses the 2% pick an outlier needs by a hair (1.9%). Higher up Zyra is the outlier in Diamond+ and Master+, Rek'Sai too in Master+, and Rek'Sai scores highest of all in Diamond+. Lee Sin is in 13% of games and loses, and Qiyana is the worst popular pick in the role.",
-  "mid": "Ekko is the outlier at every rank. Vex and Vladimir follow in Emerald+, Katarina and Zoe in Diamond+, Taliyah and Zoe in Master+. Mel gained the most since last patch and Viktor is up too, but Viktor is still a trap at 7.7% pick.",
-  "adc": "Kog'Maw and Xayah are the outliers in Emerald+ and Diamond+. Nilah scores about as high as Xayah, but she is in only 1% of games. Of the usual ADCs Corki gained the most since last patch. Ezreal is in 15% of games and has the worst score of any popular ADC.",
-  "support": "Taric and Rell score highest in Emerald+ with Leona, Braum and Zilean right behind, so pick what fits your bot laner. Taric is in only 1.2% of games, so his number is less certain. Rell is the outlier in Master+, where Taric scores even higher but is picked too rarely to be one. Yuumi, Karma and Lux are popular and lose, and Thresh dropped the most since last patch."
+  "top": "Singed (+2.0) and Kayle (+1.9) are the outliers, with Malphite, Ornn, Shen and Kled behind them. Singed and Shen lead Diamond+, and only Urgot and Camille are S in Master+. K'Sante got buffed and gained the most since last patch, but he still loses more than any popular top laner, and Jayce and Yone are picked a lot and lose too.",
+  "jungle": "Zyra and Rek'Sai lead Emerald+ at +2.1, with Lillia and Wukong right behind, and no jungler is an outlier there. Nidalee is the outlier in Diamond+, and Nidalee and Zyra in Master+. Master Yi dropped the most after his nerf, and Lee Sin (14% of games) and Qiyana still lose.",
+  "mid": "Ekko is the only outlier, with Vex, Annie, Vladimir and Ahri behind him. Katarina leads Diamond+, and Katarina, Vex and Zoe are the outliers in Master+. Most of this patch's changes hit mid: Mel and Galio gained the most since last patch, Syndra and LeBlanc dropped, and Viktor, Akali and Syndra are each in about 8% of games and lose.",
+  "adc": "Kog'Maw is the outlier at every rank, at +2.8 in Emerald+, and Draven is one too in Master+. Xayah, Nilah, Yasuo and Zeri are the S picks. Ezreal got buffed and went from 15% to 21% pick, and he still has the worst score of any popular ADC.",
+  "support": "No support is an outlier. Taric, Zilean and Rell lead Emerald+, with Braum, Janna, Sona, Leona, Rakan and Senna also in S, so pick what fits your bot laner. Janna and Rakan lead Diamond+, Rell and Janna Master+. Yuumi, Karma and Lux are popular and lose, and Bard is still D after his Q buff."
  },
  "changes": {
-  "Aurelion Sol": [
+  "Annie": [
+   "buff",
+   "Tibbers stronger"
+  ],
+  "Azir": [
+   "buff",
+   "more range, W on-hit up"
+  ],
+  "Bard": [
+   "buff",
+   "Q damage and AP ratio up"
+  ],
+  "Ezreal": [
+   "buff",
+   "W and R damage up"
+  ],
+  "Galio": [
+   "buff",
+   "W shield up"
+  ],
+  "Gnar": [
+   "buff",
+   "Q ratios up"
+  ],
+  "K'Sante": [
+   "buff",
+   "W cheaper and stronger"
+  ],
+  "Mel": [
+   "buff",
+   "Q and W up"
+  ],
+  "Vel'Koz": [
+   "buff",
+   "R rank 3 damage up"
+  ],
+  "Vi": [
    "buff",
    "E damage up"
   ],
-  "Corki": [
-   "buff",
-   "R damage up"
-  ],
-  "Kayle": [
-   "buff",
-   "Q and R cooldowns down"
-  ],
-  "Locke": [
+  "LeBlanc": [
    "nerf",
-   "Q damage down, shorter W"
+   "Q AP ratio 40% to 35%"
   ],
-  "Maokai": [
-   "buff",
-   "Q damage up"
-  ],
-  "Mel": [
-   "adjust",
-   "rework of W, Q and E"
-  ],
-  "Naafiri": [
-   "buff",
-   "Q healing and W damage up"
-  ],
-  "Rumble": [
-   "buff",
-   "R damage up"
-  ],
-  "Shen": [
-   "buff",
-   "Q damage to monsters up"
-  ],
-  "Smolder": [
-   "buff",
-   "W damage up"
-  ],
-  "Thresh": [
+  "Master Yi": [
    "nerf",
-   "R and base damage down"
+   "Q AD ratio 70% to 60%"
   ],
-  "Viktor": [
-   "buff",
-   "R damage and health up"
-  ],
-  "Yasuo": [
+  "Syndra": [
    "nerf",
-   "Q damage down"
-  ],
-  "Zaahen": [
-   "buff",
-   "Q cooldown down"
+   "E costs more, longer early cooldown"
   ]
  },
  "item_changes": {
-  "Doran's Bow": [
+  "Voltaic Cyclosword": [
    "nerf",
-   "7 attack damage instead of 8",
-   "starter"
-  ],
-  "Overlord's Bloodmail": [
-   "adjust",
-   "40 attack damage instead of 30, but Retribution gives up to 10% instead of 12%",
+   "current-health damage down",
    "core"
   ]
  },
@@ -804,17 +683,11 @@
    ]
   },
   "26.23": {
-   "status": "preview",
+   "status": "live",
    "live": "18 Nov 2026",
-   "url": "https://www.strafe.com/news/read/lol-patch-26-23-preview/",
-   "src": "Riot Phroxzon's preview of 26.23, numbers as listed on strafe.com, reasons as reported by strafe.com, gameriv.com and insider-gaming.com",
+   "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-23-notes/",
+   "src": "Riot's patch 26.23 notes",
    "champs": [
-    {
-     "c": "Akshan",
-     "kind": "buff",
-     "short": "buff, numbers not out yet",
-     "lines": []
-    },
     {
      "c": "Annie",
      "kind": "buff",
@@ -831,15 +704,15 @@
       [
        "R",
        "Tibbers aura damage per second",
-       "8 - 16 (+4% AP)",
-       "10 - 20 (+4% AP)",
+       "8 / 12 / 16 (+4% AP)",
+       "10 / 15 / 20 (+4% AP)",
        "base",
        "+"
       ],
       [
        "R",
        "Tibbers attack damage",
-       "30 - 60 (+10% AP)",
+       "30 / 45 / 60 (+10% AP)",
        "30 / 50 / 70 (+10% AP)",
        "base",
        "+"
@@ -847,7 +720,8 @@
      ],
      "ab": {
       "R": "Summon: Tibbers"
-     }
+     },
+     "why": "Weaker than she should be for average players for a while now. The changes add damage and back the build that leans on Tibbers."
     },
     {
      "c": "Azir",
@@ -874,7 +748,7 @@
      "ab": {
       "W": "Arise!"
      },
-     "why": "A former pro staple. Riot buffs these to round out the year for average players."
+     "why": "The 26.21 buffs did less than Riot expected as he moves to Lethal Tempo (an attack speed rune). The extra range is for his own basic attacks only, not his soldiers."
     },
     {
      "c": "Bard",
@@ -884,15 +758,16 @@
       [
        "Q",
        "Damage",
-       "80 - 240 (+80% AP)",
-       "80 - 260 (+100% AP)",
+       "80 / 120 / 160 / 200 / 240 (+80% AP)",
+       "80 / 125 / 170 / 215 / 260 (+100% AP)",
        "base",
        "+"
       ]
      ],
      "ab": {
       "Q": "Cosmic Binding"
-     }
+     },
+     "why": "Weak since nerfs aimed at pro play earlier this year, and players stopped building AP on him. Q gets more base damage and a bigger AP ratio."
     },
     {
      "c": "Ezreal",
@@ -902,16 +777,16 @@
       [
        "W",
        "Damage",
-       "80 - 300 (+100% bonus AD) (+90% AP)",
-       "80 - 300 (+115% bonus AD) (+100% AP)",
-       "base",
+       "80 / 135 / 190 / 245 / 300 (+100% bonus AD) (+90% AP)",
+       "80 / 135 / 190 / 245 / 300 (+115% bonus AD) (+100% AP)",
+       "ratio",
        "+"
       ],
       [
        "R",
-       "Damage",
-       "350 - 750 (+100% bonus AD) (+110% AP)",
-       "350 - 850 (+110% bonus AD) (+120% AP)",
+       "Damage to champions",
+       "350 / 550 / 750 (+100% bonus AD) (+110% AP)",
+       "350 / 600 / 850 (+110% bonus AD) (+120% AP)",
        "base",
        "+"
       ]
@@ -920,7 +795,7 @@
       "W": "Essence Flux",
       "R": "Trueshot Barrage"
      },
-     "why": "A former pro staple. Riot buffs these to round out the year for average players."
+     "why": "Weak at most ranks all year while strong in pro play. With the pro season over, Riot buffs him for normal games."
     },
     {
      "c": "Galio",
@@ -929,9 +804,9 @@
      "lines": [
       [
        "W",
-       "Shield",
-       "7.5 - 13.5% of max health",
-       "8 - 20% of max health",
+       "Shield (also on R)",
+       "7.5 / 9 / 10.5 / 12 / 13.5% of his max health",
+       "8 / 11 / 14 / 17 / 20% of his max health",
        "base",
        "+"
       ]
@@ -939,7 +814,7 @@
      "ab": {
       "W": "Shield of Durand"
      },
-     "why": "A former pro staple. Riot buffs these to round out the year for average players."
+     "why": "Weak lately. The buff is meant to help his AP bruiser builds too (some AP, some health), not only full AP."
     },
     {
      "c": "Gnar",
@@ -949,23 +824,24 @@
       [
        "Q",
        "Mini Gnar damage",
-       "5 - 165 (+125% AD)",
-       "5 - 165 (+135% AD)",
-       "base",
+       "5 / 45 / 85 / 125 / 165 (+125% AD)",
+       "5 / 45 / 85 / 125 / 165 (+135% AD)",
+       "ratio",
        "+"
       ],
       [
        "Q",
        "Mega Gnar damage",
-       "45 - 225 (+140% AD)",
-       "45 - 225 (+150% AD)",
-       "base",
+       "45 / 90 / 135 / 180 / 225 (+140% AD)",
+       "45 / 90 / 135 / 180 / 225 (+150% AD)",
+       "ratio",
        "+"
       ]
      ],
      "ab": {
       "Q": "Boomerang Throw / Boulder Toss"
-     }
+     },
+     "why": "A top pick in pro play, but weaker at every other level. Riot buffs his throw."
     },
     {
      "c": "K'Sante",
@@ -976,7 +852,7 @@
       [
        "W",
        "Mana cost",
-       "45 - 65",
+       "45 / 50 / 55 / 60 / 65",
        "45",
        "cost",
        "+"
@@ -984,24 +860,24 @@
       [
        "W",
        "Damage",
-       "45 - 165",
-       "45 - 205",
+       "45 / 75 / 105 / 135 / 165",
+       "45 / 85 / 125 / 165 / 205",
        "base",
        "+"
       ],
       [
        "W",
        "All Out: damage bonus from charging",
-       "10 - 80%",
-       "10 - 75%",
-       "base",
+       "10 / 27.5 / 45 / 62.5 / 80%",
+       "10 / 26.25 / 42.5 / 58.75 / 75%",
+       "mech",
        "-"
       ]
      ],
      "ab": {
       "W": "Path Maker"
      },
-     "why": "A former pro staple. W is often his second ability to level and is easier to see coming, so the power goes there."
+     "why": "A pro staple at Worlds, but much weaker for everyone else, especially late in the game. The power goes into his W."
     },
     {
      "c": "Mel",
@@ -1011,8 +887,8 @@
       [
        "Q",
        "Damage per extra bolt",
-       "5 - 25 (+8% AP)",
-       "6 - 26 (+9% AP)",
+       "5 / 10 / 15 / 20 / 25 (+8% AP)",
+       "6 / 11 / 16 / 21 / 26 (+9% AP)",
        "base",
        "+"
       ],
@@ -1027,31 +903,31 @@
       [
        "W",
        "Shield",
-       "50 - 170 (+50% AP)",
-       "50 - 210 (+50% AP)",
+       "50 / 80 / 110 / 140 / 170 (+50% AP)",
+       "50 / 90 / 130 / 170 / 210 (+50% AP)",
        "base",
        "+"
       ],
       [
        "W",
        "Hit-back damage",
-       "35 - 55 (+10% AP)",
-       "35 - 75 (+10% AP)",
+       "35 / 40 / 45 / 50 / 55 (+10% AP)",
+       "35 / 45 / 55 / 65 / 75 (+10% AP)",
        "base",
        "+"
       ]
      ],
      "ab": {
-      "Q": "Radiant Volley",
+      "Q": "Radiant Barrage",
       "W": "Rebuttal"
      },
-     "why": "More power after last patch's update. Riot is watching how popular she gets in bot lane."
+     "why": "Last patch's rework worked as a moderate buff without pushing her ban rate up. She is still a bit weak, so Q and W get more."
     },
     {
      "c": "Vel'Koz",
      "kind": "buff",
      "short": "R rank 3 damage up",
-     "m": "Riot lists this as a bug fix. Only rank 3 changes.",
+     "m": "Only rank 3 changes, by 25 damage.",
      "lines": [
       [
        "R",
@@ -1064,7 +940,8 @@
      ],
      "ab": {
       "R": "Life Form Disintegration Ray"
-     }
+     },
+     "why": "Fixes a small math error. Riot says it won't really change how strong he is."
     },
     {
      "c": "Vi",
@@ -1074,15 +951,16 @@
       [
        "E",
        "Damage",
-       "10 - 90 (+110% AD) (+100% AP)",
-       "10 - 110 (+110% AD) (+100% AP)",
+       "10 / 30 / 50 / 70 / 90 (+110% AD) (+100% AP)",
+       "10 / 35 / 60 / 85 / 110 (+110% AD) (+100% AP)",
        "base",
        "+"
       ]
      ],
      "ab": {
       "E": "Relentless Force"
-     }
+     },
+     "why": "With the pro season over, Riot gives her a bit more strength for ranked."
     },
     {
      "c": "LeBlanc",
@@ -1091,7 +969,7 @@
      "lines": [
       [
        "Q",
-       "AP ratio",
+       "AP ratio (first hit and mark)",
        "40%",
        "35%",
        "ratio",
@@ -1101,7 +979,7 @@
      "ab": {
       "Q": "Sigil of Malice"
      },
-     "why": "Strong and frustrating at high ranks."
+     "why": "Her damage is a bit too high, mostly on her reliable Q. A lower ratio makes it harder for her to run away with a game once she is ahead."
     },
     {
      "c": "Master Yi",
@@ -1111,24 +989,24 @@
       [
        "Q",
        "Damage",
-       "20 - 100 (+70% AD)",
-       "20 - 100 (+60% AD)",
-       "base",
+       "20 / 40 / 60 / 80 / 100 (+70% AD)",
+       "20 / 40 / 60 / 80 / 100 (+60% AD)",
+       "ratio",
        "-"
       ],
       [
        "Q",
        "Max damage to one target",
-       "35 - 175 (+122.5% AD)",
-       "35 - 175 (+105% AD)",
-       "base",
+       "35 / 70 / 105 / 140 / 175 (+122.5% AD)",
+       "35 / 70 / 105 / 140 / 175 (+105% AD)",
+       "ratio",
        "-"
       ]
      ],
      "ab": {
       "Q": "Alpha Strike"
      },
-     "why": "High in Riot's frustration surveys, especially among regular players."
+     "why": "Still a bit strong after several patches of buffs and jungle changes. The cut hits his crit build (critical strike items), the one most players use, more than his on-hit build."
     },
     {
      "c": "Syndra",
@@ -1155,7 +1033,7 @@
      "ab": {
       "E": "Scatter the Weak"
      },
-     "why": "Frustrating to play against at higher levels of play."
+     "why": "Her stun is too easy to get off. More mana and a longer early cooldown, which also makes her rely less on ability haste (cooldown reduction) and on casting it without caring about mana."
     }
    ],
    "items": [
@@ -1174,12 +1052,37 @@
        "-"
       ]
      ],
-     "why": "Slightly too strong after the Bastionbreaker nerfs, crowding out the other first items for assassins."
+     "why": "Too strong both for all-ins and for poke. Riot cuts the damage when it triggers, because all-in power matters more to assassins than the poke."
     }
    ],
-   "other": [],
-   "none": "",
-   "skins": []
+   "other": [
+    [
+     "Map",
+     "The winter version of Summoner's Rift is back until early next year. All older winter skins can be bought in the shop while it lasts."
+    ],
+    [
+     "Voice chat",
+     "Team voice chat (push to talk on C, so character info moves to Z) starts in North America and Oceania only. Other regions, EUW included, follow in later patches."
+    ],
+    [
+     "Champ select",
+     "When champ select hostaging (someone threatening to ruin the game unless they get their way) is confirmed within 60 seconds of the game starting, a vote to end the game is now offered. Before, the player was only punished afterwards."
+    ],
+    [
+     "Replays",
+     "Replay downloads: 50 per day instead of 10 per hour."
+    ]
+   ],
+   "none": "No rune, summoner spell or ranked changes.",
+   "skins": [
+    "Cafe Cuties Neeko",
+    "Cafe Cuties Zoe",
+    "DJ Sona Ultimate Remix"
+   ],
+   "chromas": [
+    "Cafe Cuties Neeko",
+    "Cafe Cuties Zoe"
+   ]
   }
  }
 }

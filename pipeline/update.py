@@ -22,6 +22,11 @@ P = json.load(open('patch.json', encoding='utf-8'))
 SAMPLES = json.load(open('data/samples.json'))
 SPEC = 0.4          # one-trick correction: points per ln-unit of pick rate below 2%
 TAU_FLOOR = 0.35    # never assume the true spread between champions is below 0.35 points
+# A region's list (EUW, KR, NA) is pulled toward the all-regions value of its rank, not toward 0, and only moves away from it
+# as far as its own games carry. 0.5 points = how far a region's true value typically sits from the global one (measured
+# 0.4 on 26.22; best value on the 26.23 test 0.45-0.6). Tested on 20 Nov 2026 against 26.22's region numbers (other games):
+# error 0.83/1.42/2.16 -> 0.20/0.18/0.30 at Emerald+/Diamond+/Master+, 90% ranges hold 92-94% instead of 84-90%.
+TAU_REGION = 0.5
 # 'All regions' = the Global block alone: every server at its real share of games (Marvin, 15 Nov 2026). The old mix
 # (Global .5 + EUW .2 + KR .2 + NA .1) counted EUW, KR and NA twice, because Global already holds them (~52% of its games).
 VIEW_W = {'glob': 1, 'euw': 0, 'kr': 0, 'na': 0}
@@ -268,10 +273,11 @@ BUILDS = json.load(open('data/opgg_builds.json', encoding='utf-8')) if os.path.e
 # where it is picked most in Global Emerald+, the same for every view) always stays in the main list, so Taric support or
 # Rek'Sai jungle are listed like any other pick and only off-role picks go to the rare row.
 TIER_Z = [('S', 1.0), ('A', .45), ('B', 0), ('C', -.6)]
+Z_SPREADS = 1.6   # Z also needs 1.6 of the role's spreads (Marvin, 20 Nov 2026): a flat +1.8 gave wide roles many 'outliers' (6 in Master+ jungle) and support none
 def tier(v, pk, allpos, zcheck, sd, main=False):   # -> (letter, rare)
     if v is None: return None, 0
     rare = 1 if pk < 1.5 and not main else 0
-    if zcheck and pk >= 2: return 'Z', 0
+    if zcheck and pk >= 2 and v / sd >= Z_SPREADS: return 'Z', 0   # +1.8, every region +1.5, 2%+ pick, and 1.6 spreads above average
     z = v / sd
     for t, cut in TIER_Z:
         if z >= cut and (t != 'S' or allpos): return t, rare
@@ -288,6 +294,20 @@ for _r in ROLES:
         if _c not in MAIN or _p > MAIN[_c][1]: MAIN[_c] = (_r, float(_p))
 MAIN = {c: r for c, (r, _) in MAIN.items()}
 RANK_OF = {'E': 'E', 'D': 'D', 'M': 'M'} | {k: rk.upper() for rk in 'edm' for k in REGK[rk].values()}
+# Last patch is the starting point for champions this patch did not change, at every rank (OP.GG Global). How far a champion
+# truly moves between patches is fitted once per rank over all roles: per role it is mostly noise (Master+ fits ran from 0.17
+# to 0.96 on 26.23). Backtest 26.22 -> 26.23 (other games): error 0.06 / 0.16 / 0.40 with last patch vs 1.8 without it.
+SC2 = {}
+for rk in 'edm':
+    acc = []
+    for r in ROLES:
+        cu, pv = opgg(f'opgg_global_{rk}', r), opgg(f'opgg_global_{rk}', r, P['prev_patch_code'])
+        if cu is None or pv is None: continue
+        dc, dp = deltas(cu), deltas(pv)
+        for c in cu.index:
+            if c in pv.index and c not in P['changed_this_patch'] and cu.n[c] >= 1000 and pv.n[c] >= 1000:
+                acc.append((dc[c] - dp[c]) ** 2 - 2500 / cu.n[c] - 2500 / pv.n[c])
+    if len(acc) >= 30: SC2[rk] = max(0.03, float(np.mean(acc)))
 for role in ROLES:
     base = opgg('opgg_global_e', role)
     comp = {}          # name -> dict(raw delta, shrunk, sd, n)
@@ -303,20 +323,17 @@ for role in ROLES:
     for rg in ['kr', 'na']:
         add(f'{rg}d', opgg(f'opgg_{rg}_d', role), f'OP.GG {rg.upper()} Diamond+'); add(f'{rg}m', opgg(f'opgg_{rg}_m', role), f'OP.GG {rg.upper()} Master+')
     add('prev', opgg('opgg_global_e', role, P['prev_patch_code']), 'OP.GG Global E+ prev')
-    # last patch as the starting point for champions this patch did not change (Global Emerald+ only):
-    # prior = last patch's shrunk value, prior variance = true patch-to-patch change + last patch's own uncertainty
-    if 'prev' in comp:
-        g, pv = comp['g'], comp['prev']
-        same = [c for c in g.index if c in pv.index and c not in P['changed_this_patch']]
-        big = [c for c in same if g.loc[c, 'n'] >= 1000 and pv.loc[c, 'n'] >= 1000]
-        if len(big) >= 8:
-            ch = g.loc[big, 'raw'] - pv.loc[big, 'raw']
-            sc2 = max(0.03, float((ch ** 2).mean() - (2500 / g.loc[big, 'n']).mean() - (2500 / pv.loc[big, 'n']).mean()))
-            meta_tau[f'patch change|{role}'] = round(math.sqrt(sc2), 2)
-            for c in same:
-                v = 2500 / g.loc[c, 'n']; mu = pv.loc[c, 'sh']; pvar = sc2 + pv.loc[c, 'sd'] ** 2
-                post = (g.loc[c, 'raw'] / v + mu / pvar) / (1 / v + 1 / pvar)
-                g.loc[c, 'sh'] = post; g.loc[c, 'sd'] = math.sqrt(1 / (1 / v + 1 / pvar))
+    add('prev_d', opgg('opgg_global_d', role, P['prev_patch_code']), 'OP.GG Global D+ prev')
+    add('prev_m', opgg('opgg_global_m', role, P['prev_patch_code']), 'OP.GG Global M+ prev')
+    # last patch as the starting point for champions this patch did not change (OP.GG Global at every rank):
+    # prior = last patch's shrunk value, prior variance = true patch-to-patch change of that rank + last patch's own uncertainty
+    for cur, prv, rk in [('g', 'prev', 'e'), ('d_op', 'prev_d', 'd'), ('m_op', 'prev_m', 'm')]:
+        if cur not in comp or prv not in comp or rk not in SC2: continue
+        g, pv = comp[cur], comp[prv]; meta_tau[f'patch change {rk.upper()}+|{role}'] = round(math.sqrt(SC2[rk]), 2)
+        for c in [c for c in g.index if c in pv.index and c not in P['changed_this_patch']]:
+            v = 2500 / g.loc[c, 'n']; mu = pv.loc[c, 'sh']; pvar = SC2[rk] + pv.loc[c, 'sd'] ** 2
+            post = (g.loc[c, 'raw'] / v + mu / pvar) / (1 / v + 1 / pvar)
+            g.loc[c, 'sh'] = post; g.loc[c, 'sd'] = math.sqrt(1 / (1 / v + 1 / pvar))
     dref = comp['d_op']
     # third-party Diamond+/Master+ sites (deltas against their own role mean; counts from the site or OP.GG Diamond+)
     for (site, rk), g in SITE[SITE.role == role].groupby(['site', 'rank']):
@@ -355,26 +372,32 @@ for role in ROLES:
             e['mx'] = round(float(best.loc[c, 'best_delta']), 1); e['mxw'] = round(float(best.loc[c, 'best_win']), 1)
         else: e['mx'] = e['mxw'] = None
         # every rank x region view, all scored the same way:
-        #   All regions = Global block 50%, EUW 20%, KR 20%, NA 10% (all at that rank, each shrunk), minus the one-trick correction
-        #   one region  = that OP.GG dataset alone, shrunk, minus the one-trick correction
+        #   All regions = the Global block of that rank (OP.GG Global, plus the other sites at Diamond+/Master+), minus the one-trick correction
+        #   one region  = that region's OP.GG numbers pulled toward the all-regions value (TAU_REGION), minus the one-trick correction
+        # S and Z also need every region on side: each region's own value (the pulled one, before the one-trick correction)
+        # above average for S and at +1.5 or more for Z. The raw region numbers were used until 20 Nov 2026; this early in a
+        # patch they swing by +-2 from luck, which decided 26 of 38 S/Z calls.
         V = {}
         for rk in 'edm':
             blk = GBLK[rk]
-            parts = {'glob': (avg([(val(k, c), w) for k, w in blk]), avg([(val(k, c, 'sd'), w) for k, w in blk]), avg([(val(k, c, 'raw'), w) for k, w in blk]))}
-            for rg, k in REGK[rk].items(): parts[rg] = (val(k, c), val(k, c, 'sd'), val(k, c, 'raw'))
-            pk = val(PICKK[rk], c, 'pick'); pk = pick if pk is None else pk
-            av = {k: p for k, p in parts.items() if p[0] is not None and VIEW_W[k] > 0}
-            if av:
-                ws = sum(VIEW_W[k] for k in av)
-                s_ = round(sum(VIEW_W[k] * p[0] for k, p in av.items()) / ws - spec(pk), 2)
-                se_ = round(1.64 * sum(VIEW_W[k] * p[1] for k, p in av.items()) / ws, 2)   # errors treated as fully correlated (datasets overlap)
-                raws = [p[2] for p in parts.values() if p[0] is not None]   # S and Z also need EUW, KR and NA on side (check only)
-                V[rk.upper()] = [s_, se_, None]; AUX[(c, rk.upper())] = (pk, all(x > 0 for x in raws), s_ >= 1.8 and min(raws) >= 1.5)
+            b = avg([(val(k, c), w) for k, w in blk]); bsd = avg([(val(k, c, 'sd'), w) for k, w in blk])   # errors treated as fully correlated (sites share games)
+            reg = {}
             for rg, k in REGK[rk].items():
-                if val(k, c) is None: continue
-                pk2 = val(k, c, 'pick'); raw = val(k, c, 'raw')
-                s2 = round(val(k, c) - spec(pk2), 2)
-                V[k] = [s2, round(1.64 * val(k, c, 'sd'), 2), None]; AUX[(c, k)] = (pk2, raw > 0, s2 >= 1.8 and raw >= 1.5)
+                if val(k, c) is None or not val(k, c, 'n') > 0: continue   # a 0.00% pick row has no games behind it
+                raw, v = val(k, c, 'raw'), 2500 / val(k, c, 'n')
+                if b is None: reg[rg] = (val(k, c), val(k, c, 'sd'))
+                else:
+                    w = TAU_REGION ** 2 / (TAU_REGION ** 2 + v + bsd ** 2)
+                    reg[rg] = (b + w * (raw - b), math.sqrt((1 - w) ** 2 * bsd ** 2 + w * w * v + (1 - w) ** 2 * TAU_REGION ** 2))
+            pk = val(PICKK[rk], c, 'pick'); pk = pick if pk is None else pk
+            if b is not None:
+                s_ = round(b - spec(pk), 2); se_ = round(1.64 * bsd, 2); rv = [x for x, _ in reg.values()]
+                V[rk.upper()] = [s_, se_, None]; AUX[(c, rk.upper())] = (pk, all(x > 0 for x in rv), s_ >= 1.8 and all(x >= 1.5 for x in rv))
+            for rg, k in REGK[rk].items():
+                if rg not in reg: continue
+                pk2 = val(k, c, 'pick'); est, sd = reg[rg]
+                s2 = round(est - spec(pk2), 2)
+                V[k] = [s2, round(1.64 * sd, 2), None]; AUX[(c, k)] = (pk2, est > 0, s2 >= 1.8 and est >= 1.5)
         e['v'] = V
         e['score'], e['se'], e['t'] = V['E']   # Emerald+, all regions: the default view (homepage, link previews, history)
         e['g'] = None if val('g', c, 'raw') is None else round(val('g', c, 'raw'), 2)   # raw Global Emerald+, for the history chart

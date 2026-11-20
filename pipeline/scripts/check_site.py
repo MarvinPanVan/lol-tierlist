@@ -84,6 +84,11 @@ with sync_playwright() as p:
         if pg.evaluate("!document.querySelector('#panel h3')||!document.querySelector('#panel h3').textContent.trim()"): problems.append(f'empty panel on {u}')
     # 5) patch notes share pages send people to their card
     sp = [os.path.relpath(r_, PUB) for r_, _, fs in os.walk(os.path.join(PUB, 'patch')) for f in fs if f == 'index.html' and r_.count(os.sep) - PUB.count(os.sep) == 3]
+    moved = [x for x in sp if '<title>Moved | LoL Tier List</title>' in open(os.path.join(PUB, x, 'index.html'), encoding='utf-8').read()]
+    for rel in moved:   # pages of changes that left the notes (build.py turns them into redirects): the target must exist
+        to = re.search(r'location\.replace\("/([^"]*)"\)', open(os.path.join(PUB, rel, 'index.html'), encoding='utf-8').read()).group(1)
+        if not os.path.exists(os.path.join(PUB, to, 'index.html')): problems.append(f'redirect page points nowhere: {rel} -> {to}')
+    sp = sorted(x for x in sp if x not in moved)
     for rel in sp[:4]:   # a change's own page: keeps its address (the link to share) and opens at its card
         u = f'{B}/{rel}/'.replace(os.sep, '/'); pg.goto(u); pg.wait_for_timeout(700)
         r_ = pg.evaluate("(()=>{const e=document.querySelector('.pn-focus');if(!e)return null;const b=e.getBoundingClientRect();return [b.top,innerHeight,location.pathname]})()")

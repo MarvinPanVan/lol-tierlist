@@ -1,6 +1,11 @@
 {
-"current": "26.22",
+"current": "26.23",
 "patches": [
+{
+"patch": "26.23",
+"kind": "full",
+"label": "Full data"
+},
 {
 "patch": "26.22",
 "kind": "full",

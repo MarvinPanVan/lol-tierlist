@@ -23,7 +23,7 @@ def fit(rows, wkey='p', nkey='n'):
     return out
 def spec(p): return .4*math.log(max(1, 2/p)) if p and p > 0 else .4*math.log(2/.3)
 def tier(v, pk, allpos, z, sd, main):   # -> [letter, rare]; S to D in steps of the role's spread (all-regions list of that rank)
-    if z and pk >= 2: return ['Z', 0]
+    if z and pk >= 2 and v / sd >= 1.6: return ['Z', 0]   # Z: +1.8, every region +1.5, 2%+ pick, 1.6 spreads above average
     q = v / sd; rare = int(pk < 1.5 and not main)   # a champion's main role never goes to the rare row
     if q >= 1 and allpos: return ['S', rare]
     return ['A' if q >= .45 else 'B' if q >= 0 else 'C' if q >= -.6 else 'D', rare]
@@ -53,16 +53,28 @@ MAINR = {}   # champion -> role with its highest Global Emerald+ pick rate
 for r in ['top','jungle','mid','adc','support']:
     for c, x in readop('opgg_global_e', r).items():
         if c not in MAINR or x['p'] > MAINR[c][1]: MAINR[c] = (r, x['p'])
+TR = 0.5   # how far a region's true value typically sits from the global one (region lists are pulled toward the all-regions value)
+PREV = P['prev_patch_code']; ROLES5 = ['top','jungle','mid','adc','support']
+havep = lambda rk, r: os.path.exists(f'data/prev/opgg_global_{rk}_{r}_{PREV}.csv')
+SC = {}   # true patch-to-patch change per rank, pooled over roles, champions with 1000+ games in both patches
+for rk in 'edm':
+    a = []
+    for r in ROLES5:
+        if not havep(rk, r): continue
+        cu, pv = readop(f'opgg_global_{rk}', r), readop(f'opgg_global_{rk}', r, PREV)
+        mc = sum(x['w']*x['p'] for x in cu.values())/sum(x['p'] for x in cu.values()); mp = sum(x['w']*x['p'] for x in pv.values())/sum(x['p'] for x in pv.values())
+        a += [((cu[c]['w']-mc) - (pv[c]['w']-mp))**2 - 2500/cu[c]['n'] - 2500/pv[c]['n'] for c in cu if c in pv and c not in P['changed_this_patch'] and cu[c]['n'] >= 1000 and pv[c]['n'] >= 1000]
+    if len(a) >= 30: SC[rk] = max(.03, sum(a)/len(a))
 bad = 0; checked = 0
-for role in ['top','jungle','mid','adc','support']:
+for role in ROLES5:
     D = {k: fit(readop(f'opgg_{k}', role)) for k in ['global_e','euw_e','kr_e','na_e','global_d','euw_d','kr_d','na_d','global_m','euw_m','kr_m','na_m']}
-    prv = fit(readop('opgg_global_e', role, P['prev_patch_code']))
-    g = D['global_e']; same = [c for c in g if c in prv and c not in P['changed_this_patch']]
-    bigc = [c for c in same if g[c]['n'] >= 1000 and prv[c]['n'] >= 1000]
-    sc2 = max(.03, sum((g[c]['raw']-prv[c]['raw'])**2 for c in bigc)/len(bigc) - sum(2500/g[c]['n'] for c in bigc)/len(bigc) - sum(2500/prv[c]['n'] for c in bigc)/len(bigc))
-    for c in same:
-        v = 2500/g[c]['n']; pv = sc2 + prv[c]['sd']**2
-        g[c] = dict(g[c], sh=(g[c]['raw']/v + prv[c]['sh']/pv)/(1/v+1/pv), sd=math.sqrt(1/(1/v+1/pv)))
+    for rk in 'edm':   # last patch as the starting point for unchanged champions, OP.GG Global at every rank
+        if rk not in SC or not havep(rk, role): continue
+        g, prv = D[f'global_{rk}'], fit(readop(f'opgg_global_{rk}', role, PREV))
+        for c in [c for c in g if c in prv and c not in P['changed_this_patch']]:
+            v = 2500/g[c]['n']; pv = SC[rk] + prv[c]['sd']**2
+            g[c] = dict(g[c], sh=(g[c]['raw']/v + prv[c]['sh']/pv)/(1/v+1/pv), sd=math.sqrt(1/(1/v+1/pv)))
+    g = D['global_e']
     tps = {}
     for (site, rk, r), rows in TP.items():
         if r != role: continue
@@ -80,22 +92,26 @@ for role in ['top','jungle','mid','adc','support']:
             def bavg(f):
                 pr = [(src[c][f], w) for src, w in GB[rk] if c in src]
                 return sum(a*w for a, w in pr)/sum(w for _, w in pr) if pr else None
-            parts = {'glob': (bavg('sh'), bavg('sd'), bavg('raw'), 1)}   # All regions = the Global block alone
-            chk = [parts['glob'][2]] + [D[f'{rg}_{rk}'][c]['raw'] for rg in ['euw', 'kr', 'na'] if c in D[f'{rg}_{rk}']]   # S/Z consistency check
-            av = [p for p in parts.values() if p[0] is not None]
-            if av:
+            B, BS = bavg('sh'), bavg('sd')   # All regions = the Global block alone
+            rv = {}   # each region pulled toward the block value by how few games it has
+            for rg in ['euw', 'kr', 'na']:
+                x = D[f'{rg}_{rk}'].get(c)
+                if not x or not x['n'] > 0: continue
+                if B is None: rv[rg] = (x['sh'], x['sd']); continue
+                v = 2500/x['n']; wt = TR*TR/(TR*TR + v + BS*BS)
+                rv[rg] = (B + wt*(x['raw'] - B), math.sqrt((1-wt)**2*BS*BS + wt*wt*v + (1-wt)**2*TR*TR))
+            if B is not None:
                 pk = D[f'global_{rk}'][c]['p'] if c in D[f'global_{rk}'] else g[c]['p']
-                s = round(sum(p[0]*p[3] for p in av)/sum(p[3] for p in av) - spec(pk), 2)
-                se = round(1.64*sum(p[1]*p[3] for p in av)/sum(p[3] for p in av), 2)
-                W[(c, rk.upper())] = (s, se, pk, all(x > 0 for x in chk), s >= 1.8 and min(chk) >= 1.5)
+                s = round(B - spec(pk), 2); se = round(1.64*BS, 2)
+                W[(c, rk.upper())] = (s, se, pk, all(m > 0 for m, _ in rv.values()), s >= 1.8 and all(m >= 1.5 for m, _ in rv.values()))
             for rg in ['euw','kr','na']:
                 x = D[f'{rg}_{rk}'].get(c); k = rg + ('' if rk == 'e' else rk)
-                if not x:
+                if not x or not x['n'] > 0:
                     if k in e['v']: bad += 1; print('EXTRA', role, c, k)
                     continue
-                s2 = round(x['sh']-spec(x['p']), 2); W[(c, k)] = (s2, round(1.64*x['sd'], 2), x['p'], x['raw'] > 0, s2 >= 1.8 and x['raw'] >= 1.5)
+                m, sd = rv[rg]; s2 = round(m - spec(x['p']), 2); W[(c, k)] = (s2, round(1.64*sd, 2), x['p'], m > 0, s2 >= 1.8 and m >= 1.5)
         if [e['score'], e['se'], e['t'], e['rare']] != e['v']['E']: bad += 1; print('E fields differ', role, c)
-    SD = {K: spread([(w[0], w[2]) for (c, k2), w in W.items() if k2 == K]) for K in 'EDM'}
+    SD = {K: round(spread([(w[0], w[2]) for (c, k2), w in W.items() if k2 == K]), 3) for K in 'EDM'}   # rounded like the published _meta.spread
     rank = lambda k: k if k in 'EDM' else {'': 'E', 'd': 'D', 'm': 'M'}[k[-1] if k[-1] in 'dm' else '']
     for e in T[role]:
         for k in e['v']:

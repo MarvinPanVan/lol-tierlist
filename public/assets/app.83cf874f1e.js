@@ -58,6 +58,8 @@ const starts=c=>{const k=slug(q);return slug(c).startsWith(k)||ALIAS[k]===c;};
 const pic=(c,cl='pic')=>`<img class="${cl}" src="${IMGBASE}${slug(c)}.webp" alt="" width="64" height="64" loading="lazy" decoding="async" onerror="this.remove()">`;
 const LIM=()=>!!(ARCH&&ARCH.kind==='limited');
 function tri(d){if(d.tr==null||Math.abs(d.tr)<.6||chance(d)||VK()!=='E')return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'↑':'↓'}</span>`;}
+// the strip under the controls: when the key no longer fits next to the view chip, drop its first, longest line
+function fitStrip(){const h=document.querySelector('.hintline'),l=$('legend'),g=$('gbtn');if(!h||!l||!g)return;h.classList.remove('tight');if(!l.hidden&&l.offsetTop>=g.offsetTop+g.offsetHeight-2)h.classList.add('tight');}
 function renderControls(){if(!DATA[role])return;
   $('roles').innerHTML=ROLES.map(([k,n])=>`<button type="button" data-r="${k}" aria-pressed="${k===role}" aria-label="${n}">${RICON[k]}<span class="rl">${n}</span></button>`).join('');
   $('modes').innerHTML=[['tiers','Tiers'],['table','Table'],['chart','Chart'],...(META.cpf&&!ARCH?[['counter','Counter']]:[])].map(([k,n])=>`<button type="button" data-mode="${k}" aria-pressed="${k===mode}">${n}</button>`).join('');
@@ -73,9 +75,9 @@ function renderControls(){if(!DATA[role])return;
   const BLK={e:'every server, from OP.GG.',d:'every server, from OP.GG, U.GG, Blitz, dpm.lol and League of Graphs.',m:'every server, from OP.GG and U.GG.'};
   const BLS={e:'OP.GG',d:'OP.GG + 4 more sites',m:'OP.GG + U.GG'};
   $('vwn').textContent=lim?`Patch ${ARCH.patch}`:G()==='all'?`${RN[R()]}, all regions`:VNM();
-  $('hint').textContent=(lim?'Global Emerald+ only':G()==='all'?BLS[R()]:'OP.GG only, fewer games')+(miss?`, ${miss} with no games`:'');
-  $('gbtn').title=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()} only, from OP.GG. Fewer games, so scores sit closer to zero.`)+(miss?` ${miss} champions have no games here.`:'')+' Tap to see which rank and region to pick.';
-  $('legend').hidden=lim||mode==='chart'||mode==='counter';
+  $('hint').textContent=(lim?'Global Emerald+ only':G()==='all'?BLS[R()]:'OP.GG, leans on all regions')+(miss?`, ${miss} with no games`:'');
+  $('gbtn').title=(lim?`Patch ${ARCH.patch}: Global Emerald+ only, same scoring and cutoffs.`:G()==='all'?`${RN[R()]}, all regions: ${BLK[R()]}`:`${VNM()}: that region's OP.GG numbers, pulled toward the all-regions list as far as its fewer games call for.`)+(miss?` ${miss} champions have no games here.`:'')+' Tap to see which rank and region to pick.';
+  $('legend').hidden=lim||mode==='chart'||mode==='counter';fitStrip();
 }
 function renderTable(){if(!DATA[role])return;
   const list=DATA[role],lim=LIM();
@@ -106,7 +108,7 @@ function fitTable(){const t=document.querySelector('.tbl');if(!t)return;t.classL
   for(const k of ['ctr','games','ban']){if(t.scrollWidth<=t.clientWidth+1)break;const i=hs.findIndex(h=>h.dataset.k===k);if(i<0)continue;
     tb.querySelectorAll(`tr>:nth-child(${i+1})`).forEach(c=>{c.hidden=true;c.dataset.drop='1';});}
   if(t.scrollWidth<=t.clientWidth+1)t.classList.add('fit');}
-const LABT={Z:'Outlier: clearly ahead in every dataset with a real pick rate.',R:'Off-role picks: under 1.5% of games, and the champion is picked more in another role. Each gets its letter by the same lines as the rest, but few games stand behind the numbers.',M:'Picked in under 1.5% of games, but this is its main role, so it stays in the list. Few players pick it, so take the score with some care.'};
+const LABT={Z:'Outlier: +1.8 or more and 1.6 spreads above the role average, at least +1.5 in every region, and a 2%+ pick rate.',R:'Off-role picks: under 1.5% of games, and the champion is picked more in another role. Each gets its letter by the same lines as the rest, but few games stand behind the numbers.',M:'Picked in under 1.5% of games, but this is its main role, so it stays in the list. Few players pick it, so take the score with some care.'};
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('tl-mine')||'[]');}catch(e){}
 const isMine=c=>MINE.includes(role+'|'+c)||MINE.includes(c);
 function toggleMine(c){MINE=isMine(c)?MINE.filter(x=>x!==c&&x!==role+'|'+c):[...MINE,role+'|'+c];try{localStorage.setItem('tl-mine',JSON.stringify(MINE));}catch(e){}renderBoard();renderPanel();}
@@ -563,7 +565,8 @@ $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
-$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${META.prev_patch}</span>${META.next?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> = buff or nerf on ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;
+addEventListener('resize',fitStrip);if(document.fonts)document.fonts.ready.then(fitStrip);
+$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${META.prev_patch}</span>${META.next&&Object.values(META.next.roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> = buff or nerf on ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;
 {const bd=$('board');if(bd)new ResizeObserver(()=>document.documentElement.style.setProperty('--bh',Math.max(bd.offsetHeight,400)+'px')).observe(bd);}
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;

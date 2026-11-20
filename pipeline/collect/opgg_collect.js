@@ -1,12 +1,13 @@
 // OP.GG collector for the LoL tier list. Runs inside a browser tab that is open on any op.gg page (built-in browser,
 // javascript_tool): paste this whole file, then for example
-//   await TLC.run('16.23', ['stats'])                    // 65 tier list pages, ~2 min
+//   await TLC.run('16.23', ['stats','prev'])             // 60 tier list pages + last patch's 15 Global pages (E+, D+, M+), ~3 min
 //   await TLC.run('16.23', ['matchups','builds'])        // counters E+/D+ and build pages, ~35 min
 //   await TLC.run('16.23', ['vs','runes','length','duos'])  // matchup builds, runes, trends and synergies pages, ~60 min
 // Each run saves ONE file, lol-tierlist-<patch>-<parts>.json, through a download (a save window opens on Marvin's PC;
 // he saves it to Downloads/lol-tierlist-data/). Then in the container: device_stage_files, and
 //   python3 pipeline/collect/import_bundle.py <staged file> <length> <number sum>
 // with the length and sum that run() returns, so a damaged or partial file is never used. Progress: TLC.status().
+// Missed the save window? TLC.save() offers the last run's file again.
 // Rules kept here: OP.GG's internal patch number (16.xx = 26.xx), 0.4 s between pages, never the visible tables.
 (() => {
 const ROLES = ['top', 'jungle', 'mid', 'adc', 'support'];
@@ -104,7 +105,7 @@ const packVs = (b, n) => ({n, sp: b.sp.map(r => [r.ids, r.pick]), rn: b.rn.map(r
 
 const S = {part: null, done: 0, total: 0, errors: []};
 async function each(list, fn) { S.total = list.length; S.done = 0; for (const x of list) { try { await fn(x); } catch (e) { S.errors.push(S.part + ' ' + JSON.stringify(x).slice(0, 80) + ': ' + e); } S.done++; await sleep(400); } }
-async function run(patch, parts) {
+async function run(patch, parts, prevPatch) {
   const q = (tier = 'emerald_plus', region = 'global') => `region=${region}&tier=${tier}&patch=${patch}`;
   const out = {patch, made: null, parts};
   let keys = null;   // "role|champion" for every champion listed in Global Emerald+
@@ -117,6 +118,12 @@ async function run(patch, parts) {
     await each(sets.flatMap(([g, tier, k]) => ROLES.map(r => [g, tier, k, r])), async ([g, tier, k, r]) => {
       const s = parseStats(await get(`/lol/champions?${q(tier, g)}&position=${r}`), r === 'adc' ? 'ADC' : r.toUpperCase());
       out.stats[`opgg_${g}_${k}_${r}`] = s.rows; if (s.samples) out.samples[`opgg_${g}_${k}`] = s.samples; }); }
+  if (parts.includes('prev')) {   // last patch's final Global numbers at Emerald+, Diamond+, Master+ (starting point, trend arrows, backtest); OP.GG keeps the previous patch
+    const pv = prevPatch || patch.replace(/\d+$/, m => String(+m - 1).padStart(2, '0'));
+    S.part = 'prev'; out.prev = {patch: pv, rows: {e: {}, d: {}, m: {}}, samples: {}};
+    await each([['emerald_plus', 'e'], ['diamond_plus', 'd'], ['master_plus', 'm']].flatMap(([t, k]) => ROLES.map(r => [t, k, r])), async ([t, k, r]) => {
+      const s = parseStats(await get(`/lol/champions?region=global&tier=${t}&patch=${pv}&position=${r}`), r === 'adc' ? 'ADC' : r.toUpperCase());
+      out.prev.rows[k][r] = s.rows; if (s.samples) out.prev.samples[k] = s.samples; }); }
   if (parts.includes('matchups')) { await needKeys(); S.part = 'matchups'; out.counters = {e: {}, d: {}};
     for (const [tier, k] of [['emerald_plus', 'e'], ['diamond_plus', 'd']])
       await each(keys, async key => { const [r, c] = key.split('|'); out.counters[k][key] = parseCtr(await get(`/lol/champions/${slug(c)}/counters/${r}?${q(tier)}`)); }); }
@@ -139,8 +146,12 @@ async function run(patch, parts) {
   const txt = JSON.stringify(out); let sum = 0; txt.replace(/-?\d+/g, x => { sum += +x; });
   const name = `lol-tierlist-${patch}-${parts.join('-')}.json`, a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([txt], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click();
-  S.part = 'saved'; return {file: name, length: txt.length, sum, errors: S.errors.length};
+  S.part = 'saved'; window.TLC_last = {name, txt}; return {file: name, length: txt.length, sum, errors: S.errors.length};
 }
-window.TLC = {run, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, parseSyn, packBuild, packVs, get};
+function save() {   // offers the last run's file again (if the save window was closed or missed)
+  const L = window.TLC_last; if (!L) return 'nothing to save'; const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([L.txt], {type: 'application/json'})); a.download = L.name; document.body.appendChild(a); a.click(); return L.name;
+}
+window.TLC = {run, save, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, parseSyn, packBuild, packVs, get};
 })();
 'TLC ready';

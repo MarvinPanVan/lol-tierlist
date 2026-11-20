@@ -31,9 +31,10 @@ def strip(h, keep):   # template blocks: B = tier list pages, M = method page, N
         if b != keep: h = re.sub(rf'<!--{b}-->.*?<!--/{b}-->', '', h, flags=re.S)
     return h.replace(f'<!--{keep}-->', '').replace(f'<!--/{keep}-->', '')
 
+WRITTEN = set()   # every page this build writes; older pages left in the role and patch folders become redirects (end of file)
 def write(rel, h):
     path = os.path.join(PUB, rel); os.makedirs(os.path.dirname(path), exist_ok=True)
-    open(path, 'w', encoding='utf-8').write(h)
+    open(path, 'w', encoding='utf-8').write(h); WRITTEN.add(os.path.normpath(rel))
 
 # each page carries only its own role (plus a small summary); the site loads data/<patch>.json when you switch roles or search
 def best(r):
@@ -611,6 +612,28 @@ a{{display:inline-block;padding:11px 18px;border-radius:999px;background:light-d
 PRIV = open(os.path.join(HERE, 'privacy.html'), encoding='utf-8').read()
 write('privacy/index.html', PRIV.replace('__UPDATED__', P.get('privacy_updated', '14 Nov 2026')))
 write('robots.txt', f'User-agent: *\nAllow: /\n\nSitemap: {SITE}sitemap.xml\n')
+# Pages from earlier builds that this build no longer makes (a champion no longer listed in a role, a change dropped from
+# a patch's notes): they would load stylesheets and scripts that no longer exist, and shared links would break if deleted.
+# They become a small noindex page that sends visitors on: to the champion's page in a role where it is listed, else to the
+# role page; for patch pages to that patch's notes (or the newest notes).
+def _stub(to):
+    return (f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>Moved | LoL Tier List</title>'
+            f'<link rel="canonical" href="{SITE}{to}"><meta http-equiv="refresh" content="0;url=/{to}"><script>location.replace("/{to}")</script></head>'
+            f'<body><a href="/{to}">Open the page</a></body></html>')
+_where = {}
+for r, _, _ in ROLES:
+    for e in D[r]: _where.setdefault(slug(e['c']), f'{r}/{slug(e["c"])}/')
+STUBBED = []
+for top in [r for r, _, _ in ROLES] + ['patch']:
+    for dp, _, fs in os.walk(os.path.join(PUB, top)):
+        if 'index.html' not in fs: continue
+        rel = os.path.normpath(os.path.relpath(os.path.join(dp, 'index.html'), PUB))
+        if rel in WRITTEN: continue
+        parts = rel.split(os.sep)
+        if top == 'patch': to = f'patch/{parts[1]}/' if len(parts) > 2 and parts[1] in NOTES else 'patch/'
+        else: to = _where.get(parts[1], f'{top}/') if len(parts) == 3 else f'{top}/'
+        open(os.path.join(PUB, rel), 'w', encoding='utf-8').write(_stub(to)); STUBBED.append(rel)
+if STUBBED: print(f'{len(STUBBED)} old pages now redirect: ' + ', '.join(sorted(STUBBED))[:400])
 today = datetime.date.today().isoformat()
 urls = [SITE] + [SITE + r + '/' for r, _, _ in ROLES] + [SITE + 'method/', SITE + 'privacy/'] + [SITE + f'patch/{q}/' for q in NOTES] + [SITE + f"{r}/{slug(e['c'])}/" for r, _, _ in ROLES for e in D[r]]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod></url>\n' for u in urls) + '</urlset>\n')
