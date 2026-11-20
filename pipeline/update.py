@@ -477,7 +477,8 @@ def note(e):
     lo_k, hi_k = (min(sure, key=sure.get), max(sure, key=sure.get)) if sure else (None, None)
     out = []
     ev_ = [v[k] for k in ['euw', 'kr', 'na'] if k in v]
-    if all(t in 'ZS' for t in ts) and 'Z' in ts: out.append((10, f'Clear outlier: Z or S in all {len(ts)} rank and region views.'))
+    nz = ts.count('Z')
+    if all(t in 'ZS' for t in ts) and nz: out.append((10, f'Outlier (Z) in all {len(ts)} rank and region views.' if nz == len(ts) else f'S or better in all {len(ts)} rank and region views, an outlier (Z) in {nz} of them.'))
     elif all(e['v'].get(k, [0, 0, ''])[2] == 'Z' for k in 'EDM'): out.append((10, f'Outlier at every rank: {f1(v["E"])} in Emerald+, {f1(v["D"])} in Diamond+, {f1(v["M"])} in Master+.'))
     elif e['t'] == 'Z' and ev_: out.append((10, f'Outlier in Emerald+, ahead in every region there ({f1(min(ev_))} to {f1(max(ev_))}).'))
     elif lo >= .5: out.append((7, f'Above average in every rank and region ({f1(lo)} to {f1(hi)}).'))
@@ -495,7 +496,7 @@ def note(e):
     if all(k in v for k in ['euwd', 'euwm', 'D', 'M']):
         ev, hb = (v['euwd'] + v['euwm']) / 2, (v['D'] + v['M']) / 2
         if abs(ev - hb) >= 1: out.append((6, f'{"Better" if ev > hb else "Worse"} on EUW in Diamond+ and Master+ ({f1(ev)} vs {f1(hb)} in all regions).'))
-    sl = {k: x for k, x in e['sites'].items() if x in LV}
+    sl = {k: x for k, x in e['sites'].items() if x in LV and k in TRUST}
     if len(sl) >= 3:
         a, b = max(sl, key=lambda k: LV[sl[k]]), min(sl, key=lambda k: LV[sl[k]])
         if LV[sl[a]] - LV[sl[b]] >= 3: out.append((5, f'Sites disagree: {a} gives {sl[a]}, {b} gives {sl[b]}.'))
@@ -506,9 +507,6 @@ def note(e):
     if e['se'] >= .8: out.append((4, 'Small sample, so treat the tier as rough.'))
     out.sort(key=lambda x: -x[0])
     return ' '.join(t for _, t in out[:2])
-for L in out.values():
-    for e in L: e['note'] = note(e)
-
 # ---------- site grading (rank correlation of letters with win rate vs popularity, Diamond+) ----------
 grade = []
 ref = {}
@@ -534,6 +532,12 @@ for site in ['U.GG', 'Blitz', 'dpm.lol', 'League of Graphs', 'Mobalytics experts
                     tv.append(LV[x.tier]); wr.append(ref[(role, c)][0]); lp.append(ref[(role, c)][1]); sd_.append(float(dl[c])); od.append(ref[(role, c)][0])
         corr_num = round(float(np.corrcoef(sd_, od)[0, 1]), 2) if len(sd_) > 10 else None
     grade.append([site, round(spearmanr(tv, wr).correlation, 2), round(spearmanr(tv, lp).correlation, 2), corr_num, len(tv)])
+
+# notes: 'Sites disagree' only counts sites whose letters follow win rate (grade r >= 0.3). METAsrc and the Mobalytics
+# expert list rank mostly by popularity (r about 0 or below against win rate, 0.7 to 0.95 against pick rate), so their S is not a strength claim.
+TRUST = {g[0] for g in grade if g[1] is not None and g[1] >= .3}
+for L in out.values():
+    for e in L: e['note'] = note(e)
 
 # ---------- backtest: does last patch predict this patch for champions that were not changed? ----------
 bt = pd.DataFrame(prev_cmp, columns=['role', 'c', 'prev_raw', 'prev_sh', 'cur_raw', 'n_prev', 'n_cur', 'sd_prev'])

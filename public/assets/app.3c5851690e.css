@@ -494,7 +494,7 @@ button.irow{cursor:pointer;transition:background .15s}button.irow:hover{backgrou
 .xmore:hover{text-decoration:underline;text-underline-offset:3px}
 /* homepage: Strongest picks spans the full width on its own row, the four lists share the row below.
    Cards only stretch within a row of lists, never to match the chip card. */
-.ins4.all{grid-template-columns:repeat(4,minmax(0,1fr))}.ins4.all>.xsc{grid-column:1/-1}
+.ins4.all{grid-template-columns:repeat(4,minmax(0,1fr))}.ins4.all>.xsc{grid-column:1/-1}@media(min-width:1181px){.ins4.all:has(>#nextc[hidden]){grid-template-columns:repeat(3,minmax(0,1fr))}}
 .xsl{display:flex;flex-wrap:wrap;gap:8px}
 @media(max-width:1180px){.ins4.all{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.ins4.all{grid-template-columns:minmax(0,1fr)}.ins4.all>.xsc{grid-column:auto}

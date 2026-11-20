@@ -12,7 +12,8 @@ const TIERS=[['Z','Outlier'],['S',''],['A',''],['B',''],['C',''],['D','']];
 let RX=false;   // the off-role row (R) shows its strongest four until opened
 const RKS=[['e','Emerald+'],['d','Diamond+'],['m','Master+']],RGS=[['all','All'],['euw','EUW'],['kr','KR'],['na','NA']];
 const RN=Object.fromEntries(RKS),GN={all:'All regions',euw:'EUW',kr:'KR',na:'NA'};
-const META=CUR._meta;let ARCH=null;const DOC=PAGE==="method"||PAGE==="patch";
+const META=CUR._meta;let ARCH=null;const PP=()=>(ARCH&&ARCH.prev_patch)||META.prev_patch;const NX=()=>(ARCH?ARCH.next:META.next)||{patch:'',date:'',roles:{}};   // the patch an archived list compares with
+const DOC=PAGE==="method"||PAGE==="patch";
 // pages carry one role; the rest of the patch loads on demand (and quietly after the first render)
 let FULLP=null;
 function ensureFull(){if(!CUR._meta.part)return Promise.resolve();return FULLP||(FULLP=fetch(SITE+'data/'+META.patch+'.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(j=>{for(const [r] of ROLES)if(!CUR[r])CUR[r]=j[r];CUR._meta.part=false;}).catch(()=>{FULLP=null;}));}
@@ -57,7 +58,7 @@ const hit=c=>{if(!q)return true;const k=slug(q);return !k||slug(c).includes(k)||
 const starts=c=>{const k=slug(q);return slug(c).startsWith(k)||ALIAS[k]===c;};
 const pic=(c,cl='pic')=>`<img class="${cl}" src="${IMGBASE}${slug(c)}.webp" alt="" width="64" height="64" loading="lazy" decoding="async" onerror="this.remove()">`;
 const LIM=()=>!!(ARCH&&ARCH.kind==='limited');
-function tri(d){if(d.tr==null||Math.abs(d.tr)<.6||chance(d)||VK()!=='E')return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${META.prev_patch}">${up?'↑':'↓'}</span>`;}
+function tri(d){if(d.tr==null||Math.abs(d.tr)<.6||chance(d)||VK()!=='E')return '';const up=d.tr>0;return `<span class="tri ${up?'up':'dn'}" title="${up?'Up':'Down'} ${Math.abs(d.tr).toFixed(1)} since ${PP()}">${up?'↑':'↓'}</span>`;}
 // the strip under the controls: when the key no longer fits next to the view chip, drop its first, longest line
 function fitStrip(){const h=document.querySelector('.hintline'),l=$('legend'),g=$('gbtn');if(!h||!l||!g)return;h.classList.remove('tight');if(!l.hidden&&l.offsetTop>=g.offsetTop+g.offsetHeight-2)h.classList.add('tight');}
 function renderControls(){if(!DATA[role])return;
@@ -83,7 +84,7 @@ function renderTable(){if(!DATA[role])return;
   const list=DATA[role],lim=LIM();
   // the three ranks of the current region side by side; the active one carries the ± range
   const rcols=lim?[['r_e','Score']]:RKS.map(([r,n])=>['r_'+r,n]);
-  const cols=[['c','Champion'],['t','Tier'],...rcols,...(lim||VK()!=='E'?[]:[['tr','Since '+META.prev_patch]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games'],...(lim?[]:[['ctr','Counters']])];
+  const cols=[['c','Champion'],['t','Tier'],...rcols,...(lim||VK()!=='E'?[]:[['tr','Since '+PP()]]),['wr','Win %'],['pick','Pick %'],['ban','Ban %'],['games','Games'],...(lim?[]:[['ctr','Counters']])];
   const NA='<span class="mu">–</span>';
   const SC={wr:'wr',pick:'pick',ban:'ban',games:'n'};
   const sk=sortK==='cur'?'r_'+R():sortK;
@@ -196,7 +197,7 @@ function renderPanel(){if(!DATA[role])return;
   <div class="ptab" data-pt="ov"${PT==='ov'?'':' hidden'}>
   ${d.note?`<p class="note">${d.note}</p>`:''}
   ${lim?`<p class="cap">Older patches keep Global Emerald+ only.</p>`:`<p class="cap gcap">Every rank and region <span class="mu">tap one to show that list</span></p>${grid}`}
-  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch}: ${d.nxt}.${nlink(META.next.patch,d.c)}</p>`:''}
+  ${histHTML(d,tr)||tr}${d.ch&&!ARCH?`<p class="nx ${d.ch[0]}">${CHW[d.ch[0]]||'Changed'} in ${META.patch}: ${d.ch[1]}.${nlink(META.patch,d.c)}</p>`:''}${d.it&&!ARCH?d.it.map(([n,k,t])=>`<p class="nx ${k}">${n}, one of its core items, ${ITW[k]||'changed'} in ${META.patch}: ${t}.${nlink(META.patch,n,1)}</p>`).join(''):''}${d.nx?`<p class="nx ${d.nx}">${d.nx==='buff'?'Buff':'Nerf'} coming in ${NX().patch}: ${d.nxt}.${nlink(NX().patch,d.c)}</p>`:''}
   ${glHTML(d)}
   ${sites?`<div class="sites"><span class="sl">Other sites, Diamond+</span>${sites}</div>`:''}</div>
   ${BD?`<div class="ptab" data-pt="bd"${PT==='bd'?'':' hidden'}>${BD}</div>`:''}
@@ -240,9 +241,9 @@ const CHW={buff:'Buffed',nerf:'Nerfed'};
 const BDG={buff:'<path d="M5 1.5 9 8H1z"/>',nerf:'<path d="M1 2h8L5 8.5z"/>',trap:'<path d="M4 1h2l-.3 5.2H4.3zM4.1 7.3h1.8V9H4.1z"/>'};
 const badge=(k,t,lab)=>`<span class="bdg ${k}" title="${t}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[k]}</svg><span class="sr">${lab}</span></span>`;
 // next-patch change and "trap" sit as small marks on the portrait corner, so names stay on one line
-const nxTag=(d,cl='')=>`<span class="nxp ${d.nx}${cl}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[d.nx]}</svg>${META.next.patch}<span class="sr"> ${d.nx} coming</span></span>`;
-const badges=d=>(d.nx&&META.next?nxTag(d):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
-const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${META.next.patch} (${META.next.date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
+const nxTag=(d,cl='')=>`<span class="nxp ${d.nx}${cl}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${NX().patch} (${NX().date})${d.nxt?': '+d.nxt:''}"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG[d.nx]}</svg>${NX().patch}<span class="sr"> ${d.nx} coming</span></span>`;
+const badges=d=>(d.nx&&NX().patch?nxTag(d):'')+(isTrap(d)?badge('trap','Trap: picked a lot, still losing','trap'):'');
+const nxFlag=d=>`<span class="flag ${d.nx}" title="${d.nx==='buff'?'Buff':'Nerf'} coming in ${NX().patch} (${NX().date})${d.nxt?': '+d.nxt:''}">${d.nx} soon</span>`;
 // links to the patch notes page when it has the champion or item
 const nlink=(p,c,item)=>((META.notes||{})[p]||[]).includes(c)?` <a class="nxa" href="${SITE}patch/${p}/${item?'i-':''}${slug(c)}/">All numbers</a>`:'';   // the change's own page: its address is the link to share
 const chLine=d=>d.ch?`${CHW[d.ch[0]]||'Changed'}: ${d.ch[1]}`:'';
@@ -389,8 +390,8 @@ function renderSide(){if(!DATA[role])return;
   $('bans').innerHTML=bans.sort((a,b)=>b[2]-a[2]).slice(0,6).map(([r,d,,sub])=>row(r,d,sub,fmt(vv(d)),'pos')).join('')||none;
   $('bansh').innerHTML=`Best bans <span class="vn">${VN}</span>`;$('trapsh').innerHTML=`Popular, but losing <span class="vn">${VN}</span>`;
   const mv=Object.values(items.filter(([r,d])=>d.tr!=null&&d.pick>=1&&Math.abs(d.tr)>=.4&&!chance(d)).reduce((o,x)=>{const k=x[1].c;if(!o[k]||Math.abs(x[1].tr)>Math.abs(o[k][1].tr))o[k]=x;return o;},{})).sort((a,b)=>b[1].tr-a[1].tr);
-  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')+(mv.length&&mv.length<4?`<li class="none">Everyone else moved too little since ${META.prev_patch} to be sure it isn't luck.</li>`:'')||'<li class="none">No big moves this patch.</li>';
-  $('movh').textContent=`Moved most since ${META.prev_patch}`;
+  $('movers').innerHTML=[...mv.filter(x=>x[1].tr>0).slice(0,3),...mv.filter(x=>x[1].tr<0).slice(-3)].map(([r,d])=>row(r,d,`${rl(r)}${chLine(d)||itLine(d)||(s=>s&&s[0].toUpperCase()+s.slice(1))(pkShift(d))||(chance(d)?'Too small to be sure':`now ${d.t} in Emerald+ · ${fmt(d.score)}`)}`,`${d.tr>0?'↑':'↓'} ${fmt(d.tr)}`,d.tr>0?'pos':'neg')).join('')+(mv.length&&mv.length<4?`<li class="none">Everyone else moved too little since ${PP()} to be sure it isn't luck.</li>`:'')||'<li class="none">No big moves this patch.</li>';
+  $('movh').textContent=`Moved most since ${PP()}`;
   $('movc').hidden=!!ARCH;
   // all roles: skip entries whose champions are already listed (the same change shows up in several roles), show the first six
   const seen=new Set(),nx=(ALL?ROLES.map(([r])=>r):[role]).flatMap(r=>(NEXT[r]||[]).map(x=>[r,...x])).filter(([r,c])=>{const ns=c.split(',').map(x=>x.trim());if(ns.every(n=>seen.has(n)))return false;ns.forEach(n=>seen.add(n));return true;});
@@ -475,7 +476,7 @@ document.addEventListener('click',e=>{
   if(t.closest('#filt')){const b=$('bar'),o=!b.classList.contains('open');b.classList.toggle('open',o);$('filt').setAttribute('aria-expanded',o);return;}
   const pb=t.closest('[data-patch]');if(pb){setPatch(pb.dataset.patch);return;}
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
-  if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);showPick();return;}
+  if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('q').blur();$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);showPick();return;}
   if(r){navRole(r.dataset.r);return;}
   if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}$('board-sec').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
@@ -506,7 +507,7 @@ async function setPatch(p){
   if(!p||p===META.patch){DATA=CUR;ARCH=null;}else{try{const r=await fetch(SITE+'data/'+p+'.json');if(!r.ok)throw 0;DATA=await r.json();ARCH=DATA._meta;}catch(e){DATA=CUR;ARCH=null;}}
   $('patchsel').value=ARCH?ARCH.patch:'';
   const u=new URL(location.href);if(ARCH)u.searchParams.set('patch',ARCH.patch);else u.searchParams.delete('patch');try{history.replaceState(null,'',u);}catch(e){}
-  document.body.classList.toggle('archived',!!ARCH);
+  document.body.classList.toggle('archived',!!ARCH);setLegend();
   $('arch').hidden=!ARCH;
   if(ARCH)$('arch').innerHTML=`<span>You're looking at <b>patch ${ARCH.patch}</b>${ARCH.kind==='limited'?' (Global Emerald+ only, older patches keep less data)':''}.</span><button type="button" data-patch="">Back to ${META.patch}</button>`;
   if(!DATA[role].some(d=>d.c===pick))pick=null;
@@ -514,7 +515,7 @@ async function setPatch(p){
 }
 const isRole=h=>ROLES.some(([k])=>k===h);
 const roleFromPath=()=>{const m=location.pathname.match(/\/(top|jungle|mid|adc|support)\/(?:[a-z0-9]+\/?)?$/);return m?m[1]:null;};
-const champFromHash=()=>{const h=decodeURIComponent(location.hash.slice(1)).toLowerCase();const d=DATA[role].find(x=>slug(x.c)===h);return d?d.c:null;};
+const champFromHash=()=>{const h=decodeURIComponent(location.hash.slice(1)).toLowerCase();const d=(DATA[role]||[]).find(x=>slug(x.c)===h);return d?d.c:null;};
 function navRole(r,champ){
   if(PAGE==='champ'){location.href=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');return;}
   role=r;pick=champ||null;
@@ -561,12 +562,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('.pn-share');if(!
 if(mine.length){const el=$('pnmine');el.hidden=false;el.innerHTML='★ Your starred champions in this patch: '+mine.map(a=>`<a href="${a.getAttribute('href')}">${a.dataset.pc}</a>`).join(', ')+'.';}
 }else if(PAGE==='method'){
 $('sites').innerHTML=SITES.map(s=>`<tr><td data-l="Site"><b>${s[1]?`<a href="${s[1]}" rel="noopener">${s[0]}</a>`:s[0]}</b></td><td data-l="Home">${s[2]}</td><td data-l="Read">${s[3]}</td><td data-l="Verdict">${s[4]}</td></tr>`).join('');
-{const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). Pulling toward zero made last patch a better guess (error ${b.mse_shrunk} vs ${b.mse_raw}).${b.cover!=null?` And the ± range: ${b.cover}% of them landed inside last patch's range. With nothing but luck moving them that would be about 90%, so the rest is real movement from item changes and the meta, which no ± can see coming.`:''}`;}
+{const b=META.backtest;$('btline').textContent=`Check: for the ${b.n} champion-role pairs that were not changed this patch, last patch's numbers line up with this patch's at r = ${b.r.toFixed(2)} (1 = perfect). ${(()=>{const d=b.mse_raw-b.mse_shrunk,g=`average squared gap ${b.mse_shrunk} vs ${b.mse_raw} unpulled, most of it this patch's own sampling noise`;return Math.abs(d)<.01?`Pulling last patch toward zero first barely changed how well it predicts (${g}), because last patch had so many games.`:d>0?`Pulling last patch toward zero first made it a better guess (${g}).`:`Pulling last patch toward zero first made it a slightly worse guess this time (${g}).`;})()}${b.cover!=null?` And the ± range: ${b.cover}% of them landed inside last patch's range. With nothing but luck moving them that would be about 90%, so the rest is real movement from item changes and the meta, which no ± can see coming.`:''}`;}
 renderGrade();
 }else{
 new ResizeObserver(()=>{if(mode==='chart')drawMap();}).observe($('board'));
 addEventListener('resize',fitStrip);if(document.fonts)document.fonts.ready.then(fitStrip);
-$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${META.prev_patch}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${META.prev_patch}</span>${META.next&&Object.values(META.next.roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${META.next.patch} (${META.next.date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${META.next.patch}</span> = buff or nerf on ${META.next.date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;
+function setLegend(){$('legend').innerHTML=`<span class="k kt" title="A score of +1.2 means 1.2 percentage points more wins than the average pick in this role">Score = win rate above the role average</span><span class="k" title="Few games, so the score could be off"><b class="lowsc">Grey score</b> = few games</span><span class="k" title="The score clearly moved since ${PP()}"><b class="tri up">↑</b><b class="tri dn">↓</b> = moved since ${PP()}</span>${NX().patch&&Object.values(NX().roles||{}).some(a=>a&&a.length)?`<span class="k" title="Buff or nerf coming in ${NX().patch} (${NX().date})"><span class="nxp buff"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.buff}</svg>${NX().patch}</span> = buff or nerf on ${NX().date}</span>`:''}<span class="k" title="Picked a lot, still losing"><span class="bdg trap"><svg viewBox="0 0 10 10" aria-hidden="true">${BDG.trap}</svg></span> = popular but losing</span>`;}setLegend();
 {const bd=$('board');if(bd)new ResizeObserver(()=>document.documentElement.style.setProperty('--bh',Math.max(bd.offsetHeight,400)+'px')).observe(bd);}
 {const bar=$('bar'),setH=()=>document.documentElement.style.setProperty('--barh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');new ResizeObserver(()=>{setH();fitTable();$('q').placeholder=$('q').clientWidth<190?'Search':'Find a champion';}).observe(bar);setH();addEventListener('resize',fitTable);}
 role=INIT_ROLE;

@@ -193,6 +193,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    - Check after scoring: `python3 pipeline/scripts/verify_views.py` (independent recompute, must print 0 mismatches) and
      that the takes in patch.json still match the Emerald+ list and what they say about Diamond+/Master+.
    - Notes are written by update.py from the numbers. Change the wording rules there, not by hand.
+     "Sites disagree" only compares sites whose letters follow win rate (method page grade r >= 0.3, `TRUST`); METAsrc and
+     the Mobalytics expert list rank by popularity, so their S is no strength claim (20 Nov 2026).
    - Also collect OP.GG EUW, KR and NA Diamond+ and Master+ (`opgg_{euw,kr,na}_{d,m}_{role}.csv`), the previous patch
      Global Emerald+ (`data/prev/`), and the "Total analyzed samples" number for every OP.GG dataset into samples.json.
      Every one of these is a view of its own (see Views above).
