@@ -179,7 +179,7 @@ function renderBoard(){if(!DATA[role])return;
   $('board').innerHTML=TIERS.map(([t,cap],ti)=>{
     const cs=list.filter(d=>tierOf(d)===t&&!isRare(d)).sort((a,b)=>(SV(b)??-99)-(SV(a)??-99));
     if(!cs.length&&t==='Z')return '';
-    const size=t==='Z'||t==='S'?'big':t==='C'||t==='D'?'sm':'';
+    const size=t==='Z'?'big':t==='S'?'md':t==='C'||t==='D'?'sm':'';
     const body=cs.length?cs.map(d=>chipHTML(d,false,size)).join(''):'<span class="empty">None</span>';
     return `<div class="row t-${t}" style="--T:var(${colT(t)})"><div class="lab"${LABT[t]?` title="${LABT[t]}"`:''}><span class="lt">${t}</span>${cap?`<small>${cap}</small>`:''}</div><div class="chips${size==='big'?' bigs':size==='sm'?' smalls':''}">${body}</div></div>`;
   }).join('')+(()=>{   // off-role picks under 1.5%: one row, best first, each with its letter by the same lines (main roles stay above)

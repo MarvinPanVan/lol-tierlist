@@ -141,9 +141,11 @@ def head_home(root):
     hl = P.get('headline', '')
     # the three cards appear in the order the headline names them, so the text and the cards match
     top3 = sorted(strong[:3], key=lambda t: (hl.find(t[1]['c']) if t[1]['c'] in hl else 999))
-    lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
-                 f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="--T:{TV(e["t"])}">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in top3)
+    # the leaders as three short rows (portrait, name, role, score); the Z cards in the list below are the page's big pictures
+    lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--R:var(--R{r})">'
+                 f'<img class="pic" src="/img/tile/{slug(e["c"])}.webp" alt="" width="44" height="44">'
+                 f'<span class="lb"><b>{E(e["c"])}</b><span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}, {fx(e["pick"])}% pick</span></span>'
+                 f'<span class="ls"><span class="tg" style="--T:{TV(e["t"])}">{e["t"]}</span>{f1(e["score"])}</span></a>' for r, e in top3)
     nx = P.get('next', {})
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
