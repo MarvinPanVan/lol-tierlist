@@ -11,6 +11,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   (`public/assets/app.<hash>.css/js`); each page only keeps a small inline config (`window.TL`).
   Look: dark by default (light only if the visitor picks it), gold accent, own position icons, tinted tier rows,
   Z/S as big art cards (a lone Z card takes the whole row), A/B normal chips, C/D compact.
+  Tried and rejected (visual test 21 Nov 2026, branch `visual-test`, never live): no box behind each champion or around the
+  tier letter, S without art, three small leader rows instead of the homepage art cards, Barlow Condensed headings, plain
+  side card without inner boxes, neutral instead of gold selection. Marvin preferred the live look in every point: the boxes
+  pair each name with its score and group the side card's parts, and the art cards and old fonts looked better. Don't
+  restyle on principles like "fewer boxes" or "fewer images"; only change the look for a problem he can see, and show him first.
   Tier colors (`--Z`..`--P` in the template, also `TCOL` in build.py, `COL` in assets.py and the logo `mark.svg`): one muted
   ramp, Z gold, S amber, A sand, B sage, C teal-slate, D steel blue, P lilac apart. Each tier is strictly darker than
   the one above in dark mode (OKLCH lightness, about 0.06 apart), so no lower tier outshines a higher one, and B/C/D have
