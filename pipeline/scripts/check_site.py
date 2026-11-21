@@ -45,13 +45,19 @@ with sync_playwright() as p:
     pg = b.new_page(viewport={'width': 1440, 'height': 900}); errs = []
     pg.on('pageerror', lambda e: errs.append((pg.url, str(e))))
     bad = []; pg.on('response', lambda r: bad.append((r.status, r.url)) if r.status >= 400 and not r.url.endswith('/nope') else None)
-    # 2) the chart can always be left: header link back, and a reload never comes back as the chart
+    # 2) the chart can always be left with the header link, and the address always matches the layout
     pg.goto(B + '/adc/'); pg.wait_for_timeout(900)
     pg.click('nav.links a[data-mode=chart]'); pg.wait_for_timeout(500)
     pg.click('nav.links a[data-go=board]'); pg.wait_for_timeout(500)
     if pg.evaluate("document.querySelectorAll('#board .chip').length") == 0: problems.append('"Tier list" link does not leave the chart')
-    pg.click('nav.links a[data-mode=chart]'); pg.wait_for_timeout(400); pg.reload(); pg.wait_for_timeout(1200)
-    if pg.evaluate("document.querySelectorAll('#board .chip').length") == 0: problems.append('the chart comes back after a reload')
+    # the address follows the layout: a reload keeps the chart, a fresh visit without ?show=chart opens the list
+    if '?' in pg.url or '#board-sec' in pg.url: problems.append(f'address not clean after leaving the chart: {pg.url}')
+    pg.click('nav.links a[data-mode=chart]'); pg.wait_for_timeout(400)
+    if 'show=chart' not in pg.url: problems.append(f'address does not show the chart: {pg.url}')
+    pg.reload(); pg.wait_for_timeout(1200)
+    if not pg.query_selector('#sv'): problems.append('a reload in the chart does not keep the chart')
+    pg.goto(pg.url.split('?')[0]); pg.wait_for_timeout(1200)
+    if pg.evaluate("document.querySelectorAll('#board .chip').length") == 0: problems.append('the chart is remembered on a fresh visit')
     # counter-pick finder: opens, lists picks for an enemy, and the way back works
     pg.goto(B + '/top/'); pg.wait_for_timeout(900)
     if pg.query_selector('nav.links a[data-mode=counter]'):

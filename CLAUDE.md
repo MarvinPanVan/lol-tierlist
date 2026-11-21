@@ -113,8 +113,11 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - Art: `public/img/tile/<slug>.webp` (square face crops) and `public/img/splash/<slug>.webp` (960x540), downloaded by
   the icons workflow (only missing files). In CSS custom properties use root paths (`/img/...`), because relative
   url() inside a CSS variable resolves against the stylesheet folder.
-- URLs: `/mid/` is the mid page, `#katarina` selects a champion, `?patch=26.21` opens an archived patch. Old `/#mid`
-  links still work.
+- URLs: `/mid/` is the mid page, `#katarina` selects a champion, `?patch=26.21` opens an archived patch,
+  `?show=table|chart|counter` the layout (Tiers has none). Every layout switch goes through `setMode()`, which updates the
+  address with replaceState (`syncURL()`), so a reload or a shared link shows the same thing (Marvin, 21 Nov 2026: reloading
+  after leaving the chart sent you back to it). `#board-sec` is only a jump mark for links from other pages and is removed on
+  arrival. Back and Forward restore patch, role, champion and layout (`popstate`). Old `/#mid` links still work.
 - Patch archive: `public/data/<patch>.json` per patch and `patches.json` (newest 6). build.py always writes the
   current patch in full, so when a new patch comes in, the old file simply stays as the archive. Do not delete them.
   `pipeline/archive_limited.py <patch> <code>` makes a reduced Global-only archive from `data/prev/` (used for 26.21,

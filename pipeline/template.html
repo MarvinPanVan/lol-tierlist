@@ -960,7 +960,7 @@ details.brow{display:block}
 </head>
 <body>
 <div class="top" id="top"><div class="wrap"><a class="brand" href="__ROOT__"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16181d" stroke="#2c3038" stroke-width="2"/><rect x="10" y="10" width="11" height="9" rx="2.5" fill="#fbcd68"/><rect x="24" y="10" width="30" height="9" rx="2.5" fill="#fbcd68" opacity="1"/><rect x="10" y="22" width="11" height="9" rx="2.5" fill="#fbaa71"/><rect x="24" y="22" width="22" height="9" rx="2.5" fill="#fbcd68" opacity=".75"/><rect x="10" y="34" width="11" height="9" rx="2.5" fill="#beaa85"/><rect x="24" y="34" width="15" height="9" rx="2.5" fill="#fbcd68" opacity=".5"/><rect x="10" y="46" width="11" height="9" rx="2.5" fill="#7fa48f"/><rect x="24" y="46" width="9" height="9" rx="2.5" fill="#fbcd68" opacity=".3"/></svg>LoL Tier List</a><span class="pill">Patch 26.23</span>
-<!--B--><nav class="links" aria-label="Sections"><a href="#board-sec" data-go="board">Tier list</a><a href="#board-sec" data-mode="chart">Pick vs win</a><a href="#board-sec" data-mode="counter">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a href="__ROOT__?show=chart#board-sec">Pick vs win</a><a href="__ROOT__?show=counter#board-sec">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/" aria-current="page">How it works</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a href="__ROOT__?show=chart#board-sec">Pick vs win</a><a href="__ROOT__?show=counter#board-sec">Counter pick</a><a href="__ROOT__patch/" aria-current="page">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
+<!--B--><nav class="links" aria-label="Sections"><a href="./" data-go="board">Tier list</a><a href="?show=chart" data-mode="chart">Pick vs win</a><a href="?show=counter" data-mode="counter">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/B--><!--M--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a href="__ROOT__?show=chart#board-sec">Pick vs win</a><a href="__ROOT__?show=counter#board-sec">Counter pick</a><a href="__ROOT__patch/">Patch notes</a><a href="__ROOT__method/" aria-current="page">How it works</a></nav><!--/M--><!--N--><nav class="links" aria-label="Sections"><a href="__ROOT__">Tier list</a><a href="__ROOT__?show=chart#board-sec">Pick vs win</a><a href="__ROOT__?show=counter#board-sec">Counter pick</a><a href="__ROOT__patch/" aria-current="page">Patch notes</a><a href="__ROOT__method/">How it works</a></nav><!--/N--><button type="button" class="theme" id="theme" aria-label="Switch between light and dark mode" title="Light or dark mode"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></g></svg></button></div></div>
 <!--B-->__HEAD__
 
 <nav class="bar" id="bar" aria-label="Tier list controls">
@@ -1112,8 +1112,15 @@ const fmt=v=>{if(v==null)return 'n/a';const r=Math.round(v*10)/10;return (r>0?'+
 const colT=t=>{t=(t||'').replace('+','');return {Z:'--Z',S:'--S',A:'--A',B:'--B',C:'--C',D:'--D',P:'--P'}[t]||'--E';};
 const narrow=()=>matchMedia('(max-width:980px)').matches;
 let role='top',rank='e',reg='all',pick=null,q='',mode='tiers',sortK='cur',sortD=-1;
-try{const s=localStorage.getItem('tl-mode');if(s==='tiers'||s==='table')mode=s;}catch(e){}
-{const sh=new URLSearchParams(location.search).get('show');if(sh==='chart'||sh==='counter')mode=sh;}   // links from other pages: /?show=chart   // the chart is never remembered: the list is the page
+// layout in the address (?show=table|chart|counter, nothing for Tiers), so a reload or a shared link opens the same
+// layout. Tiers and Table are also remembered between visits, the chart and counter finder never (21 Nov 2026).
+const MODES=['tiers','table','chart','counter'];
+const storedMode=()=>{try{return localStorage.getItem('tl-mode')==='table'?'table':'tiers';}catch(e){return 'tiers';}};
+const urlMode=()=>{const sh=new URLSearchParams(location.search).get('show');return MODES.includes(sh)?sh:storedMode();};
+mode=urlMode();
+// write the layout into the address and drop the #board-sec jump mark, without a new history step
+const syncURL=()=>{try{const u=new URL(location.href);if(mode==='tiers')u.searchParams.delete('show');else u.searchParams.set('show',mode);if(u.hash==='#board-sec')u.hash='';if(u.href!==location.href)history.replaceState(null,'',u);}catch(e){}};
+function setMode(m){mode=m;try{if(m==='tiers'||m==='table')localStorage.setItem('tl-mode',m);}catch(e){}syncURL();renderControls();renderBoard();}
 try{const s=localStorage.getItem('tl-view');if(s){const [a,b]=s.split('|');if(RN[a])rank=a;if(GN[b])reg=b;}else if(localStorage.getItem('tl-lens')==='hi')rank='d';}catch(e){}
 // every view (rank x region) is scored the same way; older limited archives only have Emerald+, all regions
 const R=()=>LIM()?'e':rank,G=()=>LIM()?'all':reg;
@@ -1579,17 +1586,17 @@ document.addEventListener('click',e=>{
   const r=t.closest('[data-r]'),vr=t.closest('[data-rk],[data-rg]'),c=t.closest('[data-c]'),j=t.closest('[data-jr]');
   if(j){if(j.tagName==='A'){if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();}$('q').value='';q='';$('q').blur();$('res').style.display='none';navRole(j.dataset.jr,j.dataset.jc);openPanel(true);showPick();return;}
   if(r){navRole(r.dataset.r);return;}
-  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter'){mode='tiers';renderControls();renderBoard();}toBoard();return;}
+  if(t.closest('[data-go]')){e.preventDefault();if(mode==='chart'||mode==='counter')setMode('tiers');toBoard();return;}
   if(t.closest('#gbtn')){toggleGuide();return;}
   {const ce=t.closest('[data-cpe]');if(ce){CPE=ce.dataset.cpe;CPall=false;renderCounter();const r_=$('cpres');if(r_)r_.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});return;}}
   if(t.closest('#cpmore')){CPall=!CPall;renderCounter();return;}
-  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;mode='counter';renderControls();renderBoard();if(narrow())openPanel(false);toBoard();return;}}
+  {const cg=t.closest('[data-cpgo]');if(cg){CPE=cg.dataset.cpgo;CPall=false;setMode('counter');if(narrow())openPanel(false);toBoard();return;}}
   if(t.closest('#cpchange')){CPE='';renderCounter();return;}
   if(t.closest('#nxmore')){const x=$('next'),all=!x.classList.contains('all'),b=$('nxmore');x.classList.toggle('all',all);b.setAttribute('aria-expanded',all);b.textContent=all?'Show fewer':`Show all ${b.dataset.n}`;return;}
   if(t.closest('#xmore')){const x=$('xs'),all=!x.classList.contains('all');x.classList.toggle('all',all);$('xmore').setAttribute('aria-expanded',all);$('xmore').textContent=all?'Show fewer':`Show all ${$('xmore').dataset.n||x.children.length+3}`;return;}
   if(vr&&!vr.disabled){setView(vr.dataset.rk,vr.dataset.rg);return;}
   const md=t.closest('[data-mode]'),so=t.closest('[data-sort]');
-  if(md){if(md.tagName==='A')e.preventDefault();mode=md.dataset.mode;try{if(mode==='tiers'||mode==='table')localStorage.setItem('tl-mode',mode);}catch(e2){}renderControls();renderBoard();if(md.tagName==='A')toBoard();return;}
+  if(md){if(md.tagName==='A')e.preventDefault();setMode(md.dataset.mode);if(md.tagName==='A')toBoard();return;}
   if(so){const c=so.dataset.sort;if(sortK===c)sortD=-sortD;else{sortK=c;sortD=c==='c'?1:-1;}renderBoard();return;}
   if(c){select(c.dataset.c,true);if(!c.closest('#board,#panel'))showPick();return;}
   if(t.id==='x'||t.id==='scrim'){openPanel(false);return;}
@@ -1622,7 +1629,7 @@ function navRole(r,champ){
   role=r;pick=champ||null;
   if(PAGE==='home'){try{history.replaceState(null,'',SITE+location.search+'#'+(champ?slug(champ):r));}catch(e){}render();return;}
   const url=SITE+r+'/'+location.search+(champ?'#'+slug(champ):'');try{history.pushState(null,'',url);}catch(e){try{history.replaceState(null,'','#'+(champ?slug(champ):r));}catch(e2){}}render();}
-function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])fromURL();});return;}
+function fromURL(){mode=urlMode();const h=location.hash.slice(1);role=roleFromPath()||(isRole(h)?h:null)||role;if(!DATA[role]){ensureFull().then(()=>{if(DATA[role])fromURL();});return;}
   let c=champFromHash();
   // homepage: a #champion link can belong to another role than the one remembered; look it up once every role is loaded
   if(!c&&PAGE==='home'&&h&&!isRole(h)){
@@ -1630,7 +1637,8 @@ function fromURL(){const h=location.hash.slice(1);role=roleFromPath()||(isRole(h
     const want=decodeURIComponent(h).toLowerCase(),r=ROLES.map(([k])=>k).find(k=>(DATA[k]||[]).some(x=>slug(x.c)===want));if(r){role=r;c=champFromHash();}}
   pick=c||(PAGE==='champ'&&INIT_CHAMP?INIT_CHAMP:pick);
   render();}
-addEventListener('popstate',()=>{if($('board'))fromURL();});
+// Back and Forward: restore that address's patch first (an archive and the current patch can sit in the same history), then role, champion and layout
+addEventListener('popstate',()=>{if(!$('board'))return;const want=new URLSearchParams(location.search).get('patch')||'';if(want!==(ARCH?ARCH.patch:''))setPatch(want).then(fromURL);else fromURL();});
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(isRole(h)){navRole(h);return;}const c=champFromHash();if(c&&c!==pick)select(c,false);});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const next=dark?'light':'dark';r.dataset.theme=next;try{localStorage.setItem('tl-theme',next);}catch(e){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=next==='dark'?'#0b0c0f':'#f5f6f8';});
 // smooth open and close for expandable parts (details.sm-d, content in one .dc box); instant with reduced motion
@@ -1675,6 +1683,8 @@ role=INIT_ROLE;
 // the homepage always opens like a first visit (Top); #adc in the address picks a role. Drop the old remembered role.
 try{localStorage.removeItem('tl-role');}catch(e){}
 fromURL();
+if(location.hash==='#board-sec')$('board-sec').scrollIntoView();
+syncURL();
 sinceVisit();
 loadPatches();
 setTimeout(()=>('requestIdleCallback' in window?requestIdleCallback:setTimeout)(()=>ensureFull()),1500);
