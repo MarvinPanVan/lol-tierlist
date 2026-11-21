@@ -11,6 +11,9 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   (`public/assets/app.<hash>.css/js`); each page only keeps a small inline config (`window.TL`).
   Look: dark by default (light only if the visitor picks it), gold accent, own position icons, tinted tier rows,
   Z/S as big art cards (a lone Z card takes the whole row), A/B normal chips, C/D compact.
+  Big card art (both themes, art fix 21 Nov 2026): full strength in an area on the right, 60% of the card and at most 460px
+  (phones 50%), fading in from its left edge; so a card across the whole row shows the picture at its normal shape, not a
+  stretched strip, and the name and pick line stay on the plain card.
   Tried and rejected (visual test 21 Nov 2026, branch `visual-test`, never live): no box behind each champion or around the
   tier letter, S without art, three small leader rows instead of the homepage art cards, Barlow Condensed headings, plain
   side card without inner boxes, neutral instead of gold selection. Marvin preferred the live look in every point: the boxes

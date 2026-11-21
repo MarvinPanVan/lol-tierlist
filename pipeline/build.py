@@ -143,7 +143,7 @@ def head_home(root):
     top3 = sorted(strong[:3], key=lambda t: (hl.find(t[1]['c']) if t[1]['c'] in hl else 999))
     lc = ''.join(f'<a class="lead" href="{root}{r}/{slug(e["c"])}/" data-jr="{r}" data-jc="{E(e["c"])}" style="--art:url(/img/splash/{slug(e["c"])}.webp);--R:var(--R{r})">'
                  f'<span class="lr"><span class="ri">{RICON[r]}</span>{RNAME[r]}</span><span class="lb"><b>{E(e["c"])}</b>'
-                 f'<span><span class="tg" style="--T:{TV(e["t"])}">{e["t"]}</span> {f1(e["score"])} · {fx(e["pick"])}% pick</span></span></a>' for r, e in top3)
+                 f'<span><span class="tg" style="--T:{TV(e["t"])}">{e["t"]}</span><span>{f1(e["score"])}</span><span class="lpk">{fx(e["pick"])}% pick</span></span></span></a>' for r, e in top3)
     nx = P.get('next', {})
     pl = f'<a href="{root}patch/{PATCH}/">Patch {PATCH}</a>' if PATCH in NOTES else f'Patch {PATCH}'
     nl = (f'<a href="{root}patch/{nx["patch"]}/">Next patch on {E(nx.get("date", ""))}</a>' if nx.get('patch') in NOTES else f'Next patch on {E(nx.get("date", ""))}') if nx else ''
