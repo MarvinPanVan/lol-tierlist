@@ -24,7 +24,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   Side card (`renderPanel`): art header with two icon buttons (star, share), one stat strip, then tabs Overview (note,
   rank x region grid, trend, changes, game length, other sites), Build (most common build, OP.GG link) and Matchups (lane
   matchups, who beats X, duos for bot lane, one colour key). `PTAB` keeps the tab while clicking through champions; the
-  tab bar sticks while the card scrolls. CSS in one block at the end of the stylesheet ("side card, one system").
+  tab bar sticks while the card scrolls; a soft fade at its bottom edge shows there is more (`.panel::after`). The trend chart
+  plots the score the site showed for each patch (history.json = `score`), so it ends on the card's number. CSS in one block at the end of the stylesheet ("side card, one system").
   Avoid new short class names: three clashes happened on 15 Nov (.pw, .pn-st, .nx, .tbl). grep the template first.
   Scrolling on click (`showPick`): picking a champion from outside the list (header cards, lists below, search) leaves the
   page alone when the chip is already on screen, otherwise centres the chip. Patch notes: index links scroll to the card
@@ -34,7 +35,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
   Strip under the controls (`.hintline`): view chip on the left (`#vwn` view name, `#hint` short source, full sources in
   its title; click opens the rank/region guide), a short key in plain words, no sample numbers (`#legend`; it never changes, so it must not look like data; what the score means is in the guide's note), patch picker on the right. The view chip is plain text, not a box. Header links (Tier list, Pick vs win, Counter pick) switch the list in place and only scroll when the list is off screen (`toBoard`; Marvin, 20 Nov 2026). Page headers are plain HTML made by build.py.
   Tier list CSS is one block near the end of the stylesheet ("the tier list, one system"): every tier row uses the same
-  column grid (auto-fill, min 190px; phones 2 columns) so columns line up; Z/S cards span 2 columns with splash art.
+  column grid (auto-fill, min 190px; phones 2 columns) so columns line up. Z/S cards with splash art have their own grid
+  (auto-fit, min 400px, so at most two per line; a lone or last odd card fills the line; review 21 Nov 2026).
   Change it there, not with new overrides elsewhere. The Chart layout is never remembered between visits (only Tiers and
   Table are), and the header "Tier list" link switches back from the chart.
 - `pipeline/tiers.json` : the data for the current patch. Source of truth for what the site shows.
@@ -85,7 +87,8 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
 - `public/data/history.json` : Global Emerald+ score per champion for the last 12 archived patches, written by
   build.py. The panel shows a small chart once 3 or more patches exist.
 - Cloudflare Web Analytics is on for the Pages project (cookieless, injected by Cloudflare on deploy).
-- Every page has the same top menu (Tier list, Pick vs win, Counter pick, Patch notes, How it works); from other pages
+- Every page has the same top menu (Tier list, Pick vs win, Counter pick, Patch notes, How it works; under 900px the patch label
+  next to the logo hides, under 760px the links hide like on phones); from other pages
   the two layout links go to `/?show=chart` and `/?show=counter`.
 - Homepage: above the control bar is the patch story and stays fixed (Emerald+, all regions): a one-sentence data line,
   `headline`, `lede` and three art cards (the top three Z/S picks across roles, `strongest()` in build.py, shown in the

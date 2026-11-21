@@ -127,7 +127,7 @@ def slug(c): return re.sub(r'[^a-z0-9]', '', c.lower())
 E = html.escape
 UPD = P.get('updated', '')
 def dline(extra=''):
-    return f'<p class="dl">Patch {PATCH}, ranked solo/duo, updated {E(UPD)}.{extra}</p>'
+    return f'<p class="dl">Ranked solo/duo, updated {E(UPD)}.{extra}</p>'
 SHARE = '<button type="button" class="ext" data-share="">Share</button>'
 SHARE_ICO = '<button type="button" class="ext ico hico" data-share="" aria-label="Share this page" title="Share"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10M6 7l4-4 4 4M4 12v4h12v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
 def head_role(r):
@@ -157,7 +157,7 @@ def head_champ(r, e, root):
     tiers = ''.join(f'<span><b class="tg" style="--T:{tc(e["v"][k][2])}">{e["v"][k][2]}</b>{n} {f1(e["v"][k][0])}</span>' for k, n in RKN if k in e.get('v', {}))
     return (f'<header class="band head champ-head" style="--art:url(/img/splash/{s_}.webp)"><div class="wrap"><a class="crumb" href="../">← {RNAME[r]} tier list</a>'
             f'<div class="ch"><img class="pic big" src="{root}img/champ/{s_}.webp" alt="" width="72" height="72"><div><h1>{E(e["c"])}</h1>'
-            f'<p class="dl">{RNAME[r]}, patch {PATCH}: {e["games"]:,} games in Global Emerald+, updated {E(UPD)}.</p></div></div>'
+            f'<p class="dl">{RNAME[r]}, {e["games"]:,} Emerald+ games, updated {E(UPD)}.</p></div></div>'
             f'<div class="ctiers">{tiers}</div>'
             f'<p class="take">{E(e.get("note") or "")}</p><div class="hacts">{SHARE}</div></div></header>')
 
@@ -603,7 +603,7 @@ for p_ in hp:
     a = json.load(open(os.path.join(PUB, 'data', f'{p_}.json'), encoding='utf-8'))
     for r, _, _ in ROLES:
         for e in a.get(r, []):
-            H['roles'].setdefault(r, {}).setdefault(e['c'], [None] * len(hp))[hp.index(p_)] = e.get('g')
+            H['roles'].setdefault(r, {}).setdefault(e['c'], [None] * len(hp))[hp.index(p_)] = e.get('score', e.get('g'))   # the score the site showed, so the chart ends on the card's number
 json.dump(H, open(os.path.join(PUB, 'data', 'history.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
 write('404.html', f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Page not found | LoL Tier List</title><meta name="robots" content="noindex"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script>try{{document.documentElement.style.colorScheme=localStorage.getItem("tl-theme")==="light"?"light":"dark";}}catch(e){{document.documentElement.style.colorScheme="dark";}}</script>
