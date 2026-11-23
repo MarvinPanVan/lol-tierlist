@@ -24,15 +24,15 @@
   "roles": {}
  },
  "game_version": "16.23",
- "updated": "20 Nov 2026",
- "headline": "Kog'Maw, Ekko and Singed lead patch 26.23",
- "lede": "<b>35 of the 68</b> most-picked champions (5% or more of their role's games) win less than half of them. Read two and a half days into the patch: <b>about 400,000 Emerald+ games</b> from OP.GG plus four more stat sites at Diamond+, corrected for small samples and one-tricks.",
+ "updated": "23 Nov 2026",
+ "headline": "Kog'Maw, Annie and Ekko lead patch 26.23",
+ "lede": "<b>35 of the 65</b> most-picked champions (5% or more of their role's games) win less than half of them. OP.GG read five and a half days into the patch, <b>about a million Emerald+ games</b>, plus four more stat sites at Diamond+ from day two, corrected for small samples and one-tricks.",
  "takes": {
-  "top": "Singed (+2.0) and Kayle (+1.9) are the outliers, and Malphite is the only other S. Singed and Shen lead Diamond+, and only Urgot is S in Master+. K'Sante got buffed and gained the most since last patch, but he still loses more than any popular top laner, and Jayce and Yone are picked a lot and lose too.",
-  "jungle": "Zyra and Rek'Sai lead Emerald+ at +2.1, with Lillia and Wukong the other S picks, and no jungler is an outlier there. Nidalee is the outlier in Diamond+, and Nidalee and Zyra in Master+. Master Yi dropped the most after his nerf, and Lee Sin (14% of games) and Qiyana still lose.",
-  "mid": "Ekko is the only outlier, with Vex and Annie the S picks behind him. Katarina leads Diamond+, and Katarina, Vex and Zoe are the outliers in Master+. Most of this patch's changes hit mid: Mel and Galio gained the most since last patch, Syndra and LeBlanc dropped, and Viktor, Akali and Syndra are each in about 8% of games and lose.",
-  "adc": "Kog'Maw is the outlier at every rank, at +2.8 in Emerald+, and Draven is one too in Master+. Xayah is the only other S in Emerald+. Ezreal got buffed and went from 15% to 21% pick, and he still has the worst score of any popular ADC.",
-  "support": "No support is an outlier. Taric, Zilean, Rell and Braum are the S picks in Emerald+, with Janna, Sona, Leona and Rakan right behind, so pick what fits your bot laner. Janna and Rakan lead Diamond+, Rell leads Master+. Yuumi, Karma and Lux are popular and lose, and Bard is still D after his Q buff."
+  "top": "Kayle and Singed are the outliers, both at +2.0, and Kled is the only other S. Singed and Shen lead Diamond+, and no top laner is S in Master+, where Camille and Urgot lead at +1.1. K'Sante got buffed and gained the most since last patch, but he still loses more than any popular top laner, and Jayce and Yone are picked a lot and lose too.",
+  "jungle": "Zyra and Lillia lead Emerald+ at +2.0, with Rek'Sai and Wukong the other S picks, and no jungler is an outlier there. Nidalee is the outlier in Diamond+, and Nidalee and Zyra in Master+. Master Yi dropped the most after his nerf, and Lee Sin (13% of games) and Qiyana still lose.",
+  "mid": "Annie, Ekko and Vex are all outliers, the only role with three. Katarina leads Diamond+, and Katarina and Zoe are the outliers in Master+. Most of this patch's changes hit mid: Mel, Galio and Annie gained the most since last patch, Syndra and LeBlanc dropped, and Viktor, Akali and Syndra are each in about 8% of games and lose.",
+  "adc": "Kog'Maw is the outlier at every rank, at +2.7 in Emerald+, and Xayah is the only other S there. Ezreal got buffed and went from 15% to 20% pick, and he still has the worst score of any popular ADC.",
+  "support": "No support is an outlier. Taric, Zilean, Rell and Sona are the S picks in Emerald+, with Braum, Leona, Rakan and Janna right behind, so pick what fits your bot laner. Janna, Braum and Rakan lead Diamond+, Rell leads Master+. Yuumi, Karma and Lux are popular and lose, and Bard moved up to C after his Q buff, still below average."
  },
  "changes": {
   "Annie": [
