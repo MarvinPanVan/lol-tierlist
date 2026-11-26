@@ -288,8 +288,10 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    patch's games, so day 5 roughly doubles them and cuts the noise by about a third. Only `TLC.run('16.xx', ['stats'])`
    (about 2 minutes, one save click), import, update.py, texts (lede day count and games, `updated`), build, check, push.
    Matchups, builds and the other sites stay from the first read.
-   Reminders for 26.23 are scheduled in Marvin's Claude session (20 Nov full update, 23 Nov stats refresh, 26 Nov
-   refresh). After each day-8 refresh, schedule the next patch's three reminders.
+   Reminders are scheduled in Marvin's Claude session. 26.24 (live 9 Dec; 26.23 ran three weeks, so no preview until
+   after 24 Nov): 2 Dec preview check (repeats on 5 Dec if not out), 11 Dec full update, 14 Dec stats refresh, 17 Dec
+   refresh. 26 Nov's 26.23 day-8 refresh could not run (PC offline), retry on 27 Nov. After each day-8 refresh, schedule
+   the next patch's three reminders.
 
 ## Riot API collector (prototype, development key)
 
