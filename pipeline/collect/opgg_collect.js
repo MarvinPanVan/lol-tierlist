@@ -7,7 +7,7 @@
 // he saves it to Downloads/lol-tierlist-data/). Then in the container: device_stage_files, and
 //   python3 pipeline/collect/import_bundle.py <staged file> <length> <number sum>
 // with the length and sum that run() returns, so a damaged or partial file is never used. Progress: TLC.status().
-// Missed the save window? TLC.save() offers the last run's file again.
+// Missed the save window, or it failed? TLC.save() offers the last finished file again, even after a restart (see below).
 // Rules kept here: OP.GG's internal patch number (16.xx = 26.xx), 0.4 s between pages, never the visible tables.
 (() => {
 const ROLES = ['top', 'jungle', 'mid', 'adc', 'support'];
@@ -103,16 +103,37 @@ const packBuild = b => [b.sp.map(r => [r.ids, x10(r.pick), x10(r.win)]), b.rn, b
   b.bo.map(r => [r.ids[0], x10(r.pick), x10(r.win), r.games]), b.st.map(r => [r.ids, x10(r.pick), x10(r.win), r.games])];
 const packVs = (b, n) => ({n, sp: b.sp.map(r => [r.ids, r.pick]), rn: b.rn.map(r => [r[0], r[6] / 10]), bo: b.bo.map(r => [r.ids[0], r.pick]), co: b.co.map(r => [r.ids, r.pick]), st: b.st.map(r => [r.ids, r.pick])});
 
-const S = {part: null, done: 0, total: 0, errors: []};
-async function each(list, fn) { S.total = list.length; S.done = 0; for (const x of list) { try { await fn(x); } catch (e) { S.errors.push(S.part + ' ' + JSON.stringify(x).slice(0, 80) + ': ' + e); } S.done++; await sleep(400); } }
+// Progress is kept in the browser's own storage (IndexedDB of op.gg, which the built-in browser keeps across restarts):
+// a checkpoint every 25 pages, and the finished file until the next run. So if the PC goes off or the save window fails,
+// paste this file again and call the same TLC.run(...): it continues where it stopped (pages already read are skipped),
+// and TLC.save() can offer a finished file again even after a restart. TLC.pending() shows what is stored.
+const idb = (() => { let dbp;
+  const db = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('tlc', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = async (mode, fn) => { const d = await db(); return new Promise((res, rej) => { const t = d.transaction('kv', mode), q = fn(t.objectStore('kv'));
+    t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); };
+  return {get: k => tx('readonly', s => s.get(k)), set: (k, v) => tx('readwrite', s => s.put(v, k)), del: k => tx('readwrite', s => s.delete(k)),
+    keys: () => tx('readonly', s => s.getAllKeys())}; })();
+const S = {part: null, done: 0, total: 0, errors: [], resumed: 0};
+let CK = null;   // {key, out, done: Set of finished pages, keys, n}
+const ckSave = async () => { if (CK) await idb.set(CK.key, {out: CK.out, done: [...CK.done], keys: CK.keys, at: new Date().toISOString()}); };
+async function each(list, fn) { S.total = list.length; S.done = 0;
+  for (const x of list) { const id = S.part + ' ' + JSON.stringify(x);
+    if (CK && CK.done.has(id)) { S.done++; S.resumed++; continue; }
+    try { await fn(x); if (CK) CK.done.add(id); } catch (e) { S.errors.push(id.slice(0, 90) + ': ' + e); }
+    S.done++; if (CK && ++CK.n % 25 === 0) await ckSave(); await sleep(400); }
+  await ckSave(); }
 async function run(patch, parts, prevPatch) {
   const q = (tier = 'emerald_plus', region = 'global') => `region=${region}&tier=${tier}&patch=${patch}`;
-  const out = {patch, made: null, parts};
-  let keys = null;   // "role|champion" for every champion listed in Global Emerald+
+  const name = `lol-tierlist-${patch}-${parts.join('-')}.json`, old = await idb.get('ck:' + name);
+  const out = old ? old.out : {patch, made: null, parts};
+  CK = {key: 'ck:' + name, out, done: new Set(old ? old.done : []), keys: old ? old.keys : null, n: 0};
+  S.errors = []; S.resumed = 0;
+  let keys = CK.keys;   // "role|champion" for every champion listed in Global Emerald+ (kept in the checkpoint, so a resumed run uses the same list)
   const needKeys = async () => { if (keys) return keys; keys = [];
     for (const r of ROLES) { const s = parseStats(await get(`/lol/champions?${q()}&position=${r}`), r === 'adc' ? 'ADC' : r.toUpperCase()); s.rows.forEach(x => keys.push(r + '|' + x[0])); await sleep(400); }
-    return keys; };
-  if (parts.includes('stats')) { S.part = 'stats'; out.stats = {}; out.samples = {};
+    CK.keys = keys; await ckSave(); return keys; };
+  if (parts.includes('stats')) { S.part = 'stats'; out.stats = out.stats || {}; out.samples = out.samples || {};
     const sets = [['global', 'emerald_plus', 'e'], ['euw', 'emerald_plus', 'e'], ['kr', 'emerald_plus', 'e'], ['na', 'emerald_plus', 'e'],
       ...['global', 'euw', 'kr', 'na'].flatMap(g => [[g, 'diamond_plus', 'd'], [g, 'master_plus', 'm']])];
     await each(sets.flatMap(([g, tier, k]) => ROLES.map(r => [g, tier, k, r])), async ([g, tier, k, r]) => {
@@ -120,38 +141,56 @@ async function run(patch, parts, prevPatch) {
       out.stats[`opgg_${g}_${k}_${r}`] = s.rows; if (s.samples) out.samples[`opgg_${g}_${k}`] = s.samples; }); }
   if (parts.includes('prev')) {   // last patch's final Global numbers at Emerald+, Diamond+, Master+ (starting point, trend arrows, backtest); OP.GG keeps the previous patch
     const pv = prevPatch || patch.replace(/\d+$/, m => String(+m - 1).padStart(2, '0'));
-    S.part = 'prev'; out.prev = {patch: pv, rows: {e: {}, d: {}, m: {}}, samples: {}};
+    S.part = 'prev'; out.prev = out.prev || {patch: pv, rows: {e: {}, d: {}, m: {}}, samples: {}};
     await each([['emerald_plus', 'e'], ['diamond_plus', 'd'], ['master_plus', 'm']].flatMap(([t, k]) => ROLES.map(r => [t, k, r])), async ([t, k, r]) => {
       const s = parseStats(await get(`/lol/champions?region=global&tier=${t}&patch=${pv}&position=${r}`), r === 'adc' ? 'ADC' : r.toUpperCase());
       out.prev.rows[k][r] = s.rows; if (s.samples) out.prev.samples[k] = s.samples; }); }
-  if (parts.includes('matchups')) { await needKeys(); S.part = 'matchups'; out.counters = {e: {}, d: {}};
-    for (const [tier, k] of [['emerald_plus', 'e'], ['diamond_plus', 'd']])
-      await each(keys, async key => { const [r, c] = key.split('|'); out.counters[k][key] = parseCtr(await get(`/lol/champions/${slug(c)}/counters/${r}?${q(tier)}`)); }); }
-  if (parts.includes('builds')) { await needKeys(); S.part = 'builds'; out.builds = {}; out.skills = {};
+  if (parts.includes('matchups')) { await needKeys(); out.counters = out.counters || {e: {}, d: {}};
+    for (const [tier, k] of [['emerald_plus', 'e'], ['diamond_plus', 'd']]) { S.part = 'matchups-' + k;
+      await each(keys, async key => { const [r, c] = key.split('|'); out.counters[k][key] = parseCtr(await get(`/lol/champions/${slug(c)}/counters/${r}?${q(tier)}`)); }); } }
+  if (parts.includes('builds')) { await needKeys(); S.part = 'builds'; out.builds = out.builds || {}; out.skills = out.skills || {};
     await each(keys, async key => { const [r, c] = key.split('|'); const b = parseBuild(await get(`/lol/champions/${slug(c)}/build/${r}?${q()}`));
       out.builds[key] = packBuild(b); out.skills[key] = b.skill; }); }
-  if (parts.includes('vs')) { await needKeys(); S.part = 'vs'; out.vs = {};
+  if (parts.includes('vs')) { await needKeys(); S.part = 'vs'; out.vs = out.vs || {};
     if (!out.counters) throw new Error('vs needs the matchups part in the same run (it uses the 6 most played opponents)');
     const jobs = keys.flatMap(key => (out.counters.e[key] || []).slice().sort((a, b) => b[1] - a[1]).slice(0, 6).map(([o, n]) => [key, o, n]));
     await each(jobs, async ([key, o, n]) => { const [r, c] = key.split('|'); const b = parseBuild(await get(`/lol/champions/${slug(c)}/build/${r}?${q()}&target_champion=${slug(o)}`));
       (out.vs[key] = out.vs[key] || {})[o] = packVs(b, n); }); }
-  if (parts.includes('runes')) { await needKeys(); S.part = 'runes'; out.rune_pages = {};
+  if (parts.includes('runes')) { await needKeys(); S.part = 'runes'; out.rune_pages = out.rune_pages || {};
     await each(keys, async key => { const [r, c] = key.split('|'); const p = parseRunesPage(await get(`/lol/champions/${slug(c)}/runes/${r}?${q()}`)); if (p) out.rune_pages[key] = p; }); }
-  if (parts.includes('length')) { await needKeys(); S.part = 'length'; out.game_length = {};
+  if (parts.includes('length')) { await needKeys(); S.part = 'length'; out.game_length = out.game_length || {};
     await each(keys, async key => { const [r, c] = key.split('|'); const p = parseLen(await get(`/lol/champions/${slug(c)}/trends/${r}?${q()}`)); if (p && p.length) out.game_length[key] = p; }); }
-  if (parts.includes('duos')) { await needKeys(); S.part = 'duos'; out.synergy = {};
+  if (parts.includes('duos')) { await needKeys(); S.part = 'duos'; out.synergy = out.synergy || {};
     await each(keys.filter(k => k.startsWith('adc|') || k.startsWith('support|')), async key => { const [r, c] = key.split('|');
       const p = parseSyn(await get(`/lol/champions/${slug(c)}/synergies/${r}?${q()}`)); if (p.length) out.synergy[key] = p; }); }
+  // Pages that failed are not marked done, so with errors the checkpoint stays: the same call again reads only those.
   out.made = new Date().toISOString(); out.errors = S.errors.slice(); S.part = 'saving';
   const txt = JSON.stringify(out); let sum = 0; txt.replace(/-?\d+/g, x => { sum += +x; });
-  const name = `lol-tierlist-${patch}-${parts.join('-')}.json`, a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([txt], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click();
-  S.part = 'saved'; window.TLC_last = {name, txt}; return {file: name, length: txt.length, sum, errors: S.errors.length};
+  await idb.set('last:' + name, {name, txt, length: txt.length, sum, at: out.made}); if (!S.errors.length) await idb.del(CK.key); CK = null;
+  offer(name, txt); S.part = 'saved'; window.TLC_last = {name, txt}; return {file: name, length: txt.length, sum, errors: S.errors.length, resumed: S.resumed};
 }
-function save() {   // offers the last run's file again (if the save window was closed or missed)
-  const L = window.TLC_last; if (!L) return 'nothing to save'; const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([L.txt], {type: 'application/json'})); a.download = L.name; document.body.appendChild(a); a.click(); return L.name;
+// Browsers let a page start only ONE download by itself; a second one from the same site (stats in the morning, the long
+// run later) is silently blocked (27 Nov 2026). So every file also gets a big gold button at the top of the page: a real
+// click (Marvin's, or the computer tool's left_click on it, found with find "SAVE TIER LIST FILE") always starts the download.
+function offer(name, txt) {
+  const go = () => { const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click(); };
+  const old = document.getElementById('tlc-save'); if (old) old.remove();
+  const b = document.createElement('button'); b.id = 'tlc-save'; b.textContent = 'SAVE TIER LIST FILE: ' + name;
+  b.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:2147483647;padding:16px 24px;font:700 16px sans-serif;background:#e0b050;color:#000;border:0;border-radius:8px;cursor:pointer';
+  b.onclick = () => { go(); b.textContent = 'Save window opened for ' + name + ' (click again if it did not)'; };
+  document.body.appendChild(b); go(); }
+// offers a finished file again (save window closed, failed or missed; also after a restart). Without a name: the newest one.
+async function save(name) {
+  if (!name && window.TLC_last) { offer(window.TLC_last.name, window.TLC_last.txt); return window.TLC_last.name; }
+  const ks = (await idb.keys()).filter(k => k.startsWith('last:') && (!name || k === 'last:' + name)); if (!ks.length) return 'nothing to save';
+  const all = await Promise.all(ks.map(k => idb.get(k))); all.sort((a, b) => (b.at > a.at ? 1 : -1));
+  offer(all[0].name, all[0].txt); return {file: all[0].name, length: all[0].length, sum: all[0].sum};
 }
-window.TLC = {run, save, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, parseSyn, packBuild, packVs, get};
+async function pending() {   // what is stored: unfinished runs (checkpoints) and finished files
+  const out = []; for (const k of await idb.keys()) { const v = await idb.get(k);
+    out.push(k.startsWith('ck:') ? {run: k.slice(3), pages_done: v.done.length, at: v.at} : {file: v.name, length: v.length, sum: v.sum, at: v.at}); }
+  return out; }
+window.TLC = {run, save, pending, status: () => ({...S, errors: S.errors.length}), parseStats, parseCtr, parseBuild, parseRunesPage, parseLen, parseSyn, packBuild, packVs, get};
 })();
 'TLC ready';

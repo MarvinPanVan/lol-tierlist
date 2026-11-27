@@ -159,7 +159,20 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    (Marvin clicks save once, into Downloads/lol-tierlist-data/); stage it and run
    `python3 pipeline/collect/import_bundle.py <file> <length> <sum>` with the numbers run() returned. The importer checks
    the file, computes the matchup ranking and writes every data file below. Tested on 15 Nov 2026 against the data in the
-   repo (identical). The notes below describe what it does, for when OP.GG changes its pages:
+   repo (identical). The other stat sites (U.GG, Blitz, dpm.lol, League of Graphs) have their own saved script,
+   `pipeline/collect/sites_collect.js` (paste into a tab on the site, call `TLS.ugg/blitz/dpm/log`, one save each; the
+   file header lists the URLs and traps), then `python3 pipeline/collect/import_sites.py <folder> 16.xx` on a folder that
+   holds only the new files (an old log-metasrc.json there would overwrite League of Graphs with old numbers).
+   Lessons from 27 Nov 2026: (1) a page may start only ONE download by itself; a second one from the same site (stats in
+   the morning, the long run later) is silently blocked and Marvin sees no save window. Both scripts therefore also put
+   a gold "SAVE TIER LIST FILE" button on the page: front the tab (tabs_select), find the button, left_click it with the
+   computer tool (a real click always works), or ask Marvin to click it. (2) The save window needs the page that made the
+   file: never navigate a tab away before its file is in the folder ("Die Datei konnte nicht gespeichert werden").
+   (3) opgg_collect.js keeps a checkpoint in op.gg's IndexedDB every 25 pages and the finished file until the next run,
+   so after a crash or PC restart paste it again and call the same TLC.run(...): it skips pages already read;
+   TLC.save() re-offers a finished file, TLC.pending() lists what is stored. The sites script has no checkpoint (each
+   read takes a minute), so save its files right after each read.
+   The notes below describe what it does, for when OP.GG changes its pages:
    - OP.GG champion stats, Emerald+: Global, EUW, KR, NA; plus Global Master+ and Global Diamond+.
      Always add `&patch=16.xx` (OP.GG's internal number, 16.22 = 26.22) or it serves an old patch.
      CSV: `champion,win,pick,ban` per role -> `data/opgg_{global,euw,kr,na}_e_{role}.csv`, `opgg_global_{m,d}_{role}.csv`.
@@ -290,7 +303,7 @@ Every push to `main` goes live by itself within about a minute. Nothing for Marv
    Matchups, builds and the other sites stay from the first read.
    Reminders are scheduled in Marvin's Claude session. 26.24 (live 9 Dec; 26.23 ran three weeks, so no preview until
    after 24 Nov): 2 Dec preview check (repeats on 5 Dec if not out), 11 Dec full update, 14 Dec stats refresh, 17 Dec
-   refresh. 26 Nov's 26.23 day-8 refresh could not run (PC offline), retry on 27 Nov. After each day-8 refresh, schedule
+   refresh. The 26.23 day-8 refresh ran on 27 Nov (26 Nov's try failed, PC offline). After each day-8 refresh, schedule
    the next patch's three reminders.
 
 ## Riot API collector (prototype, development key)
